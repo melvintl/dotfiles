@@ -92,6 +92,8 @@ function ToggleMouse()
     endif
 endfunction
 
+set splitbelow splitright
+
 " color scheme
 syntax on
 colorscheme onedark
@@ -182,9 +184,23 @@ vmap <C-x> "+c
 vmap <C-v> c<ESC>"+p
 imap <C-v> <ESC>"+pa
 
-
 "let g:airline_symbols.branch = '⎇'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
+
+" My main changes here
+imap <F10> <Esc>:w<CR>:!clear;python %<CR>
+imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
+nmap <F8> :TagbarToggle<CR>
+
+" Both NERDtree and Jedi vim have a mapping to <leader>n,
+" changing the Jedi key mapping
+let g:jedi#usages_command = '<leader>N'
+
+" Change some of the clipboard settings
+" On Debian OS first install gvim/ sudo apt-get install vim-gtk3 to get +clipboard in vim
+"set clipboard=unnamedplus
+vmap <C-c> "+y
+map <C-p> "+p
 
