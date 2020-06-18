@@ -166,17 +166,17 @@ function NERDTreeToggle()
 endfunction
 
 " syntastic
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 0
-let g:syntastic_check_on_wq = 0
-map <leader>s :SyntasticCheck<CR>
-map <leader>d :SyntasticReset<CR>
-map <leader>e :lnext<CR>
-map <leader>r :lprev<CR>
+"let g:syntastic_always_populate_loc_list = 1
+"let g:syntastic_auto_loc_list = 1
+"let g:syntastic_check_on_open = 0
+"let g:syntastic_check_on_wq = 0
+"map <leader>s :SyntasticCheck<CR>
+"map <leader>d :SyntasticReset<CR>
+"map <leader>e :lnext<CR>
+"map <leader>r :lprev<CR>
 
 " tag list
-map <leader>t :TagbarToggle<CR>
+imap <leader>t :TagbarToggle<CR>
 
 " copy, cut and paste
 vmap <C-c> "+y
@@ -190,8 +190,13 @@ let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
 
 " My main changes here
-imap <F10> <Esc>:w<CR>:!clear;python %<CR>
-imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
+autocmd FileType python imap <F10> <Esc>:w<CR>:!clear;python %<CR>
+autocmd FileType python map <F10> <CR>:!python %<CR>
+
+autocmd FileType python imap <F12> <Esc>:w<CR>:terminal python %<CR>
+autocmd FileType python map <F12> <CR>:terminal python %<CR>
+
+autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
 nmap <F8> :TagbarToggle<CR>
 
 " Both NERDtree and Jedi vim have a mapping to <leader>n,
