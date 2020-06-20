@@ -15,26 +15,26 @@ call plug#begin()
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'joshdick/onedark.vim'
-Plug 'tpope/vim-fugitive'
 
-" Layout + Experience
+" Experience + Functionality
 Plug 'tpope/vim-sensible'
 Plug 'ap/vim-buftabline'
-Plug 'airblade/vim-gitgutter'
 Plug 'vim-scripts/The-NERD-tree'
 Plug 'jistr/vim-nerdtree-tabs'
+Plug 'mileszs/ack.vim'
+
+"git
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 
-" For Python
+" For Python/development
 Plug 'majutsushi/tagbar'
 Plug 'scrooloose/syntastic'
 "Plug 'vim-scripts/indentpython.vim'
 Plug 'davidhalter/jedi-vim'
 
 call plug#end()
-
-filetype plugin indent on
-syntax on
 
 if need_to_install_plugins == 1
     echo "Installing plugins..."
@@ -43,13 +43,17 @@ if need_to_install_plugins == 1
     q
 endif
 
+filetype plugin indent on
+syntax on
+
+set splitbelow splitright
+
 " always show the status bar
 set laststatus=2
 
-" enable 256 colors
 set t_Co=256
+colorscheme onedark
 
-" turn on line numbering
 set number
 
 " sane text files
@@ -64,6 +68,10 @@ set softtabstop=4
 set colorcolumn=80
 set expandtab
 set viminfo='25,\"50,n~/.viminfo
+
+" code folding
+set foldmethod=indent
+set foldlevel=99
 
 " word movement
 imap <S-Left> <Esc>bi
@@ -91,18 +99,6 @@ function ToggleMouse()
         let g:is_mouse_enabled = 1
     endif
 endfunction
-
-set splitbelow splitright
-
-" color scheme
-syntax on
-colorscheme onedark
-filetype on
-filetype plugin indent on
-
-" code folding
-set foldmethod=indent
-set foldlevel=99
 
 " wrap toggle
 setlocal nowrap
@@ -176,13 +172,7 @@ endfunction
 "map <leader>r :lprev<CR>
 
 " tag list
-imap <leader>t :TagbarToggle<CR>
-
-" copy, cut and paste
-vmap <C-c> "+y
-vmap <C-x> "+c
-vmap <C-v> c<ESC>"+p
-imap <C-v> <ESC>"+pa
+"imap <leader>t :TagbarToggle<CR>
 
 "let g:airline_symbols.branch = '⎇'
 let g:airline#extensions#tabline#enabled = 1
@@ -199,8 +189,7 @@ autocmd FileType python map <F12> <CR>:terminal python %<CR>
 autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
 nmap <F8> :TagbarToggle<CR>
 
-" Both NERDtree and Jedi vim have a mapping to <leader>n,
-" changing the Jedi key mapping
+" Both NERDtree and Jedi vim have a mapping to <leader>n, changing the Jedi key mapping
 let g:jedi#usages_command = '<leader>N'
 
 " Change some of the clipboard settings
@@ -208,4 +197,25 @@ let g:jedi#usages_command = '<leader>N'
 "set clipboard=unnamedplus
 vmap <C-c> "+y
 map <C-p> "+p
+vmap <C-c> "+y
+vmap <C-x> "+c
+vmap <C-v> c<ESC>"+p
+imap <C-v> <ESC>"+pa
+
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
+
+" Issue on MacOS and Ack setting the below  as per https://github.com/mileszs/ack.vim/issues/18
+function Search(string) abort
+  let saved_shellpipe = &shellpipe
+  let &shellpipe = '>'
+  try
+    execute 'Ack!' shellescape(a:string, 1)
+  finally
+    let &shellpipe = saved_shellpipe
+  endtry
+endfunction
+
+nnoremap <C-F> :call Search("")<left><left>
 
