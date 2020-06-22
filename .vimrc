@@ -13,12 +13,12 @@ call plug#begin()
 
 " General look and feel
 Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+"Plug 'vim-airline/vim-airline-themes'
 Plug 'joshdick/onedark.vim'
 
 " Experience + Functionality
 Plug 'tpope/vim-sensible'
-Plug 'ap/vim-buftabline'
+"Plug 'ap/vim-buftabline'
 Plug 'vim-scripts/The-NERD-tree'
 Plug 'jistr/vim-nerdtree-tabs'
 Plug 'mileszs/ack.vim'
@@ -30,7 +30,8 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 
 " For Python/development
 Plug 'majutsushi/tagbar'
-Plug 'scrooloose/syntastic'
+Plug 'w0rp/ale'
+"Plug 'scrooloose/syntastic'
 "Plug 'vim-scripts/indentpython.vim'
 Plug 'davidhalter/jedi-vim'
 
@@ -132,7 +133,7 @@ function ToggleWrap()
     endif
 endfunction
 
-" move through split windows
+" move through splits
 nmap <leader><Up> :wincmd k<CR>
 nmap <leader><Down> :wincmd j<CR>
 nmap <leader><Left> :wincmd h<CR>
@@ -150,7 +151,7 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 let NERDTreeMinimalUI = 1
 let g:nerdtree_open = 0
-map <leader>n :call NERDTreeToggle()<CR>
+map <leader>m :call NERDTreeToggle()<CR>
 function NERDTreeToggle()
     NERDTreeTabsToggle
     if g:nerdtree_open == 1
@@ -160,19 +161,6 @@ function NERDTreeToggle()
         wincmd p
     endif
 endfunction
-
-"delete  later if  syntastic
-"let g:syntastic_always_populate_loc_list = 1
-"let g:syntastic_auto_loc_list = 1
-"let g:syntastic_check_on_open = 0
-"let g:syntastic_check_on_wq = 0
-"map <leader>s :SyntasticCheck<CR>
-"map <leader>d :SyntasticReset<CR>
-"map <leader>e :lnext<CR>
-"map <leader>r :lprev<CR>
-
-" tag list
-"imap <leader>t :TagbarToggle<CR>
 
 "let g:airline_symbols.branch = '⎇'
 let g:airline#extensions#tabline#enabled = 1
@@ -190,7 +178,7 @@ autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w
 nmap <F8> :TagbarToggle<CR>
 
 " Both NERDtree and Jedi vim have a mapping to <leader>n, changing the Jedi key mapping
-let g:jedi#usages_command = '<leader>N'
+"let g:jedi#usages_command = '<leader>N'
 
 " Change some of the clipboard settings
 " On Debian OS first install gvim/ sudo apt-get install vim-gtk3 to get +clipboard in vim
@@ -218,4 +206,3 @@ function Search(string) abort
 endfunction
 
 nnoremap <C-F> :call Search("")<left><left>
-
