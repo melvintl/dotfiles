@@ -34,6 +34,7 @@ Plug 'w0rp/ale'
 "Plug 'scrooloose/syntastic'
 "Plug 'vim-scripts/indentpython.vim'
 Plug 'davidhalter/jedi-vim'
+Plug 'preservim/nerdcommenter'
 
 call plug#end()
 
@@ -162,27 +163,24 @@ function NERDTreeToggle()
     endif
 endfunction
 
-"let g:airline_symbols.branch = '⎇'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
+let g:airline#extensions#ale#enabled = 1
 
 " My main changes here
+nmap <F8> :TagbarToggle<CR>
+autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
 autocmd FileType python imap <F10> <Esc>:w<CR>:!clear;python %<CR>
-autocmd FileType python map <F10> <CR>:!python %<CR>
+autocmd FileType python map <F10> :w<CR>:!clear;python %<CR>
 
 autocmd FileType python imap <F12> <Esc>:w<CR>:terminal python %<CR>
 autocmd FileType python map <F12> <CR>:terminal python %<CR>
 
-autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
-nmap <F8> :TagbarToggle<CR>
-
-" Both NERDtree and Jedi vim have a mapping to <leader>n, changing the Jedi key mapping
-"let g:jedi#usages_command = '<leader>N'
-
 " Change some of the clipboard settings
 " On Debian OS first install gvim/ sudo apt-get install vim-gtk3 to get +clipboard in vim
 "set clipboard=unnamedplus
+set clipboard^=unnamed,unnamedplus
 vmap <C-c> "+y
 map <C-p> "+p
 vmap <C-c> "+y
@@ -206,3 +204,8 @@ function Search(string) abort
 endfunction
 
 nnoremap <C-F> :call Search("")<left><left>
+
+let g:ale_fixers = {'python': ['reorder-python-imports', 'black']}
+let g:ale_fix_on_save = 1
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+
