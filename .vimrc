@@ -18,10 +18,10 @@ Plug 'joshdick/onedark.vim'
 
 " Experience + Functionality
 Plug 'tpope/vim-sensible'
-"Plug 'ap/vim-buftabline'
 Plug 'vim-scripts/The-NERD-tree'
 Plug 'jistr/vim-nerdtree-tabs'
 Plug 'mileszs/ack.vim'
+Plug 'majutsushi/tagbar'
 
 "git
 Plug 'tpope/vim-fugitive'
@@ -29,12 +29,14 @@ Plug 'airblade/vim-gitgutter'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 
 " For Python/development
-Plug 'majutsushi/tagbar'
 Plug 'w0rp/ale'
+Plug 'davidhalter/jedi-vim'
 "Plug 'scrooloose/syntastic'
 "Plug 'vim-scripts/indentpython.vim'
-Plug 'davidhalter/jedi-vim'
-Plug 'preservim/nerdcommenter'
+
+" Other
+Plug 'tpope/vim-commentary'
+" Plug 'preservim/nerdcommenter'
 
 call plug#end()
 
@@ -56,7 +58,8 @@ set laststatus=2
 set t_Co=256
 colorscheme onedark
 
-set number
+set number relativenumber
+"set number
 
 " sane text files
 set fileformat=unix
@@ -168,9 +171,11 @@ let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
 let g:airline#extensions#ale#enabled = 1
 
-" My main changes here
+" My main shortcuts mapped here
 nmap <F8> :TagbarToggle<CR>
-autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
+" autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
+autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>
+" autocmd FileType python imap <F10> <Esc>:w<CR>:!clear;make test<CR>
 autocmd FileType python imap <F10> <Esc>:w<CR>:!clear;python %<CR>
 autocmd FileType python map <F10> :w<CR>:!clear;python %<CR>
 
@@ -203,7 +208,7 @@ function Search(string) abort
   endtry
 endfunction
 
-nnoremap <C-F> :call Search("")<left><left>
+nnoremap <C-S> :call Search("")<left><left>
 
 let g:ale_fixers = {'python': ['reorder-python-imports', 'black']}
 let g:ale_fix_on_save = 1
