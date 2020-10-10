@@ -9,12 +9,12 @@ endif
 
 call plug#begin()
 
-" General look and feel
+" Look and feel
 Plug 'vim-airline/vim-airline'
 "Plug 'vim-airline/vim-airline-themes'
 Plug 'joshdick/onedark.vim'
 
-" Experience + Functionality
+" Experience + Functionality + Navigation
 Plug 'tpope/vim-sensible'
 Plug 'vim-scripts/The-NERD-tree'
 Plug 'jistr/vim-nerdtree-tabs'
@@ -41,14 +41,14 @@ Plug 'davidhalter/jedi-vim'
 
 call plug#end()
 
-let mapleader=" "
-
 if need_to_install_plugins == 1
     echo "Installing plugins..."
     silent! PlugInstall
     echo "Done!"
     q
 endif
+
+let mapleader=" "
 
 filetype plugin indent on
 syntax on
@@ -96,7 +96,7 @@ nmap <S-tab> <<
 " mouse
 set mouse=a
 let g:is_mouse_enabled = 1
-noremap <silent> <Leader>m :call ToggleMouse()<CR>
+noremap <silent> <Leader>u :call ToggleMouse()<CR>
 function ToggleMouse()
     if g:is_mouse_enabled == 1
         echo "Mouse OFF"
@@ -150,7 +150,7 @@ nmap <leader><Right> :wincmd l<CR>
 " All about the buffers!
 nmap <leader>[ :bp!<CR>
 nmap <leader>] :bn!<CR>
-nmap <leader>x :bd<CR>
+nmap <leader>q :bd<CR>
 noremap <silent> <Leader>w :w<CR>
 nnoremap <leader>b :CtrlPBuffer<CR>
 
@@ -216,7 +216,7 @@ let g:ale_fix_on_save = 1
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 
 " Other shortcuts
-nnoremap  <leader>t :term<CR>
+nnoremap  <leader>x :term<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " My main project/server specific shortcuts mapped here
@@ -235,8 +235,8 @@ imap <F12> <Esc>:w<CR>:!clear;make test<CR>
 map <F12> :w<CR>:!clear;make test<CR>
 
 " All things testing 
-nmap <silent> t<C-n> :TestNearest<CR>
-nmap <silent> t<C-f> :TestFile<CR>
-nmap <silent> t<C-s> :TestSuite<CR>
-nmap <silent> t<C-l> :TestLast<CR>
-nmap <silent> t<C-g> :TestVisit<CR>
+" nmap <silent> t<C-n> :TestNearest<CR>
+nmap <silent> tf :TestFile<CR>
+" nmap <silent> t<C-s> :TestSuite<CR>
+nmap <silent> tl :TestLast<CR>
+" nmap <silent> t<C-g> :TestVisit<CR>
