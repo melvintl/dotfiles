@@ -1,6 +1,4 @@
-let mapleader=" "
-
-" plugins
+" Plugins
 let need_to_install_plugins = 0
 if empty(glob('~/.vim/autoload/plug.vim'))
     silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -20,13 +18,20 @@ Plug 'joshdick/onedark.vim'
 Plug 'tpope/vim-sensible'
 Plug 'vim-scripts/The-NERD-tree'
 Plug 'jistr/vim-nerdtree-tabs'
+Plug 'kien/ctrlp.vim'
 Plug 'mileszs/ack.vim'
-Plug 'majutsushi/tagbar'
 
-"git
+" Git
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'Xuyuanp/nerdtree-git-plugin'
+
+" General dev/file type
+Plug 'majutsushi/tagbar'
+Plug 'tpope/vim-commentary'
+Plug 'godlygeek/tabular'
+Plug 'nathanaelkane/vim-indent-guides'
+Plug 'vim-test/vim-test'
 
 " For Python/development
 Plug 'w0rp/ale'
@@ -34,11 +39,9 @@ Plug 'davidhalter/jedi-vim'
 "Plug 'scrooloose/syntastic'
 "Plug 'vim-scripts/indentpython.vim'
 
-" Other
-Plug 'tpope/vim-commentary'
-" Plug 'preservim/nerdcommenter'
-
 call plug#end()
+
+let mapleader=" "
 
 if need_to_install_plugins == 1
     echo "Installing plugins..."
@@ -59,7 +62,6 @@ set t_Co=256
 colorscheme onedark
 
 set number relativenumber
-"set number
 
 " sane text files
 set fileformat=unix
@@ -77,6 +79,8 @@ set viminfo='25,\"50,n~/.viminfo
 " code folding
 set foldmethod=indent
 set foldlevel=99
+
+nmap <F8> :TagbarToggle<CR>
 
 " word movement
 imap <S-Left> <Esc>bi
@@ -107,7 +111,7 @@ endfunction
 
 " wrap toggle
 setlocal nowrap
-noremap <silent> <Leader>w :call ToggleWrap()<CR>
+noremap <silent> <Leader>p :call ToggleWrap()<CR>
 function ToggleWrap()
     if &wrap
         echo "Wrap OFF"
@@ -137,21 +141,23 @@ function ToggleWrap()
     endif
 endfunction
 
-" move through splits
+" Navigate splits
 nmap <leader><Up> :wincmd k<CR>
 nmap <leader><Down> :wincmd j<CR>
 nmap <leader><Left> :wincmd h<CR>
 nmap <leader><Right> :wincmd l<CR>
 
-" move through buffers
+" All about the buffers!
 nmap <leader>[ :bp!<CR>
 nmap <leader>] :bn!<CR>
 nmap <leader>x :bd<CR>
+noremap <silent> <Leader>w :w<CR>
+nnoremap <leader>b :CtrlPBuffer<CR>
 
 " restore place in file from previous session
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
-" file browser
+" NERDTree
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 let NERDTreeMinimalUI = 1
 let g:nerdtree_open = 0
@@ -166,24 +172,14 @@ function NERDTreeToggle()
     endif
 endfunction
 
+" Status line
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
 let g:airline#extensions#ale#enabled = 1
 
-" My main shortcuts mapped here
-nmap <F8> :TagbarToggle<CR>
-" autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
-autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>
-" autocmd FileType python imap <F10> <Esc>:w<CR>:!clear;make test<CR>
-autocmd FileType python imap <F10> <Esc>:w<CR>:!clear;python %<CR>
-autocmd FileType python map <F10> :w<CR>:!clear;python %<CR>
-
-autocmd FileType python imap <F12> <Esc>:w<CR>:terminal python %<CR>
-autocmd FileType python map <F12> <CR>:terminal python %<CR>
-
 " Change some of the clipboard settings
-" On Debian OS first install gvim/ sudo apt-get install vim-gtk3 to get +clipboard in vim
+" On Debian OS first install gvim/ sudo apt-get install vim-gtk3 to get +clipboard in vim, on CentOS get vimx
 "set clipboard=unnamedplus
 set clipboard^=unnamed,unnamedplus
 vmap <C-c> "+y
@@ -195,6 +191,12 @@ imap <C-v> <ESC>"+pa
 
 if executable('ag')
   let g:ackprg = 'ag --vimgrep'
+
+  " Use Ag over Grep
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
 
 " Issue on MacOS and Ack setting the below  as per https://github.com/mileszs/ack.vim/issues/18
@@ -207,10 +209,34 @@ function Search(string) abort
     let &shellpipe = saved_shellpipe
   endtry
 endfunction
-
-nnoremap <C-S> :call Search("")<left><left>
+nnoremap  <leader>f :call Search("")<left><left>
 
 let g:ale_fixers = {'python': ['reorder-python-imports', 'black']}
 let g:ale_fix_on_save = 1
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 
+" Other shortcuts
+nnoremap  <leader>t :term<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" My main project/server specific shortcuts mapped here
+
+" autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
+autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>
+
+imap <F10> <Esc>:w<CR>:!clear;make test_my<CR>
+map <F10> :w<CR>:!clear;make test_my<CR>
+" autocmd FileType python imap <F10> <Esc>:w<CR>:!clear;python %<CR>
+" autocmd FileType python map <F10> :w<CR>:!clear;python %<CR>
+
+autocmd FileType python imap <F11> <Esc>:w<CR>:terminal python %<CR>
+autocmd FileType python map <F11> <CR>:terminal python %<CR>
+imap <F12> <Esc>:w<CR>:!clear;make test<CR>
+map <F12> :w<CR>:!clear;make test<CR>
+
+" All things testing 
+nmap <silent> t<C-n> :TestNearest<CR>
+nmap <silent> t<C-f> :TestFile<CR>
+nmap <silent> t<C-s> :TestSuite<CR>
+nmap <silent> t<C-l> :TestLast<CR>
+nmap <silent> t<C-g> :TestVisit<CR>
