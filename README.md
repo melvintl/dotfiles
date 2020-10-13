@@ -11,7 +11,6 @@ brew install ag
 ```
 
 ### Debian
-install gvim for clipboard
 ```
 apt-get install gvim
 

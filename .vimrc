@@ -54,6 +54,7 @@ filetype plugin indent on
 syntax on
 
 set splitbelow splitright
+set hidden
 
 " always show the status bar
 set laststatus=2
@@ -80,7 +81,8 @@ set viminfo='25,\"50,n~/.viminfo
 set foldmethod=indent
 set foldlevel=99
 
-nmap <F8> :TagbarToggle<CR>
+nmap <F2> :lopen<CR>
+nmap <F3> :TagbarToggle<CR>
 
 " word movement
 imap <S-Left> <Esc>bi
@@ -88,13 +90,14 @@ nmap <S-Left> b
 imap <S-Right> <Esc><Right>wi
 nmap <S-Right> w
 
-" indent/unindent with tab/shift-tab
+" indent/unindent
 nmap <Tab> >>
 imap <S-Tab> <Esc><<i
 nmap <S-tab> <<
 
 " mouse
 set mouse=a
+set ttymouse=xterm2
 let g:is_mouse_enabled = 1
 noremap <silent> <Leader>u :call ToggleMouse()<CR>
 function ToggleMouse()
@@ -105,6 +108,7 @@ function ToggleMouse()
     else
         echo "Mouse ON"
         set mouse=a
+        set ttymouse=xterm2
         let g:is_mouse_enabled = 1
     endif
 endfunction
@@ -153,6 +157,10 @@ nmap <leader>] :bn!<CR>
 nmap <leader>q :bd<CR>
 noremap <silent> <Leader>w :w<CR>
 nnoremap <leader>b :CtrlPBuffer<CR>
+augroup termIgnore
+    autocmd!
+    autocmd TerminalOpen * set nobuflisted
+augroup END
 
 " restore place in file from previous session
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
@@ -195,7 +203,7 @@ if executable('ag')
   " Use Ag over Grep
   set grepprg=ag\ --nogroup\ --nocolor
 
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  " Use ag in CtrlP for listing files.
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
 
@@ -211,12 +219,15 @@ function Search(string) abort
 endfunction
 nnoremap  <leader>f :call Search("")<left><left>
 
+let g:ale_linters = {'python': ['pylint', 'flake8']}
 let g:ale_fixers = {'python': ['reorder-python-imports', 'black']}
 let g:ale_fix_on_save = 1
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+" let g:ale_set_quickfix = 1
+let g:ale_set_loclist = 1
 
 " Other shortcuts
-nnoremap  <leader>x :term<CR>
+nnoremap  <leader><CR> :term<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " My main project/server specific shortcuts mapped here
