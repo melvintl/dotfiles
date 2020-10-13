@@ -28,4 +28,3 @@ sudo apt-get install xbacklight alsa-utils pulseaudio
 sudo apt-get install gnome-sound-applet indicator-sound
 sudo apt-get install volumeicon-alsa
 ```
-
