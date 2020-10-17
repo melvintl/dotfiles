@@ -1,4 +1,4 @@
-mkdir -f ~/myprojects
+mkdir -p ~/myprojects
 cd myprojects
 git clone https://github.com/melvintl/dotfiles.git
 ln -s -f ~/myprojects/dotfiles/.tmux.conf ~/.tmux.conf

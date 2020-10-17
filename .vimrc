@@ -10,14 +10,16 @@ endif
 call plug#begin()
 
 " Look and feel
-Plug 'vim-airline/vim-airline'
-"Plug 'vim-airline/vim-airline-themes'
 Plug 'joshdick/onedark.vim'
+Plug 'vim-airline/vim-airline'
 
 " Experience + Functionality + Navigation
 Plug 'tpope/vim-sensible'
 Plug 'vim-scripts/The-NERD-tree'
 Plug 'jistr/vim-nerdtree-tabs'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+" Dont really need all 3 - may decide to drop ctrlp?
+Plug 'junegunn/fzf.vim'
 Plug 'kien/ctrlp.vim'
 Plug 'mileszs/ack.vim'
 
@@ -35,6 +37,7 @@ Plug 'vim-test/vim-test'
 
 " For Python/development
 Plug 'w0rp/ale'
+Plug 'pechorin/any-jump.vim'
 Plug 'davidhalter/jedi-vim'
 "Plug 'scrooloose/syntastic'
 "Plug 'vim-scripts/indentpython.vim'
@@ -48,7 +51,11 @@ if need_to_install_plugins == 1
     q
 endif
 
+let g:any_jump_disable_default_keybindings = 1
 let mapleader=" "
+imap jk <Esc>
+" map <M-a> <C-a>
+" map <A-a> <C-a>
 
 filetype plugin indent on
 syntax on
@@ -150,17 +157,34 @@ nmap <leader><Up> :wincmd k<CR>
 nmap <leader><Down> :wincmd j<CR>
 nmap <leader><Left> :wincmd h<CR>
 nmap <leader><Right> :wincmd l<CR>
+nmap <leader>k :wincmd k<CR>
+nmap <leader>j :wincmd j<CR>
+nmap <leader>h :wincmd h<CR>
+nmap <leader>l :wincmd l<CR>
+
+" " Quicker window movement
+" nnoremap <C-j> <C-w>j
+" nnoremap <C-k> <C-w>k
+" nnoremap <C-h> <C-w>h
+" nnoremap <C-l> <C-w>l
 
 " All about the buffers!
 nmap <leader>[ :bp!<CR>
 nmap <leader>] :bn!<CR>
+nmap <leader>x :bd<CR>
 nmap <leader>q :bd<CR>
 noremap <silent> <Leader>w :w<CR>
 nnoremap <leader>b :CtrlPBuffer<CR>
+" nnoremap <leader>b :Buffers<CR>
 augroup termIgnore
     autocmd!
     autocmd TerminalOpen * set nobuflisted
 augroup END
+" Switch between the last two buffers
+nnoremap <Leader><Leader> <C-^>
+
+" Display extra whitespace
+set list listchars=tab:»·,trail:·,nbsp:·
 
 " restore place in file from previous session
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
@@ -186,16 +210,29 @@ let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
 let g:airline#extensions#ale#enabled = 1
 
-" Change some of the clipboard settings
-" On Debian OS first install gvim/ sudo apt-get install vim-gtk3 to get +clipboard in vim, on CentOS get vimx
-"set clipboard=unnamedplus
-set clipboard^=unnamed,unnamedplus
-vmap <C-c> "+y
-map <C-p> "+p
-vmap <C-c> "+y
-vmap <C-x> "+c
-vmap <C-v> c<ESC>"+p
-imap <C-v> <ESC>"+pa
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" START: All the Search, CtrlP and FZF config
+"
+let g:ctrlp_map = '<c-p>'
+let g:ctrlp_cmd = 'CtrlP'
+
+" Default fzf layout
+" - down / up / left / right
+let g:fzf_layout = { 'down': '~40%' }
+" An action can be a reference to a function that processes selected lines
+function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfunction
+
+let g:fzf_action = {
+  \ 'ctrl-q': function('s:build_quickfix_list'),
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+let $FZF_DEFAULT_OPTS = '--bind ctrl-a:select-all'
+
 
 if executable('ag')
   let g:ackprg = 'ag --vimgrep'
@@ -207,7 +244,7 @@ if executable('ag')
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
 
-" Issue on MacOS and Ack setting the below  as per https://github.com/mileszs/ack.vim/issues/18
+" " Issue on MacOS and Ack setting the below  as per https://github.com/mileszs/ack.vim/issues/18
 function Search(string) abort
   let saved_shellpipe = &shellpipe
   let &shellpipe = '>'
@@ -218,6 +255,23 @@ function Search(string) abort
   endtry
 endfunction
 nnoremap  <leader>f :call Search("")<left><left>
+" nnoremap  <leader>f :Ag<CR>
+" nnoremap  <C-f> :Rg<CR>
+
+" END: ALL the search and FZF config
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Change some of the clipboard settings
+" On Debian OS first install gvim/ sudo apt-get install vim-gtk3 to get +clipboard in vim, on CentOS get vimx
+"set clipboard=unnamedplus
+set clipboard^=unnamed,unnamedplus
+vmap <C-c> "+y
+" map <C-p> "+p
+vmap <C-c> "+y
+vmap <C-x> "+c
+vmap <C-v> c<ESC>"+p
+imap <C-v> <ESC>"+pa
+
 
 let g:ale_linters = {'python': ['pylint', 'flake8']}
 let g:ale_fixers = {'python': ['reorder-python-imports', 'black']}
@@ -228,6 +282,11 @@ let g:ale_set_loclist = 1
 
 " Other shortcuts
 nnoremap  <leader><CR> :term<CR>
+nnoremap <C-j> :AnyJump<CR>
+
+
+
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " My main project/server specific shortcuts mapped here

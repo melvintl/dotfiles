@@ -7,7 +7,7 @@ Plugins have minimal external depenencies except for the below:
 ### MacOS
 ```
 brew install ctags
-brew install ag
+brew install ag fzf ripgrep
 ```
 
 ### Debian
