@@ -1,5 +1,6 @@
-apt update -y & apt install -y python3-dev
-apt install -y openssh-server vim wget curl git
+apt update && apt install -y git
+apt install -y openssh-server vim wget curl
+apt install -y python3-dev
 
 # sudo apt-get install gvim
 apt install -y  vim-gtk3
