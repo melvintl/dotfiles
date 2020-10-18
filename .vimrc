@@ -37,7 +37,7 @@ Plug 'vim-test/vim-test'
 
 " For Python/development
 Plug 'w0rp/ale'
-Plug 'pechorin/any-jump.vim'
+" Plug 'pechorin/any-jump.vim'
 Plug 'davidhalter/jedi-vim'
 "Plug 'scrooloose/syntastic'
 "Plug 'vim-scripts/indentpython.vim'
