@@ -15,7 +15,7 @@ Plug 'vim-airline/vim-airline'
 
 " Experience + Functionality + Navigation
 Plug 'tpope/vim-sensible'
-Plug 'vim-scripts/The-NERD-tree'
+Plug 'preservim/nerdtree'
 Plug 'jistr/vim-nerdtree-tabs'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 " Dont really need all 3 - may decide to drop ctrlp?
