@@ -16,7 +16,6 @@ Plug 'vim-airline/vim-airline'
 " Experience + Functionality + Navigation
 Plug 'tpope/vim-sensible'
 Plug 'preservim/nerdtree'
-Plug 'jistr/vim-nerdtree-tabs'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 " Dont really need all 3 - may decide to drop ctrlp?
 Plug 'junegunn/fzf.vim'
@@ -32,15 +31,17 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'majutsushi/tagbar'
 Plug 'tpope/vim-commentary'
 Plug 'godlygeek/tabular'
-Plug 'nathanaelkane/vim-indent-guides'
-Plug 'vim-test/vim-test'
+" Plug 'nathanaelkane/vim-indent-guides'
+Plug 'yggdroot/indentline'
+Plug 'simnalamburt/vim-mundo'
 
 " For Python/development
 Plug 'w0rp/ale'
-" Plug 'pechorin/any-jump.vim'
 Plug 'davidhalter/jedi-vim'
-"Plug 'scrooloose/syntastic'
-"Plug 'vim-scripts/indentpython.vim'
+Plug 'vim-test/vim-test'
+" Plug 'pechorin/any-jump.vim'
+" Plug 'scrooloose/syntastic'
+" Plug 'vim-scripts/indentpython.vim'
 
 call plug#end()
 
@@ -88,6 +89,10 @@ set viminfo='25,\"50,n~/.viminfo
 set foldmethod=indent
 set foldlevel=99
 
+" Enable persistent undo so that undo history persists across vim sessions
+set undofile
+set undodir=~/.vim/undo
+
 nmap <F2> :lopen<CR>
 nmap <F3> :TagbarToggle<CR>
 
@@ -101,6 +106,14 @@ nmap <S-Right> w
 nmap <Tab> >>
 imap <S-Tab> <Esc><<i
 nmap <S-tab> <<
+
+noremap <silent> <Leader>sr :source ~/.vim/Session.vim<CR>
+noremap <silent> <Leader>ss :call SaveSession()<CR>
+function SaveSession()
+    NERDTreeClose
+    MundoHide
+    mks! ~/.vim/Session.vim
+endfunction
 
 " mouse
 set mouse=a
@@ -192,19 +205,13 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 " NERDTree
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 let NERDTreeMinimalUI = 1
-let g:nerdtree_open = 0
-map <leader>m :call NERDTreeToggle()<CR>
-function NERDTreeToggle()
-    NERDTreeTabsToggle
-    if g:nerdtree_open == 1
-        let g:nerdtree_open = 0
-    else
-        let g:nerdtree_open = 1
-        wincmd p
-    endif
-endfunction
+map <leader>m : NERDTreeToggle<CR>
+
+let g:mundo_right = 1
 
 " Status line
+let g:airline_theme='onedark'
+
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'

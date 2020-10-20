@@ -4,6 +4,7 @@
 
 # Note: This script is copied from https://raw.githubusercontent.com/mislav/dotfiles/d2af5900fce38238d1202aa43e7332b20add6205/bin/tmux-session
 
+
 set -e
 
 dump() {
