@@ -1,5 +1,6 @@
-yum install wget curl
-yum install vim-X11 
+yum update && yum install -y git
+yum install -y wget curl
+yum install -y vim-X11 
 yum install -y https://dl.bintray.com/subchen/yum-repo/the_silver_searcher-2.1.0-1.el8.x86_64.rpm
 
 # apt-get install exuberant-ctags ack-grep

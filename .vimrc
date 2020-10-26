@@ -1,3 +1,6 @@
+let mapleader=" "
+imap jk <Esc>
+
 " Plugins
 let need_to_install_plugins = 0
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -43,6 +46,11 @@ Plug 'vim-test/vim-test'
 " Plug 'scrooloose/syntastic'
 " Plug 'vim-scripts/indentpython.vim'
 
+" tmux
+" Plug 'edkolev/tmuxline.vim'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'benmills/vimux'
+
 call plug#end()
 
 if need_to_install_plugins == 1
@@ -53,8 +61,6 @@ if need_to_install_plugins == 1
 endif
 
 let g:any_jump_disable_default_keybindings = 1
-let mapleader=" "
-imap jk <Esc>
 " map <M-a> <C-a>
 " map <A-a> <C-a>
 
@@ -93,6 +99,9 @@ set foldlevel=99
 set undofile
 set undodir=~/.vim/undo
 
+" Display extra whitespace
+set list listchars=tab:»·,trail:·,nbsp:·
+
 nmap <F2> :lopen<CR>
 nmap <F3> :TagbarToggle<CR>
 
@@ -107,6 +116,7 @@ nmap <Tab> >>
 imap <S-Tab> <Esc><<i
 nmap <S-tab> <<
 
+" session
 noremap <silent> <Leader>sr :source ~/.vim/Session.vim<CR>
 noremap <silent> <Leader>ss :call SaveSession()<CR>
 function SaveSession()
@@ -196,8 +206,6 @@ augroup END
 " Switch between the last two buffers
 nnoremap <Leader><Leader> <C-^>
 
-" Display extra whitespace
-set list listchars=tab:»·,trail:·,nbsp:·
 
 " restore place in file from previous session
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
@@ -211,11 +219,24 @@ let g:mundo_right = 1
 
 " Status line
 let g:airline_theme='onedark'
-
+" let g:airline_powerline_fonts c2
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
+let g:airline#extensions#tabline#buffer_nr_show = 1
 let g:airline#extensions#ale#enabled = 1
+
+"tmuxline
+let g:tmuxline_powerline_separators = 0
+let g:tmuxline_preset = {
+      \'a'    : '#S',
+      \'b'    : '#I #W',
+      \'c'    : '',
+      \'win'  : '#I #W',
+      \'cwin' : '#I #W',
+      \'x'    : '%a',
+      \'y'    : '%R',
+      \'z'    : ''}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " START: All the Search, CtrlP and FZF config
@@ -251,7 +272,7 @@ if executable('ag')
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
 
-" " Issue on MacOS and Ack setting the below  as per https://github.com/mileszs/ack.vim/issues/18
+" Issue on MacOS and Ack setting the below  as per https://github.com/mileszs/ack.vim/issues/18
 function Search(string) abort
   let saved_shellpipe = &shellpipe
   let &shellpipe = '>'
@@ -269,7 +290,8 @@ nnoremap  <leader>f :call Search("")<left><left>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Change some of the clipboard settings
-" On Debian OS first install gvim/ sudo apt-get install vim-gtk3 to get +clipboard in vim, on CentOS get vimx
+" On Debian OS first install gvim/ sudo apt-get install vim-gtk3 to get +clipboard in vim
+" on CentOS get vim-X11 for vimx
 "set clipboard=unnamedplus
 set clipboard^=unnamed,unnamedplus
 vmap <C-c> "+y
@@ -280,6 +302,19 @@ vmap <C-v> c<ESC>"+p
 imap <C-v> <ESC>"+pa
 
 
+" vimux shortcuts
+map <Leader>vr :call VimuxRunCommand("clear; python -m pytest .")<CR>
+map <Leader>vp :VimuxPromptCommand<CR>
+map <Leader>vl :VimuxRunLastCommand<CR>
+map <Leader>vi :VimuxInspectRunner<CR>
+map <Leader>vq :VimuxCloseRunner<CR>
+map <Leader>vx :VimuxInterruptRunner<CR>
+map <Leader>vz :call VimuxZoomRunner()<CR>
+
+" Other shortcuts
+nnoremap  <leader><CR> :term<CR>
+
+
 let g:ale_linters = {'python': ['pylint', 'flake8']}
 let g:ale_fixers = {'python': ['reorder-python-imports', 'black']}
 let g:ale_fix_on_save = 1
@@ -287,12 +322,9 @@ let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 " let g:ale_set_quickfix = 1
 let g:ale_set_loclist = 1
 
-" Other shortcuts
-nnoremap  <leader><CR> :term<CR>
-nnoremap <C-j> :AnyJump<CR>
-
-
-
+" Disabling the git gutter keys as it has default mapping to
+" <leader>h<other-key> and slows my navigation mapping so disabling for now. May update later
+let g:gitgutter_map_keys = 0
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -306,8 +338,8 @@ map <F10> :w<CR>:!clear;make test_my<CR>
 " autocmd FileType python imap <F10> <Esc>:w<CR>:!clear;python %<CR>
 " autocmd FileType python map <F10> :w<CR>:!clear;python %<CR>
 
-autocmd FileType python imap <F11> <Esc>:w<CR>:terminal python %<CR>
-autocmd FileType python map <F11> <CR>:terminal python %<CR>
+autocmd FileType python imap <F11> <Esc>:w<CR>:clear python %<CR>
+autocmd FileType python map <F11> <CR>:clear python %<CR>
 imap <F12> <Esc>:w<CR>:!clear;make test<CR>
 map <F12> :w<CR>:!clear;make test<CR>
 
