@@ -1,5 +1,4 @@
 let mapleader=" "
-imap jk <Esc>
 
 " Plugins
 let need_to_install_plugins = 0
@@ -14,16 +13,21 @@ call plug#begin()
 
 " Look and feel
 Plug 'joshdick/onedark.vim'
+Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
 " Experience + Functionality + Navigation
+Plug 'mhinz/vim-startify'
 Plug 'tpope/vim-sensible'
 Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-" Dont really need all 3 - may decide to drop ctrlp?
+" Dont really need all 3 - may decide to drop ctrlp? fzf > ctrlp + ack
 Plug 'junegunn/fzf.vim'
 Plug 'kien/ctrlp.vim'
 Plug 'mileszs/ack.vim'
+" Plug 'junegunn/vim-peekaboo'
+Plug 'simnalamburt/vim-mundo'
 
 " Git
 Plug 'tpope/vim-fugitive'
@@ -32,24 +36,23 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 
 " General dev/file type
 Plug 'majutsushi/tagbar'
+Plug 'yggdroot/indentline'
+" Plug 'nathanaelkane/vim-indent-guides'
 Plug 'tpope/vim-commentary'
 Plug 'godlygeek/tabular'
-" Plug 'nathanaelkane/vim-indent-guides'
-Plug 'yggdroot/indentline'
-Plug 'simnalamburt/vim-mundo'
 
 " For Python/development
 Plug 'w0rp/ale'
 Plug 'davidhalter/jedi-vim'
 Plug 'vim-test/vim-test'
-" Plug 'pechorin/any-jump.vim'
 " Plug 'scrooloose/syntastic'
-" Plug 'vim-scripts/indentpython.vim'
+" Plug 'pechorin/any-jump.vim'
 
 " tmux
 " Plug 'edkolev/tmuxline.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'benmills/vimux'
+Plug 'wellle/tmux-complete.vim'
 
 call plug#end()
 
@@ -60,9 +63,6 @@ if need_to_install_plugins == 1
     q
 endif
 
-let g:any_jump_disable_default_keybindings = 1
-" map <M-a> <C-a>
-" map <A-a> <C-a>
 
 filetype plugin indent on
 syntax on
@@ -73,8 +73,13 @@ set hidden
 " always show the status bar
 set laststatus=2
 
+"color my world
 set t_Co=256
+" colorscheme gruvbox
 colorscheme onedark
+" let g:airline_theme='gruvbox'
+let g:airline_theme='onedark'
+
 
 set number relativenumber
 
@@ -96,12 +101,19 @@ set foldmethod=indent
 set foldlevel=99
 
 " Enable persistent undo so that undo history persists across vim sessions
-set undofile
+if !isdirectory($HOME."/.vim")
+    call mkdir($HOME."/.vim", "", 0770)
+endif
+if !isdirectory($HOME."/.vim/undo")
+    call mkdir($HOME."/.vim/undo", "", 0700)
+endif
 set undodir=~/.vim/undo
+set undofile
 
 " Display extra whitespace
 set list listchars=tab:»·,trail:·,nbsp:·
 
+imap jk <Esc>
 nmap <F2> :lopen<CR>
 nmap <F3> :TagbarToggle<CR>
 
@@ -119,7 +131,7 @@ nmap <S-tab> <<
 " session
 noremap <silent> <Leader>sr :source ~/.vim/Session.vim<CR>
 noremap <silent> <Leader>ss :call SaveSession()<CR>
-function SaveSession()
+function! SaveSession()
     NERDTreeClose
     MundoHide
     mks! ~/.vim/Session.vim
@@ -129,8 +141,8 @@ endfunction
 set mouse=a
 set ttymouse=xterm2
 let g:is_mouse_enabled = 1
-noremap <silent> <Leader>u :call ToggleMouse()<CR>
-function ToggleMouse()
+noremap <silent> <Leader>m :call ToggleMouse()<CR>
+function! ToggleMouse()
     if g:is_mouse_enabled == 1
         echo "Mouse OFF"
         set mouse=
@@ -146,7 +158,7 @@ endfunction
 " wrap toggle
 setlocal nowrap
 noremap <silent> <Leader>p :call ToggleWrap()<CR>
-function ToggleWrap()
+function! ToggleWrap()
     if &wrap
         echo "Wrap OFF"
         setlocal nowrap
@@ -194,11 +206,11 @@ nmap <leader>l :wincmd l<CR>
 " All about the buffers!
 nmap <leader>[ :bp!<CR>
 nmap <leader>] :bn!<CR>
-nmap <leader>x :bd<CR>
 nmap <leader>q :bd<CR>
 noremap <silent> <Leader>w :w<CR>
-nnoremap <leader>b :CtrlPBuffer<CR>
-" nnoremap <leader>b :Buffers<CR>
+nnoremap <leader>b :CtrlPBuffer<CR>  "Use CtrlP plugin  
+" nnoremap <leader>b :Buffers<CR> "Use FZF plugin
+" Make sure that terminal is not added to buffer when cyclying through buffers
 augroup termIgnore
     autocmd!
     autocmd TerminalOpen * set nobuflisted
@@ -213,12 +225,11 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 " NERDTree
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 let NERDTreeMinimalUI = 1
-map <leader>m : NERDTreeToggle<CR>
+map <leader>n : NERDTreeToggle<CR>
 
 let g:mundo_right = 1
 
 " Status line
-let g:airline_theme='onedark'
 " let g:airline_powerline_fonts c2
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
@@ -246,7 +257,7 @@ let g:ctrlp_cmd = 'CtrlP'
 
 " Default fzf layout
 " - down / up / left / right
-let g:fzf_layout = { 'down': '~40%' }
+" let g:fzf_layout = { 'down': '~40%' }
 " An action can be a reference to a function that processes selected lines
 function! s:build_quickfix_list(lines)
   call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
@@ -261,7 +272,6 @@ let g:fzf_action = {
   \ 'ctrl-v': 'vsplit' }
 let $FZF_DEFAULT_OPTS = '--bind ctrl-a:select-all'
 
-
 if executable('ag')
   let g:ackprg = 'ag --vimgrep'
 
@@ -273,7 +283,7 @@ if executable('ag')
 endif
 
 " Issue on MacOS and Ack setting the below  as per https://github.com/mileszs/ack.vim/issues/18
-function Search(string) abort
+function! Search(string) abort
   let saved_shellpipe = &shellpipe
   let &shellpipe = '>'
   try
@@ -282,9 +292,23 @@ function Search(string) abort
     let &shellpipe = saved_shellpipe
   endtry
 endfunction
-nnoremap  <leader>f :call Search("")<left><left>
-" nnoremap  <leader>f :Ag<CR>
+
+nnoremap  <leader>f :Files<CR>
+nnoremap  <leader>F :History<CR>
+
+nnoremap  <leader>/ :call Search("")<left><left>
+" nnoremap  <leader>/ :Ag<CR>
 " nnoremap  <C-f> :Rg<CR>
+
+" Use Ctrl-/ to search in buffers
+noremap <C-_> :BLines<space>  
+inoremap <C-_> <esc>:BLines<space>
+
+" Insert mode completion
+imap <c-x><c-k> <plug>(fzf-complete-word)
+imap <c-x><c-f> <plug>(fzf-complete-path)
+imap <c-x><c-l> <plug>(fzf-complete-line)
+
 
 " END: ALL the search and FZF config
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -310,6 +334,21 @@ map <Leader>vi :VimuxInspectRunner<CR>
 map <Leader>vq :VimuxCloseRunner<CR>
 map <Leader>vx :VimuxInterruptRunner<CR>
 map <Leader>vz :call VimuxZoomRunner()<CR>
+
+let g:tmuxcomplete#trigger = 'completefunc'
+
+let g:tmuxcomplete#asyncomplete_source_options = {
+            \ 'name':      'tmuxcomplete',
+            \ 'whitelist': ['*'],
+            \ 'config': {
+            \     'splitmode':      'lines,words',
+            \     'filter_prefix':   1,
+            \     'show_incomplete': 1,
+            \     'sort_candidates': 0,
+            \     'scrollback':      0,
+            \     'truncate':        0
+            \     }
+            \ }
 
 " Other shortcuts
 nnoremap  <leader><CR> :term<CR>
