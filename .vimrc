@@ -1,6 +1,8 @@
+" vim:fdm=marker
+
 let mapleader=" "
 
-" Plugins
+" plugins  {{{
 let need_to_install_plugins = 0
 if empty(glob('~/.vim/autoload/plug.vim'))
     silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -62,26 +64,19 @@ if need_to_install_plugins == 1
     echo "Done!"
     q
 endif
+" }}}
 
-
+" settings (general) {{{
 filetype plugin indent on
 syntax on
+
+set number relativenumber
 
 set splitbelow splitright
 set hidden
 
 " always show the status bar
 set laststatus=2
-
-"color my world
-set t_Co=256
-" colorscheme gruvbox
-colorscheme onedark
-" let g:airline_theme='gruvbox'
-let g:airline_theme='onedark'
-
-
-set number relativenumber
 
 " sane text files
 set fileformat=unix
@@ -100,7 +95,10 @@ set viminfo='25,\"50,n~/.viminfo
 set foldmethod=indent
 set foldlevel=99
 
-" Enable persistent undo so that undo history persists across vim sessions
+" display extra whitespace
+set list listchars=tab:»·,trail:·,nbsp:·
+
+" enable persistent undo so that undo history persists across vim sessions
 if !isdirectory($HOME."/.vim")
     call mkdir($HOME."/.vim", "", 0770)
 endif
@@ -109,13 +107,35 @@ if !isdirectory($HOME."/.vim/undo")
 endif
 set undodir=~/.vim/undo
 set undofile
+" }}}
 
-" Display extra whitespace
-set list listchars=tab:»·,trail:·,nbsp:·
+" color my word ! {{{
+" set background=dark
+if (has("termguicolors"))
+    " Enable true colors if available
+    set termguicolors
+    " set t_Co=256
+    colorscheme onedark
+    " colorscheme gruvbox 
+    " Enable italics, Make sure this is immediately after colorscheme
+    " https://stackoverflow.com/questions/3494435/vimrc-make-comments-italic
+    " highlight Comment cterm=italic gui=italic
+    set cursorline
+    " Highlight current line
+    autocmd ColorScheme * highlight StatusLine ctermbg=darkgray cterm=NONE guibg=darkgray gui=NONE
+else
+    set t_Co=256
+    " let base16colorspace=256
+    colorscheme onedark
+endif
 
+" }}}
+
+" general mapping & navigation mappings {{{
 imap jk <Esc>
 nmap <F2> :lopen<CR>
 nmap <F3> :TagbarToggle<CR>
+nnoremap  <leader><CR> :term<CR>
 
 " word movement
 imap <S-Left> <Esc>bi
@@ -128,7 +148,24 @@ nmap <Tab> >>
 imap <S-Tab> <Esc><<i
 nmap <S-tab> <<
 
-" session
+" navigate splits
+nmap <leader><Up> :wincmd k<CR>
+nmap <leader><Down> :wincmd j<CR>
+nmap <leader><Left> :wincmd h<CR>
+nmap <leader><Right> :wincmd l<CR>
+nmap <leader>k :wincmd k<CR>
+nmap <leader>j :wincmd j<CR>
+nmap <leader>h :wincmd h<CR>
+nmap <leader>l :wincmd l<CR>
+
+" " Quicker window movement
+" nnoremap <C-j> <C-w>j
+" nnoremap <C-k> <C-w>k
+" nnoremap <C-h> <C-w>h
+" nnoremap <C-l> <C-w>l
+" }}}
+
+" session {{{
 noremap <silent> <Leader>sr :source ~/.vim/Session.vim<CR>
 noremap <silent> <Leader>ss :call SaveSession()<CR>
 function! SaveSession()
@@ -137,7 +174,12 @@ function! SaveSession()
     mks! ~/.vim/Session.vim
 endfunction
 
-" mouse
+" restore place in file from previous session
+autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+
+" }}}
+
+" mouse {{{
 set mouse=a
 set ttymouse=xterm2
 let g:is_mouse_enabled = 1
@@ -154,8 +196,9 @@ function! ToggleMouse()
         let g:is_mouse_enabled = 1
     endif
 endfunction
+" }}}
 
-" wrap toggle
+" wrap toggle {{{
 setlocal nowrap
 noremap <silent> <Leader>p :call ToggleWrap()<CR>
 function! ToggleWrap()
@@ -186,29 +229,28 @@ function! ToggleWrap()
         inoremap <buffer> <silent> <End>  <C-o>g<End>
     endif
 endfunction
+" }}}
 
-" Navigate splits
-nmap <leader><Up> :wincmd k<CR>
-nmap <leader><Down> :wincmd j<CR>
-nmap <leader><Left> :wincmd h<CR>
-nmap <leader><Right> :wincmd l<CR>
-nmap <leader>k :wincmd k<CR>
-nmap <leader>j :wincmd j<CR>
-nmap <leader>h :wincmd h<CR>
-nmap <leader>l :wincmd l<CR>
+" clipboard {{{
+" Change some of the clipboard settings
+" On Debian OS first install gvim/ sudo apt-get install vim-gtk3 to get +clipboard in vim
+" on CentOS get vim-X11 for vimx
+"set clipboard=unnamedplus
+set clipboard^=unnamed,unnamedplus
+vmap <C-c> "+y
+" map <C-p> "+p
+vmap <C-c> "+y
+vmap <C-x> "+c
+vmap <C-v> c<ESC>"+p
+imap <C-v> <ESC>"+pa
+" }}}
 
-" " Quicker window movement
-" nnoremap <C-j> <C-w>j
-" nnoremap <C-k> <C-w>k
-" nnoremap <C-h> <C-w>h
-" nnoremap <C-l> <C-w>l
-
-" All about the buffers!
+" buffers mapping {{{
 nmap <leader>[ :bp!<CR>
 nmap <leader>] :bn!<CR>
 nmap <leader>q :bd<CR>
-noremap <silent> <Leader>w :w<CR>
-nnoremap <leader>b :CtrlPBuffer<CR>  "Use CtrlP plugin  
+noremap <silent> <Leader>w :w!<CR>
+nnoremap <leader>b :CtrlPBuffer<CR>  "Use CtrlP plugin
 " nnoremap <leader>b :Buffers<CR> "Use FZF plugin
 " Make sure that terminal is not added to buffer when cyclying through buffers
 augroup termIgnore
@@ -217,38 +259,24 @@ augroup termIgnore
 augroup END
 " Switch between the last two buffers
 nnoremap <Leader><Leader> <C-^>
+" }}}
 
-
-" restore place in file from previous session
-autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-
-" NERDTree
+" NERDTree {{{
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 let NERDTreeMinimalUI = 1
 map <leader>n : NERDTreeToggle<CR>
+" }}}
 
-let g:mundo_right = 1
-
-" Status line
+" status line {{{
 " let g:airline_powerline_fonts c2
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
 let g:airline#extensions#tabline#buffer_nr_show = 1
 let g:airline#extensions#ale#enabled = 1
+" }}}
 
-"tmuxline
-let g:tmuxline_powerline_separators = 0
-let g:tmuxline_preset = {
-      \'a'    : '#S',
-      \'b'    : '#I #W',
-      \'c'    : '',
-      \'win'  : '#I #W',
-      \'cwin' : '#I #W',
-      \'x'    : '%a',
-      \'y'    : '%R',
-      \'z'    : ''}
-
+" search, CtrlP, FZF  {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " START: All the Search, CtrlP and FZF config
 "
@@ -312,21 +340,9 @@ imap <c-x><c-l> <plug>(fzf-complete-line)
 
 " END: ALL the search and FZF config
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" }}}
 
-" Change some of the clipboard settings
-" On Debian OS first install gvim/ sudo apt-get install vim-gtk3 to get +clipboard in vim
-" on CentOS get vim-X11 for vimx
-"set clipboard=unnamedplus
-set clipboard^=unnamed,unnamedplus
-vmap <C-c> "+y
-" map <C-p> "+p
-vmap <C-c> "+y
-vmap <C-x> "+c
-vmap <C-v> c<ESC>"+p
-imap <C-v> <ESC>"+pa
-
-
-" vimux shortcuts
+" vimux {{{
 map <Leader>vr :call VimuxRunCommand("clear; python -m pytest .")<CR>
 map <Leader>vp :VimuxPromptCommand<CR>
 map <Leader>vl :VimuxRunLastCommand<CR>
@@ -334,7 +350,22 @@ map <Leader>vi :VimuxInspectRunner<CR>
 map <Leader>vq :VimuxCloseRunner<CR>
 map <Leader>vx :VimuxInterruptRunner<CR>
 map <Leader>vz :call VimuxZoomRunner()<CR>
+" }}}
 
+"tmuxline {{{
+let g:tmuxline_powerline_separators = 0
+let g:tmuxline_preset = {
+      \'a'    : '#S',
+      \'b'    : '#I #W',
+      \'c'    : '',
+      \'win'  : '#I #W',
+      \'cwin' : '#I #W',
+      \'x'    : '%a',
+      \'y'    : '%R',
+      \'z'    : ''}
+" }}}
+
+" tmuxcomplete {{{
 let g:tmuxcomplete#trigger = 'completefunc'
 
 let g:tmuxcomplete#asyncomplete_source_options = {
@@ -350,22 +381,26 @@ let g:tmuxcomplete#asyncomplete_source_options = {
             \     }
             \ }
 
-" Other shortcuts
-nnoremap  <leader><CR> :term<CR>
+" }}}
 
-
+" ale {{{
 let g:ale_linters = {'python': ['pylint', 'flake8']}
 let g:ale_fixers = {'python': ['reorder-python-imports', 'black']}
 let g:ale_fix_on_save = 1
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 " let g:ale_set_quickfix = 1
 let g:ale_set_loclist = 1
+" }}}
 
+" other plugins {{{
 " Disabling the git gutter keys as it has default mapping to
 " <leader>h<other-key> and slows my navigation mapping so disabling for now. May update later
 let g:gitgutter_map_keys = 0
 
+let g:mundo_right = 1
+" }}}
 
+" python: project specific mapping {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " My main project/server specific shortcuts mapped here
 
@@ -388,3 +423,6 @@ nmap <silent> tf :TestFile<CR>
 " nmap <silent> t<C-s> :TestSuite<CR>
 nmap <silent> tl :TestLast<CR>
 " nmap <silent> t<C-g> :TestVisit<CR>
+
+
+" }}}
