@@ -24,7 +24,7 @@ Plug 'mhinz/vim-startify'
 Plug 'tpope/vim-sensible'
 Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-" Dont really need all 3 - may decide to drop ctrlp? fzf > ctrlp + ack
+" Dont really need all 3 - may decide to drop ctrlp. fzf > ctrlp + ack
 Plug 'junegunn/fzf.vim'
 Plug 'kien/ctrlp.vim'
 Plug 'mileszs/ack.vim'
@@ -70,7 +70,17 @@ endif
 filetype plugin indent on
 syntax on
 
+" dont need the annoying .swp and and ~backup files
+set noswapfile
+set nobackup
+
+" best of both worlds
 set number relativenumber
+
+" search settings
+set ignorecase
+set smartcase
+set hlsearch
 
 set splitbelow splitright
 set hidden
@@ -109,32 +119,29 @@ set undodir=~/.vim/undo
 set undofile
 " }}}
 
-" color my word ! {{{
-" set background=dark
+" color my world ! {{{
+set background=dark
 if (has("termguicolors"))
     " Enable true colors if available
     set termguicolors
     " set t_Co=256
     colorscheme onedark
-    " colorscheme gruvbox 
-    " Enable italics, Make sure this is immediately after colorscheme
-    " https://stackoverflow.com/questions/3494435/vimrc-make-comments-italic
+    " colorscheme gruvbox
+
     " highlight Comment cterm=italic gui=italic
     set cursorline
     " Highlight current line
     autocmd ColorScheme * highlight StatusLine ctermbg=darkgray cterm=NONE guibg=darkgray gui=NONE
 else
     set t_Co=256
-    " let base16colorspace=256
     colorscheme onedark
 endif
-
 " }}}
+
 
 " general mapping & navigation mappings {{{
 imap jk <Esc>
 nmap <F2> :lopen<CR>
-nmap <F3> :TagbarToggle<CR>
 nnoremap  <leader><CR> :term<CR>
 
 " word movement
@@ -183,7 +190,7 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 set mouse=a
 set ttymouse=xterm2
 let g:is_mouse_enabled = 1
-noremap <silent> <Leader>m :call ToggleMouse()<CR>
+noremap <silent> <Leader>o :call ToggleMouse()<CR>
 function! ToggleMouse()
     if g:is_mouse_enabled == 1
         echo "Mouse OFF"
@@ -264,7 +271,7 @@ nnoremap <Leader><Leader> <C-^>
 " NERDTree {{{
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 let NERDTreeMinimalUI = 1
-map <leader>n : NERDTreeToggle<CR>
+map <leader>m : NERDTreeToggle<CR>
 " }}}
 
 " status line {{{
@@ -273,6 +280,7 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
 let g:airline#extensions#tabline#buffer_nr_show = 1
+" let g:airline#extensions#tabline#fnamemod = ':t'  " show only filename
 let g:airline#extensions#ale#enabled = 1
 " }}}
 
@@ -289,7 +297,7 @@ let g:ctrlp_cmd = 'CtrlP'
 " An action can be a reference to a function that processes selected lines
 function! s:build_quickfix_list(lines)
   call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
-  copen
+      copen
   cc
 endfunction
 
@@ -329,7 +337,7 @@ nnoremap  <leader>/ :call Search("")<left><left>
 " nnoremap  <C-f> :Rg<CR>
 
 " Use Ctrl-/ to search in buffers
-noremap <C-_> :BLines<space>  
+noremap <C-_> :BLines<space>
 inoremap <C-_> <esc>:BLines<space>
 
 " Insert mode completion
@@ -393,16 +401,52 @@ let g:ale_set_loclist = 1
 " }}}
 
 " other plugins {{{
+let g:mundo_right = 1
+" }}}
+
+" vim-gitgutter {{{
 " Disabling the git gutter keys as it has default mapping to
 " <leader>h<other-key> and slows my navigation mapping so disabling for now. May update later
 let g:gitgutter_map_keys = 0
+set updatetime=100
+nmap ]g <Plug>(GitGutterNextHunk)
+nmap [g <Plug>(GitGutterPrevHunk)
+" nmap <Leader>ga <Plug>(GitGutterStageHunk)
+" }}}
 
-let g:mundo_right = 1
+
+" vim-startify {{{
+" handle cwd when opening a file through startify
+let g:startify_change_to_dir = 0
+let g:startify_change_to_vcs_root = 1
+" Use :SS to save a session
+let g:startify_session_persistence = 1
+let g:startify_list_order = ['sessions', 'dir']
+let g:startify_files_number = 5
+let g:startify_list_order = [
+            \ ['   Sessions'],
+            \ 'sessions',
+            \ ['   Recent Files'],
+            \ 'dir',
+            \ ]
+" }}}
+
+
+" tagbar {{{
+let g:tagbar_autoclose = 1
+let g:tagbar_autofocus = 1
+let g:tagbar_compact = 1
+let g:tagbar_sort = 0  "sort according to where its listed in the file and not alphabetical
+nmap <F3> :TagbarToggle<CR>
 " }}}
 
 " python: project specific mapping {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " My main project/server specific shortcuts mapped here
+
+augroup run_buffer
+    autocmd FileType python map <buffer> <Leader>x :call VimuxRunCommand("clear;python " . bufname("%"))<CR>
+augroup END
 
 " autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
 autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>
@@ -417,7 +461,7 @@ autocmd FileType python map <F11> <CR>:clear python %<CR>
 imap <F12> <Esc>:w<CR>:!clear;make test<CR>
 map <F12> :w<CR>:!clear;make test<CR>
 
-" All things testing 
+" All things testing
 " nmap <silent> t<C-n> :TestNearest<CR>
 nmap <silent> tf :TestFile<CR>
 " nmap <silent> t<C-s> :TestSuite<CR>
