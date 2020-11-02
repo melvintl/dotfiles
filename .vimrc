@@ -1,5 +1,15 @@
 " vim:fdm=marker
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Melvins .vimrc file. Make vim into an IDE (optimised for Python)
+" Objectives of the .virmrc:
+"  - Minimal insallations outside of the vim plugins
+"  - Works on MacOS, Debian, CentOS (& Amazon Linux)
+"
+" Note for mappings:
+"  - Consider mappong Caps lock to Ctrl in the OS
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 let mapleader=" "
 
 " plugins  {{{
@@ -15,7 +25,7 @@ call plug#begin()
 
 " Look and feel
 Plug 'joshdick/onedark.vim'
-Plug 'morhetz/gruvbox'
+" Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
@@ -29,6 +39,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'kien/ctrlp.vim'
 Plug 'mileszs/ack.vim'
 " Plug 'junegunn/vim-peekaboo'
+Plug 'majutsushi/tagbar'
 Plug 'simnalamburt/vim-mundo'
 
 " Git
@@ -36,8 +47,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 
-" General dev/file type
-Plug 'majutsushi/tagbar'
+" General file-type/dev support
 Plug 'yggdroot/indentline'
 " Plug 'nathanaelkane/vim-indent-guides'
 Plug 'tpope/vim-commentary'
@@ -50,10 +60,11 @@ Plug 'vim-test/vim-test'
 " Plug 'scrooloose/syntastic'
 " Plug 'pechorin/any-jump.vim'
 
-" tmux
+" tmux and job dispatch
 " Plug 'edkolev/tmuxline.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'benmills/vimux'
+Plug 'tpope/vim-dispatch'
 Plug 'wellle/tmux-complete.vim'
 
 call plug#end()
@@ -120,13 +131,12 @@ set undofile
 " }}}
 
 " color my world ! {{{
-set background=dark
 if (has("termguicolors"))
-    " Enable true colors if available
-    set termguicolors
-    " set t_Co=256
+    set termguicolors     " Enable true colors if available
     colorscheme onedark
+    " set background=dark
     " colorscheme gruvbox
+    " set t_Co=256
 
     " highlight Comment cterm=italic gui=italic
     set cursorline
@@ -137,7 +147,6 @@ else
     colorscheme onedark
 endif
 " }}}
-
 
 " general mapping & navigation mappings {{{
 imap jk <Esc>
@@ -257,10 +266,12 @@ nmap <leader>[ :bp!<CR>
 nmap <leader>] :bn!<CR>
 nmap <leader>q :bd<CR>
 noremap <silent> <Leader>w :w!<CR>
-nnoremap <leader>b :CtrlPBuffer<CR>  "Use CtrlP plugin
-" nnoremap <leader>b :Buffers<CR> "Use FZF plugin
+"Use CtrlP plugin
+nnoremap <leader>b :CtrlPBuffer<CR>  
+"Use FZF plugin
+" nnoremap <leader>b :Buffers<CR>
 " Make sure that terminal is not added to buffer when cyclying through buffers
-augroup termIgnore
+augroup term_ignore
     autocmd!
     autocmd TerminalOpen * set nobuflisted
 augroup END
@@ -400,10 +411,6 @@ let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_set_loclist = 1
 " }}}
 
-" other plugins {{{
-let g:mundo_right = 1
-" }}}
-
 " vim-gitgutter {{{
 " Disabling the git gutter keys as it has default mapping to
 " <leader>h<other-key> and slows my navigation mapping so disabling for now. May update later
@@ -413,7 +420,6 @@ nmap ]g <Plug>(GitGutterNextHunk)
 nmap [g <Plug>(GitGutterPrevHunk)
 " nmap <Leader>ga <Plug>(GitGutterStageHunk)
 " }}}
-
 
 " vim-startify {{{
 " handle cwd when opening a file through startify
@@ -431,7 +437,6 @@ let g:startify_list_order = [
             \ ]
 " }}}
 
-
 " tagbar {{{
 let g:tagbar_autoclose = 1
 let g:tagbar_autofocus = 1
@@ -440,33 +445,47 @@ let g:tagbar_sort = 0  "sort according to where its listed in the file and not a
 nmap <F3> :TagbarToggle<CR>
 " }}}
 
+" all things testing {{{
+" make test commands execute using vimux 
+" let test#strategy = "vimux"
+let test#strategy = "dispatch"
+
+" I have projects where tests are written in pythons UnitTest
+" but want to run the tests using pytest
+let test#python#runner = 'pytest'
+
+nmap <silent> tf :TestFile<CR>
+nmap <silent> ts :TestSuite<CR>
+nmap <silent> tl :TestLast<CR>
+" }}}
+
+" other plugins {{{
+let g:mundo_right = 1
+" }}}
+
 " python: project specific mapping {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " My main project/server specific shortcuts mapped here
 
 augroup run_buffer
     autocmd FileType python map <buffer> <Leader>x :call VimuxRunCommand("clear;python " . bufname("%"))<CR>
+    autocmd FileType python let b:dispatch = 'python %'
+
+    " autocmd FileType python map <buffer> <F7> :terminal python %<CR>
+    autocmd FileType python map <buffer> <F8> :!clear; python %<CR>
+    autocmd FileType python imap <buffer> <F8> <Esc>:w<CR>:!clear python %<CR>
+
+    " autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
+    autocmd FileType python imap <buffer> <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>
 augroup END
+imap <F5> <Esc>:w<CR>:Dispatch<CR>
+map <F5> :w<CR>:Dispatch<CR>
 
-" autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
-autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>
+" run make commands
+imap <F10> <Esc>:wa<CR>:!clear;make test_my<CR>
+map <F10> :wa<CR>:!clear;make test_my<CR>
 
-imap <F10> <Esc>:w<CR>:!clear;make test_my<CR>
-map <F10> :w<CR>:!clear;make test_my<CR>
-" autocmd FileType python imap <F10> <Esc>:w<CR>:!clear;python %<CR>
-" autocmd FileType python map <F10> :w<CR>:!clear;python %<CR>
-
-autocmd FileType python imap <F11> <Esc>:w<CR>:clear python %<CR>
-autocmd FileType python map <F11> <CR>:clear python %<CR>
-imap <F12> <Esc>:w<CR>:!clear;make test<CR>
-map <F12> :w<CR>:!clear;make test<CR>
-
-" All things testing
-" nmap <silent> t<C-n> :TestNearest<CR>
-nmap <silent> tf :TestFile<CR>
-" nmap <silent> t<C-s> :TestSuite<CR>
-nmap <silent> tl :TestLast<CR>
-" nmap <silent> t<C-g> :TestVisit<CR>
-
+imap <F12> <Esc>:wa<CR>:!clear;make test<CR>
+map <F12> :wa<CR>:!clear;make test<CR>
 
 " }}}
