@@ -3,7 +3,7 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Melvins .vimrc file. Make vim into an IDE (optimised for Python)
 " Objectives of the .virmrc:
-"  - Minimal insallations outside of the vim plugins
+"  - Minimal external installations outside of the vim plugins
 "  - Works on MacOS, Debian, CentOS (& Amazon Linux)
 "
 " Note for mappings:
@@ -29,7 +29,7 @@ Plug 'joshdick/onedark.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
-" Experience + Functionality + Navigation
+" Functionality + Navigation
 Plug 'mhinz/vim-startify'
 Plug 'tpope/vim-sensible'
 Plug 'preservim/nerdtree'
@@ -38,9 +38,11 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'kien/ctrlp.vim'
 Plug 'mileszs/ack.vim'
-" Plug 'junegunn/vim-peekaboo'
 Plug 'majutsushi/tagbar'
 Plug 'simnalamburt/vim-mundo'
+Plug 'justinmk/vim-sneak'           " prefer sneak over vim-easymotion
+Plug 'junegunn/vim-peekaboo'
+" Plug 'liuchengxu/vim-which-key'
 
 " Git
 Plug 'tpope/vim-fugitive'
@@ -49,15 +51,15 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 
 " General file-type/dev support
 Plug 'yggdroot/indentline'
-" Plug 'nathanaelkane/vim-indent-guides'
 Plug 'tpope/vim-commentary'
 Plug 'godlygeek/tabular'
+" Plug 'sheerun/vim-polyglot'
+" Plug 'nathanaelkane/vim-indent-guides'
 
 " For Python/development
 Plug 'w0rp/ale'
 Plug 'davidhalter/jedi-vim'
 Plug 'vim-test/vim-test'
-" Plug 'scrooloose/syntastic'
 " Plug 'pechorin/any-jump.vim'
 
 " tmux and job dispatch
@@ -65,6 +67,7 @@ Plug 'vim-test/vim-test'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'benmills/vimux'
 Plug 'tpope/vim-dispatch'
+Plug 'jpalardy/vim-slime'
 Plug 'wellle/tmux-complete.vim'
 
 call plug#end()
@@ -85,8 +88,7 @@ syntax on
 set noswapfile
 set nobackup
 
-" best of both worlds
-set number relativenumber
+set number relativenumber               " best of both worlds
 
 " search settings
 set ignorecase
@@ -96,8 +98,7 @@ set hlsearch
 set splitbelow splitright
 set hidden
 
-" always show the status bar
-set laststatus=2
+set laststatus=2                         " always show the status bar
 
 " sane text files
 set fileformat=unix
@@ -130,7 +131,13 @@ set undodir=~/.vim/undo
 set undofile
 " }}}
 
-" color my world ! {{{
+" alias {{{
+command Q :qa!
+command W :w!
+
+" }}}
+
+" color my world! {{{
 if (has("termguicolors"))
     set termguicolors     " Enable true colors if available
     colorscheme onedark
@@ -152,6 +159,8 @@ endif
 imap jk <Esc>
 nmap <F2> :lopen<CR>
 nnoremap  <leader><CR> :term<CR>
+
+nmap \ :noh<CR>             " clear highlighted text, i tend to use / to search often
 
 " word movement
 imap <S-Left> <Esc>bi
@@ -197,7 +206,7 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 
 " mouse {{{
 set mouse=a
-set ttymouse=xterm2
+set ttymouse=xterm2     "Mouse may not work to resize windows etc on remote server
 let g:is_mouse_enabled = 1
 noremap <silent> <Leader>o :call ToggleMouse()<CR>
 function! ToggleMouse()
@@ -266,27 +275,27 @@ nmap <leader>[ :bp!<CR>
 nmap <leader>] :bn!<CR>
 nmap <leader>q :bd<CR>
 noremap <silent> <Leader>w :w!<CR>
-"Use CtrlP plugin
-nnoremap <leader>b :CtrlPBuffer<CR>  
-"Use FZF plugin
-" nnoremap <leader>b :Buffers<CR>
+
+nnoremap <leader>b :CtrlPBuffer<CR>         "Use CtrlP plugin
+" nnoremap <leader>b :Buffers<CR>           "Use FZF plugin
+
 " Make sure that terminal is not added to buffer when cyclying through buffers
 augroup term_ignore
     autocmd!
     autocmd TerminalOpen * set nobuflisted
 augroup END
-" Switch between the last two buffers
-nnoremap <Leader><Leader> <C-^>
+
+nnoremap <Leader><Leader> <C-^>             " Switch between the last two buffers
 " }}}
 
-" NERDTree {{{
+" plugin NERDTree {{{
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 let NERDTreeMinimalUI = 1
 map <leader>m : NERDTreeToggle<CR>
 " }}}
 
-" status line {{{
-" let g:airline_powerline_fonts c2
+" plugin airline {{{
+" let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
@@ -295,10 +304,7 @@ let g:airline#extensions#tabline#buffer_nr_show = 1
 let g:airline#extensions#ale#enabled = 1
 " }}}
 
-" search, CtrlP, FZF  {{{
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" START: All the Search, CtrlP and FZF config
-"
+" plugin search, CtrlP, FZF  {{{
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
 
@@ -356,12 +362,67 @@ imap <c-x><c-k> <plug>(fzf-complete-word)
 imap <c-x><c-f> <plug>(fzf-complete-path)
 imap <c-x><c-l> <plug>(fzf-complete-line)
 
-
-" END: ALL the search and FZF config
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " }}}
 
-" vimux {{{
+" plugin tagbar {{{
+let g:tagbar_autoclose = 0
+let g:tagbar_autofocus = 1
+let g:tagbar_compact = 1
+let g:tagbar_sort = 0  "sort according to where its listed in the file and not alphabetical
+nmap <F3> :TagbarToggle<CR>
+" }}}
+
+" plugin ale {{{
+let g:ale_linters = {'python': ['pylint', 'flake8']}
+let g:ale_fixers = {'python': ['reorder-python-imports', 'black']}
+let g:ale_fix_on_save = 1
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+" let g:ale_set_quickfix = 1
+let g:ale_set_loclist = 1
+" }}}
+
+" plugin vim-gitgutter {{{
+" Disabling the git gutter keys as it has default mapping to
+" <leader>h<other-key> and slows my navigation mapping so disabling default
+" keys for now
+let g:gitgutter_map_keys = 0
+set updatetime=100
+nmap ]g <Plug>(GitGutterNextHunk)
+nmap [g <Plug>(GitGutterPrevHunk)
+" nmap <Leader>ga <Plug>(GitGutterStageHunk)
+" }}}
+
+" plugin vim-startify {{{
+" handle cwd when opening a file through startify
+let g:startify_change_to_dir = 0
+let g:startify_change_to_vcs_root = 1
+" Use :SS to save a session
+let g:startify_session_persistence = 1
+let g:startify_list_order = ['sessions', 'dir']
+let g:startify_files_number = 5
+let g:startify_list_order = [
+            \ ['   Sessions'],
+            \ 'sessions',
+            \ ['   Recent Files'],
+            \ 'dir',
+            \ ]
+" }}}
+
+" plugin vim-test {{{
+" make test commands execute using vimux
+let test#strategy = "vimux"
+" let test#strategy = "dispatch"
+
+" I have projects where tests are written in pythons UnitTest
+" but want to run the tests using pytest
+let test#python#runner = 'pytest'
+
+nmap <silent> tt :TestFile<CR>
+nmap <silent> ts :TestSuite<CR>
+nmap <silent> tl :TestLast<CR>
+" }}}
+
+" plugin vimux {{{
 map <Leader>vr :call VimuxRunCommand("clear; python -m pytest .")<CR>
 map <Leader>vp :VimuxPromptCommand<CR>
 map <Leader>vl :VimuxRunLastCommand<CR>
@@ -371,7 +432,7 @@ map <Leader>vx :VimuxInterruptRunner<CR>
 map <Leader>vz :call VimuxZoomRunner()<CR>
 " }}}
 
-"tmuxline {{{
+"plugin tmuxline {{{
 let g:tmuxline_powerline_separators = 0
 let g:tmuxline_preset = {
       \'a'    : '#S',
@@ -384,7 +445,15 @@ let g:tmuxline_preset = {
       \'z'    : ''}
 " }}}
 
-" tmuxcomplete {{{
+" plugin slime {{{
+let g:slime_target = "tmux"
+let g:slime_default_config = {"socket_name": get(split($TMUX, ","), 0), "target_pane": ":.2"}
+let g:slime_cell_delimiter = "#%%"      "setup like ipython notebook cell
+nmap <leader>s <Plug>SlimeSendCell
+
+" }}}
+
+" plugin tmuxcomplete {{{
 let g:tmuxcomplete#trigger = 'completefunc'
 
 let g:tmuxcomplete#asyncomplete_source_options = {
@@ -402,65 +471,11 @@ let g:tmuxcomplete#asyncomplete_source_options = {
 
 " }}}
 
-" ale {{{
-let g:ale_linters = {'python': ['pylint', 'flake8']}
-let g:ale_fixers = {'python': ['reorder-python-imports', 'black']}
-let g:ale_fix_on_save = 1
-let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-" let g:ale_set_quickfix = 1
-let g:ale_set_loclist = 1
-" }}}
-
-" vim-gitgutter {{{
-" Disabling the git gutter keys as it has default mapping to
-" <leader>h<other-key> and slows my navigation mapping so disabling for now. May update later
-let g:gitgutter_map_keys = 0
-set updatetime=100
-nmap ]g <Plug>(GitGutterNextHunk)
-nmap [g <Plug>(GitGutterPrevHunk)
-" nmap <Leader>ga <Plug>(GitGutterStageHunk)
-" }}}
-
-" vim-startify {{{
-" handle cwd when opening a file through startify
-let g:startify_change_to_dir = 0
-let g:startify_change_to_vcs_root = 1
-" Use :SS to save a session
-let g:startify_session_persistence = 1
-let g:startify_list_order = ['sessions', 'dir']
-let g:startify_files_number = 5
-let g:startify_list_order = [
-            \ ['   Sessions'],
-            \ 'sessions',
-            \ ['   Recent Files'],
-            \ 'dir',
-            \ ]
-" }}}
-
-" tagbar {{{
-let g:tagbar_autoclose = 1
-let g:tagbar_autofocus = 1
-let g:tagbar_compact = 1
-let g:tagbar_sort = 0  "sort according to where its listed in the file and not alphabetical
-nmap <F3> :TagbarToggle<CR>
-" }}}
-
-" all things testing {{{
-" make test commands execute using vimux 
-" let test#strategy = "vimux"
-let test#strategy = "dispatch"
-
-" I have projects where tests are written in pythons UnitTest
-" but want to run the tests using pytest
-let test#python#runner = 'pytest'
-
-nmap <silent> tf :TestFile<CR>
-nmap <silent> ts :TestSuite<CR>
-nmap <silent> tl :TestLast<CR>
-" }}}
-
 " other plugins {{{
 let g:mundo_right = 1
+let g:sneak#label = 1
+let g:peekaboo_delay = 1000         "if i dont know which reg to paste from then show popup
+
 " }}}
 
 " python: project specific mapping {{{
