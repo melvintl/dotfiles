@@ -35,10 +35,10 @@ Plug 'tpope/vim-sensible'
 Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 " Dont really need all 3 - may decide to drop ctrlp. fzf > ctrlp + ack
-Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf.vim'             " optional external dependency on ag, ripgrep
 Plug 'kien/ctrlp.vim'
 Plug 'mileszs/ack.vim'
-Plug 'majutsushi/tagbar'
+Plug 'majutsushi/tagbar'            " external install dependency
 Plug 'simnalamburt/vim-mundo'
 Plug 'justinmk/vim-sneak'           " prefer sneak over vim-easymotion
 Plug 'junegunn/vim-peekaboo'
@@ -60,22 +60,22 @@ Plug 'godlygeek/tabular'
 Plug 'w0rp/ale'
 Plug 'davidhalter/jedi-vim'
 Plug 'vim-test/vim-test'
-" Plug 'pechorin/any-jump.vim'
 
-" tmux and job dispatch
-" Plug 'edkolev/tmuxline.vim'
+" tmux / job dispatch/ REPL
+" Plug 'edkolev/tmuxline.vim'       " if you dont have an existing tmux theme
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'benmills/vimux'
 Plug 'tpope/vim-dispatch'
 Plug 'jpalardy/vim-slime'
 Plug 'wellle/tmux-complete.vim'
+Plug 'metakirby5/codi.vim'          " works better in neovim than in terminal vim
 
 call plug#end()
 
 if need_to_install_plugins == 1
     echo "Installing plugins..."
     silent! PlugInstall
-    echo "Done!"
+    echo "Plugins have been installed!"
     q
 endif
 " }}}
