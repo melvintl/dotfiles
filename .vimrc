@@ -1,10 +1,11 @@
 " vim:fdm=marker
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Melvins .vimrc file. Make vim into an IDE (optimised for Python)
+" Melvins .vimrc file. Turn vim into an IDE (optimised for Python)
+"
 " Objectives of the .virmrc:
 "  - Minimal external installations outside of the vim plugins
-"  - Works on MacOS, Debian, CentOS (& Amazon Linux)
+"  - Go anywhere. Do anything: Works on MacOS, Debian, CentOS (& Amazon Linux)
 "
 " Note for mappings:
 "  - Consider mappong Caps lock to Ctrl in the OS
@@ -13,12 +14,12 @@
 let mapleader=" "
 
 " plugins  {{{
-let need_to_install_plugins = 0
+let first_time_install_plugins = 0
 if empty(glob('~/.vim/autoload/plug.vim'))
     silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
         \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     "autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-    let need_to_install_plugins = 1
+    let first_time_install_plugins = 1
 endif
 
 call plug#begin()
@@ -31,11 +32,11 @@ Plug 'vim-airline/vim-airline-themes'
 
 " Functionality + Navigation
 Plug 'mhinz/vim-startify'
-Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-sensible'           " sensible defaults for less cluttered vimrc
 Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 " Dont really need all 3 - may decide to drop ctrlp. fzf > ctrlp + ack
-Plug 'junegunn/fzf.vim'             " optional external dependency on ag, ripgrep
+Plug 'junegunn/fzf.vim'             " optional external dependency on ag, ripgrep, bat
 Plug 'kien/ctrlp.vim'
 Plug 'mileszs/ack.vim'
 Plug 'majutsushi/tagbar'            " external install dependency
@@ -54,28 +55,27 @@ Plug 'yggdroot/indentline'
 Plug 'tpope/vim-commentary'
 Plug 'godlygeek/tabular'
 " Plug 'sheerun/vim-polyglot'
-" Plug 'nathanaelkane/vim-indent-guides'
 
-" For Python/development
+" For Python/development and testing
 Plug 'w0rp/ale'
 Plug 'davidhalter/jedi-vim'
 Plug 'vim-test/vim-test'
 
-" tmux / job dispatch/ REPL
-" Plug 'edkolev/tmuxline.vim'       " if you dont have an existing tmux theme
+" tmux,  job dispatch, REPL
+" Plug 'edkolev/tmuxline.vim'           " if you dont have an existing tmux theme
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'benmills/vimux'
 Plug 'tpope/vim-dispatch'
 Plug 'jpalardy/vim-slime'
 Plug 'wellle/tmux-complete.vim'
-Plug 'metakirby5/codi.vim'          " works better in neovim than in terminal vim
+" Plug 'metakirby5/codi.vim'          " Works better on Neovim
 
 call plug#end()
 
-if need_to_install_plugins == 1
+if first_time_install_plugins == 1
     echo "Installing plugins..."
     silent! PlugInstall
-    echo "Plugins have been installed!"
+    echo "...Install complete"
     q
 endif
 " }}}
@@ -88,7 +88,7 @@ syntax on
 set noswapfile
 set nobackup
 
-set number relativenumber               " best of both worlds
+set number relativenumber               " line numbers - best of both worlds
 
 " search settings
 set ignorecase
@@ -100,18 +100,22 @@ set hidden
 
 set laststatus=2                         " always show the status bar
 
-" sane text files
+" file format and encoding
 set fileformat=unix
 set encoding=utf-8
 set fileencoding=utf-8
 
-" sane editing
+" tabs and columns
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 set colorcolumn=80
 set expandtab
+
+
+ " restore place in file from previous session
 set viminfo='25,\"50,n~/.viminfo
+autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 " code folding
 set foldmethod=indent
@@ -143,7 +147,6 @@ if (has("termguicolors"))
     colorscheme onedark
     " set background=dark
     " colorscheme gruvbox
-    " set t_Co=256
 
     " highlight Comment cterm=italic gui=italic
     set cursorline
@@ -160,7 +163,8 @@ imap jk <Esc>
 nmap <F2> :lopen<CR>
 nnoremap  <leader><CR> :term<CR>
 
-nmap \ :noh<CR>             " clear highlighted text, i tend to use / to search often
+" clear highlighted text, i tend to use / to search often
+nmap \ :noh<CR>
 
 " word movement
 imap <S-Left> <Esc>bi
@@ -183,7 +187,7 @@ nmap <leader>j :wincmd j<CR>
 nmap <leader>h :wincmd h<CR>
 nmap <leader>l :wincmd l<CR>
 
-" " Quicker window movement
+" Quicker window movement
 " nnoremap <C-j> <C-w>j
 " nnoremap <C-k> <C-w>k
 " nnoremap <C-h> <C-w>h
@@ -191,22 +195,21 @@ nmap <leader>l :wincmd l<CR>
 " }}}
 
 " session {{{
-noremap <silent> <Leader>sr :source ~/.vim/Session.vim<CR>
+" noremap <silent> <Leader>sr :source ~/.vim/Session.vim<CR>
 noremap <silent> <Leader>ss :call SaveSession()<CR>
 function! SaveSession()
     NERDTreeClose
     MundoHide
-    mks! ~/.vim/Session.vim
+    " mks! ~/.vim/Session.vim
+    SSave
 endfunction
-
-" restore place in file from previous session
-autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-
 " }}}
 
 " mouse {{{
 set mouse=a
-set ttymouse=xterm2     "Mouse may not work to resize windows etc on remote server
+"Mouse may not work to resize windows etc on remote server
+set ttymouse=xterm2
+
 let g:is_mouse_enabled = 1
 noremap <silent> <Leader>o :call ToggleMouse()<CR>
 function! ToggleMouse()
@@ -271,21 +274,26 @@ imap <C-v> <ESC>"+pa
 " }}}
 
 " buffers mapping {{{
-nmap <leader>[ :bp!<CR>
-nmap <leader>] :bn!<CR>
+"
+" " Cycle through buffers
+" nmap <leader>[ :bp!<CR>
+" nmap <leader>] :bn!<CR>
+
 nmap <leader>q :bd<CR>
 noremap <silent> <Leader>w :w!<CR>
+" Use CtrlP plugin
+nnoremap <leader>b :CtrlPBuffer<CR>
+" " Use FZF plugin
+" nnoremap <leader>b :Buffers<CR>
 
-nnoremap <leader>b :CtrlPBuffer<CR>         "Use CtrlP plugin
-" nnoremap <leader>b :Buffers<CR>           "Use FZF plugin
+" " Make sure that terminal is not added to buffer when cyclying through buffers
+" augroup term_ignore
+"     autocmd!
+"     autocmd TerminalOpen * set nobuflisted
+" augroup END
 
-" Make sure that terminal is not added to buffer when cyclying through buffers
-augroup term_ignore
-    autocmd!
-    autocmd TerminalOpen * set nobuflisted
-augroup END
-
-nnoremap <Leader><Leader> <C-^>             " Switch between the last two buffers
+" Switch between the last two buffers
+nnoremap <Leader><Leader> <C-^>
 " }}}
 
 " plugin NERDTree {{{
@@ -335,7 +343,7 @@ if executable('ag')
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
 
-" Issue on MacOS and Ack setting the below  as per https://github.com/mileszs/ack.vim/issues/18
+" Issue on MacOS and Ack setting the below as per https://github.com/mileszs/ack.vim/issues/18
 function! Search(string) abort
   let saved_shellpipe = &shellpipe
   let &shellpipe = '>'
@@ -351,7 +359,6 @@ nnoremap  <leader>F :History<CR>
 
 nnoremap  <leader>/ :call Search("")<left><left>
 " nnoremap  <leader>/ :Ag<CR>
-" nnoremap  <C-f> :Rg<CR>
 
 " Use Ctrl-/ to search in buffers
 noremap <C-_> :BLines<space>
@@ -368,7 +375,7 @@ imap <c-x><c-l> <plug>(fzf-complete-line)
 let g:tagbar_autoclose = 0
 let g:tagbar_autofocus = 1
 let g:tagbar_compact = 1
-let g:tagbar_sort = 0  "sort according to where its listed in the file and not alphabetical
+let g:tagbar_sort = 0       "sort as  per code in the file and not alphabetical
 nmap <F3> :TagbarToggle<CR>
 " }}}
 
@@ -382,9 +389,8 @@ let g:ale_set_loclist = 1
 " }}}
 
 " plugin vim-gitgutter {{{
-" Disabling the git gutter keys as it has default mapping to
+" Disabling the git gutter default mapping keys as the default maps to
 " <leader>h<other-key> and slows my navigation mapping so disabling default
-" keys for now
 let g:gitgutter_map_keys = 0
 set updatetime=100
 nmap ]g <Plug>(GitGutterNextHunk)
@@ -406,6 +412,13 @@ let g:startify_list_order = [
             \ ['   Recent Files'],
             \ 'dir',
             \ ]
+" }}}
+
+
+
+" plugin jedi-vim {{{
+let g:jedi#popup_on_dot = 0
+let g:jedi#goto_stubs_command = ""
 " }}}
 
 " plugin vim-test {{{
@@ -474,13 +487,12 @@ let g:tmuxcomplete#asyncomplete_source_options = {
 " other plugins {{{
 let g:mundo_right = 1
 let g:sneak#label = 1
-let g:peekaboo_delay = 1000         "if i dont know which reg to paste from then show popup
+let g:peekaboo_delay = 1000         "if i dont know which reg to paste from then show popup after delay
 
 " }}}
 
 " python: project specific mapping {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" My main project/server specific shortcuts mapped here
 
 augroup run_buffer
     autocmd FileType python map <buffer> <Leader>x :call VimuxRunCommand("clear;python " . bufname("%"))<CR>
@@ -488,11 +500,12 @@ augroup run_buffer
 
     " autocmd FileType python map <buffer> <F7> :terminal python %<CR>
     autocmd FileType python map <buffer> <F8> :!clear; python %<CR>
-    autocmd FileType python imap <buffer> <F8> <Esc>:w<CR>:!clear python %<CR>
+    autocmd FileType python imap <buffer> <F8> <Esc>:w<CR>:!clear; python %<CR>
 
     " autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
     autocmd FileType python imap <buffer> <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>
 augroup END
+
 imap <F5> <Esc>:w<CR>:Dispatch<CR>
 map <F5> :w<CR>:Dispatch<CR>
 
