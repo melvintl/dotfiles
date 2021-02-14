@@ -1,106 +1,130 @@
+" vim:fdm=marker
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Melvins .vimrc file. Turn vim into an IDE (optimised for Python)
+"
+" Objectives of the .virmrc:
+"  - Minimal external installations outside of the vim plugins
+"  - Go anywhere. Do anything: Works on MacOS, Debian, CentOS (& Amazon Linux)
+"
+" Note for mappings:
+"  - Consider mappong Caps lock to Ctrl in the OS
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 let mapleader=" "
 
-" Plugins
-let need_to_install_plugins = 0
+" plugins  {{{
+let first_time_install_plugins = 0
 if empty(glob('~/.vim/autoload/plug.vim'))
     silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
         \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     "autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-    let need_to_install_plugins = 1
+    let first_time_install_plugins = 1
 endif
 
 call plug#begin()
 
 " Look and feel
 Plug 'joshdick/onedark.vim'
-Plug 'morhetz/gruvbox'
+" Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
-" Experience + Functionality + Navigation
+" Functionality + Navigation
 Plug 'mhinz/vim-startify'
-Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-sensible'           " sensible defaults for less cluttered vimrc
 Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-" Dont really need all 3 - may decide to drop ctrlp? fzf > ctrlp + ack
-Plug 'junegunn/fzf.vim'
+" Dont really need all 3 - may decide to drop ctrlp. fzf > ctrlp + ack
+Plug 'junegunn/fzf.vim'             " optional external dependency on ag, ripgrep, bat
 Plug 'kien/ctrlp.vim'
 Plug 'mileszs/ack.vim'
-" Plug 'junegunn/vim-peekaboo'
+Plug 'majutsushi/tagbar'            " external install dependency
 Plug 'simnalamburt/vim-mundo'
+Plug 'justinmk/vim-sneak'           " prefer sneak over vim-easymotion
+Plug 'junegunn/vim-peekaboo'
+" Plug 'liuchengxu/vim-which-key'
 
 " Git
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 
-" General dev/file type
-Plug 'majutsushi/tagbar'
+" General file-type/dev support
 Plug 'yggdroot/indentline'
-" Plug 'nathanaelkane/vim-indent-guides'
 Plug 'tpope/vim-commentary'
 Plug 'godlygeek/tabular'
+" Plug 'sheerun/vim-polyglot'
 
-" For Python/development
+" For Python/development and testing
 Plug 'w0rp/ale'
 Plug 'davidhalter/jedi-vim'
 Plug 'vim-test/vim-test'
-" Plug 'scrooloose/syntastic'
-" Plug 'pechorin/any-jump.vim'
 
-" tmux
-" Plug 'edkolev/tmuxline.vim'
+" tmux,  job dispatch, REPL
+" Plug 'edkolev/tmuxline.vim'           " if you dont have an existing tmux theme
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'benmills/vimux'
+Plug 'tpope/vim-dispatch'
+Plug 'jpalardy/vim-slime'
 Plug 'wellle/tmux-complete.vim'
+" Plug 'metakirby5/codi.vim'          " Works better on Neovim
 
 call plug#end()
 
-if need_to_install_plugins == 1
+if first_time_install_plugins == 1
     echo "Installing plugins..."
     silent! PlugInstall
-    echo "Done!"
+    echo "...Install complete"
     q
 endif
+" }}}
 
-
+" settings (general) {{{
 filetype plugin indent on
 syntax on
+
+" dont need the annoying .swp and and ~backup files
+set noswapfile
+set nobackup
+
+set number relativenumber               " line numbers - best of both worlds
+
+" search settings
+set ignorecase
+set smartcase
+set hlsearch
 
 set splitbelow splitright
 set hidden
 
-" always show the status bar
-set laststatus=2
+set laststatus=2                         " always show the status bar
 
-"color my world
-set t_Co=256
-" colorscheme gruvbox
-colorscheme onedark
-" let g:airline_theme='gruvbox'
-let g:airline_theme='onedark'
-
-
-set number relativenumber
-
-" sane text files
+" file format and encoding
 set fileformat=unix
 set encoding=utf-8
 set fileencoding=utf-8
 
-" sane editing
+" tabs and columns
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 set colorcolumn=80
 set expandtab
+
+
+ " restore place in file from previous session
 set viminfo='25,\"50,n~/.viminfo
+autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 " code folding
 set foldmethod=indent
 set foldlevel=99
 
-" Enable persistent undo so that undo history persists across vim sessions
+" display extra whitespace
+set list listchars=tab:»·,trail:·,nbsp:·
+
+" enable persistent undo so that undo history persists across vim sessions
 if !isdirectory($HOME."/.vim")
     call mkdir($HOME."/.vim", "", 0770)
 endif
@@ -109,13 +133,38 @@ if !isdirectory($HOME."/.vim/undo")
 endif
 set undodir=~/.vim/undo
 set undofile
+" }}}
 
-" Display extra whitespace
-set list listchars=tab:»·,trail:·,nbsp:·
+" alias {{{
+command Q :qa!
+command W :w!
 
+" }}}
+
+" color my world! {{{
+if (has("termguicolors"))
+    set termguicolors     " Enable true colors if available
+    colorscheme onedark
+    " set background=dark
+    " colorscheme gruvbox
+
+    " highlight Comment cterm=italic gui=italic
+    set cursorline
+    " Highlight current line
+    autocmd ColorScheme * highlight StatusLine ctermbg=darkgray cterm=NONE guibg=darkgray gui=NONE
+else
+    set t_Co=256
+    colorscheme onedark
+endif
+" }}}
+
+" general mapping & navigation mappings {{{
 imap jk <Esc>
 nmap <F2> :lopen<CR>
-nmap <F3> :TagbarToggle<CR>
+nnoremap  <leader><CR> :term<CR>
+
+" clear highlighted text, i tend to use / to search often
+nmap \ :noh<CR>
 
 " word movement
 imap <S-Left> <Esc>bi
@@ -128,20 +177,41 @@ nmap <Tab> >>
 imap <S-Tab> <Esc><<i
 nmap <S-tab> <<
 
-" session
-noremap <silent> <Leader>sr :source ~/.vim/Session.vim<CR>
+" navigate splits
+nmap <leader><Up> :wincmd k<CR>
+nmap <leader><Down> :wincmd j<CR>
+nmap <leader><Left> :wincmd h<CR>
+nmap <leader><Right> :wincmd l<CR>
+nmap <leader>k :wincmd k<CR>
+nmap <leader>j :wincmd j<CR>
+nmap <leader>h :wincmd h<CR>
+nmap <leader>l :wincmd l<CR>
+
+" Quicker window movement
+" nnoremap <C-j> <C-w>j
+" nnoremap <C-k> <C-w>k
+" nnoremap <C-h> <C-w>h
+" nnoremap <C-l> <C-w>l
+" }}}
+
+" session {{{
+" noremap <silent> <Leader>sr :source ~/.vim/Session.vim<CR>
 noremap <silent> <Leader>ss :call SaveSession()<CR>
 function! SaveSession()
     NERDTreeClose
     MundoHide
-    mks! ~/.vim/Session.vim
+    " mks! ~/.vim/Session.vim
+    SSave
 endfunction
+" }}}
 
-" mouse
+" mouse {{{
 set mouse=a
+"Mouse may not work to resize windows etc on remote server
 set ttymouse=xterm2
+
 let g:is_mouse_enabled = 1
-noremap <silent> <Leader>m :call ToggleMouse()<CR>
+noremap <silent> <Leader>o :call ToggleMouse()<CR>
 function! ToggleMouse()
     if g:is_mouse_enabled == 1
         echo "Mouse OFF"
@@ -154,8 +224,9 @@ function! ToggleMouse()
         let g:is_mouse_enabled = 1
     endif
 endfunction
+" }}}
 
-" wrap toggle
+" wrap toggle {{{
 setlocal nowrap
 noremap <silent> <Leader>p :call ToggleWrap()<CR>
 function! ToggleWrap()
@@ -186,72 +257,62 @@ function! ToggleWrap()
         inoremap <buffer> <silent> <End>  <C-o>g<End>
     endif
 endfunction
+" }}}
 
-" Navigate splits
-nmap <leader><Up> :wincmd k<CR>
-nmap <leader><Down> :wincmd j<CR>
-nmap <leader><Left> :wincmd h<CR>
-nmap <leader><Right> :wincmd l<CR>
-nmap <leader>k :wincmd k<CR>
-nmap <leader>j :wincmd j<CR>
-nmap <leader>h :wincmd h<CR>
-nmap <leader>l :wincmd l<CR>
+" clipboard {{{
+" Change some of the clipboard settings
+" On Debian OS first install gvim/ sudo apt-get install vim-gtk3 to get +clipboard in vim
+" on CentOS get vim-X11 for vimx
+"set clipboard=unnamedplus
+set clipboard^=unnamed,unnamedplus
+vmap <C-c> "+y
+" map <C-p> "+p
+vmap <C-c> "+y
+vmap <C-x> "+c
+vmap <C-v> c<ESC>"+p
+imap <C-v> <ESC>"+pa
+" }}}
 
-" " Quicker window movement
-" nnoremap <C-j> <C-w>j
-" nnoremap <C-k> <C-w>k
-" nnoremap <C-h> <C-w>h
-" nnoremap <C-l> <C-w>l
+" buffers mapping {{{
+"
+" " Cycle through buffers
+" nmap <leader>[ :bp!<CR>
+" nmap <leader>] :bn!<CR>
 
-" All about the buffers!
-nmap <leader>[ :bp!<CR>
-nmap <leader>] :bn!<CR>
 nmap <leader>q :bd<CR>
-noremap <silent> <Leader>w :w<CR>
-nnoremap <leader>b :CtrlPBuffer<CR>  "Use CtrlP plugin  
-" nnoremap <leader>b :Buffers<CR> "Use FZF plugin
-" Make sure that terminal is not added to buffer when cyclying through buffers
-augroup termIgnore
-    autocmd!
-    autocmd TerminalOpen * set nobuflisted
-augroup END
+noremap <silent> <Leader>w :w!<CR>
+" Use CtrlP plugin
+nnoremap <leader>b :CtrlPBuffer<CR>
+" " Use FZF plugin
+" nnoremap <leader>b :Buffers<CR>
+
+" " Make sure that terminal is not added to buffer when cyclying through buffers
+" augroup term_ignore
+"     autocmd!
+"     autocmd TerminalOpen * set nobuflisted
+" augroup END
+
 " Switch between the last two buffers
 nnoremap <Leader><Leader> <C-^>
+" }}}
 
-
-" restore place in file from previous session
-autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-
-" NERDTree
+" plugin NERDTree {{{
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 let NERDTreeMinimalUI = 1
-map <leader>n : NERDTreeToggle<CR>
+map <leader>m : NERDTreeToggle<CR>
+" }}}
 
-let g:mundo_right = 1
-
-" Status line
-" let g:airline_powerline_fonts c2
+" plugin airline {{{
+" let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
 let g:airline#extensions#tabline#buffer_nr_show = 1
+" let g:airline#extensions#tabline#fnamemod = ':t'  " show only filename
 let g:airline#extensions#ale#enabled = 1
+" }}}
 
-"tmuxline
-let g:tmuxline_powerline_separators = 0
-let g:tmuxline_preset = {
-      \'a'    : '#S',
-      \'b'    : '#I #W',
-      \'c'    : '',
-      \'win'  : '#I #W',
-      \'cwin' : '#I #W',
-      \'x'    : '%a',
-      \'y'    : '%R',
-      \'z'    : ''}
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" START: All the Search, CtrlP and FZF config
-"
+" plugin search, CtrlP, FZF  {{{
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
 
@@ -261,7 +322,7 @@ let g:ctrlp_cmd = 'CtrlP'
 " An action can be a reference to a function that processes selected lines
 function! s:build_quickfix_list(lines)
   call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
-  copen
+      copen
   cc
 endfunction
 
@@ -282,7 +343,7 @@ if executable('ag')
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
 
-" Issue on MacOS and Ack setting the below  as per https://github.com/mileszs/ack.vim/issues/18
+" Issue on MacOS and Ack setting the below as per https://github.com/mileszs/ack.vim/issues/18
 function! Search(string) abort
   let saved_shellpipe = &shellpipe
   let &shellpipe = '>'
@@ -298,10 +359,9 @@ nnoremap  <leader>F :History<CR>
 
 nnoremap  <leader>/ :call Search("")<left><left>
 " nnoremap  <leader>/ :Ag<CR>
-" nnoremap  <C-f> :Rg<CR>
 
 " Use Ctrl-/ to search in buffers
-noremap <C-_> :BLines<space>  
+noremap <C-_> :BLines<space>
 inoremap <C-_> <esc>:BLines<space>
 
 " Insert mode completion
@@ -309,24 +369,73 @@ imap <c-x><c-k> <plug>(fzf-complete-word)
 imap <c-x><c-f> <plug>(fzf-complete-path)
 imap <c-x><c-l> <plug>(fzf-complete-line)
 
+" }}}
 
-" END: ALL the search and FZF config
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" plugin tagbar {{{
+let g:tagbar_autoclose = 0
+let g:tagbar_autofocus = 1
+let g:tagbar_compact = 1
+let g:tagbar_sort = 0       "sort as  per code in the file and not alphabetical
+nmap <F3> :TagbarToggle<CR>
+" }}}
 
-" Change some of the clipboard settings
-" On Debian OS first install gvim/ sudo apt-get install vim-gtk3 to get +clipboard in vim
-" on CentOS get vim-X11 for vimx
-"set clipboard=unnamedplus
-set clipboard^=unnamed,unnamedplus
-vmap <C-c> "+y
-" map <C-p> "+p
-vmap <C-c> "+y
-vmap <C-x> "+c
-vmap <C-v> c<ESC>"+p
-imap <C-v> <ESC>"+pa
+" plugin ale {{{
+let g:ale_linters = {'python': ['pylint', 'flake8']}
+let g:ale_fixers = {'python': ['reorder-python-imports', 'black']}
+let g:ale_fix_on_save = 1
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+" let g:ale_set_quickfix = 1
+let g:ale_set_loclist = 1
+" }}}
+
+" plugin vim-gitgutter {{{
+" Disabling the git gutter default mapping keys as the default maps to
+" <leader>h<other-key> and slows my navigation mapping so disabling default
+let g:gitgutter_map_keys = 0
+set updatetime=100
+nmap ]g <Plug>(GitGutterNextHunk)
+nmap [g <Plug>(GitGutterPrevHunk)
+" nmap <Leader>ga <Plug>(GitGutterStageHunk)
+" }}}
+
+" plugin vim-startify {{{
+" handle cwd when opening a file through startify
+let g:startify_change_to_dir = 0
+let g:startify_change_to_vcs_root = 1
+" Use :SS to save a session
+let g:startify_session_persistence = 1
+let g:startify_list_order = ['sessions', 'dir']
+let g:startify_files_number = 5
+let g:startify_list_order = [
+            \ ['   Sessions'],
+            \ 'sessions',
+            \ ['   Recent Files'],
+            \ 'dir',
+            \ ]
+" }}}
 
 
-" vimux shortcuts
+
+" plugin jedi-vim {{{
+let g:jedi#popup_on_dot = 0
+let g:jedi#goto_stubs_command = ""
+" }}}
+
+" plugin vim-test {{{
+" make test commands execute using vimux
+let test#strategy = "vimux"
+" let test#strategy = "dispatch"
+
+" I have projects where tests are written in pythons UnitTest
+" but want to run the tests using pytest
+let test#python#runner = 'pytest'
+
+nmap <silent> tt :TestFile<CR>
+nmap <silent> ts :TestSuite<CR>
+nmap <silent> tl :TestLast<CR>
+" }}}
+
+" plugin vimux {{{
 map <Leader>vr :call VimuxRunCommand("clear; python -m pytest .")<CR>
 map <Leader>vp :VimuxPromptCommand<CR>
 map <Leader>vl :VimuxRunLastCommand<CR>
@@ -334,7 +443,30 @@ map <Leader>vi :VimuxInspectRunner<CR>
 map <Leader>vq :VimuxCloseRunner<CR>
 map <Leader>vx :VimuxInterruptRunner<CR>
 map <Leader>vz :call VimuxZoomRunner()<CR>
+" }}}
 
+"plugin tmuxline {{{
+let g:tmuxline_powerline_separators = 0
+let g:tmuxline_preset = {
+      \'a'    : '#S',
+      \'b'    : '#I #W',
+      \'c'    : '',
+      \'win'  : '#I #W',
+      \'cwin' : '#I #W',
+      \'x'    : '%a',
+      \'y'    : '%R',
+      \'z'    : ''}
+" }}}
+
+" plugin slime {{{
+let g:slime_target = "tmux"
+let g:slime_default_config = {"socket_name": get(split($TMUX, ","), 0), "target_pane": ":.2"}
+let g:slime_cell_delimiter = "#%%"      "setup like ipython notebook cell
+nmap <leader>s <Plug>SlimeSendCell
+
+" }}}
+
+" plugin tmuxcomplete {{{
 let g:tmuxcomplete#trigger = 'completefunc'
 
 let g:tmuxcomplete#asyncomplete_source_options = {
@@ -350,41 +482,38 @@ let g:tmuxcomplete#asyncomplete_source_options = {
             \     }
             \ }
 
-" Other shortcuts
-nnoremap  <leader><CR> :term<CR>
+" }}}
 
+" other plugins {{{
+let g:mundo_right = 1
+let g:sneak#label = 1
+let g:peekaboo_delay = 1000         "if i dont know which reg to paste from then show popup after delay
 
-let g:ale_linters = {'python': ['pylint', 'flake8']}
-let g:ale_fixers = {'python': ['reorder-python-imports', 'black']}
-let g:ale_fix_on_save = 1
-let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-" let g:ale_set_quickfix = 1
-let g:ale_set_loclist = 1
+" }}}
 
-" Disabling the git gutter keys as it has default mapping to
-" <leader>h<other-key> and slows my navigation mapping so disabling for now. May update later
-let g:gitgutter_map_keys = 0
-
-
+" python: project specific mapping {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" My main project/server specific shortcuts mapped here
 
-" autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
-autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>
+augroup run_buffer
+    autocmd FileType python map <buffer> <Leader>x :call VimuxRunCommand("clear;python " . bufname("%"))<CR>
+    autocmd FileType python let b:dispatch = 'python %'
 
-imap <F10> <Esc>:w<CR>:!clear;make test_my<CR>
-map <F10> :w<CR>:!clear;make test_my<CR>
-" autocmd FileType python imap <F10> <Esc>:w<CR>:!clear;python %<CR>
-" autocmd FileType python map <F10> :w<CR>:!clear;python %<CR>
+    " autocmd FileType python map <buffer> <F7> :terminal python %<CR>
+    autocmd FileType python map <buffer> <F8> :!clear; python %<CR>
+    autocmd FileType python imap <buffer> <F8> <Esc>:w<CR>:!clear; python %<CR>
 
-autocmd FileType python imap <F11> <Esc>:w<CR>:clear python %<CR>
-autocmd FileType python map <F11> <CR>:clear python %<CR>
-imap <F12> <Esc>:w<CR>:!clear;make test<CR>
-map <F12> :w<CR>:!clear;make test<CR>
+    " autocmd FileType python imap <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>:!clear;python %<CR>
+    autocmd FileType python imap <buffer> <F9> from ipdb import set_trace; set_trace()<Esc>:w<CR>
+augroup END
 
-" All things testing 
-" nmap <silent> t<C-n> :TestNearest<CR>
-nmap <silent> tf :TestFile<CR>
-" nmap <silent> t<C-s> :TestSuite<CR>
-nmap <silent> tl :TestLast<CR>
-" nmap <silent> t<C-g> :TestVisit<CR>
+imap <F5> <Esc>:w<CR>:Dispatch<CR>
+map <F5> :w<CR>:Dispatch<CR>
+
+" run make commands
+imap <F10> <Esc>:wa<CR>:!clear;make test_my<CR>
+map <F10> :wa<CR>:!clear;make test_my<CR>
+
+imap <F12> <Esc>:wa<CR>:!clear;make test<CR>
+map <F12> :wa<CR>:!clear;make test<CR>
+
+" }}}

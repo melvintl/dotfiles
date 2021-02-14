@@ -28,3 +28,10 @@ sudo apt-get install xbacklight alsa-utils pulseaudio
 sudo apt-get install gnome-sound-applet indicator-sound
 sudo apt-get install volumeicon-alsa
 ```
+
+Other Install(debian):
+```
+apt install zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+```
+https://github.com/chriskempson/base16-shell
