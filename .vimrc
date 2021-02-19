@@ -8,8 +8,7 @@
 "  - Go anywhere. Do anything: Works on MacOS, Debian, CentOS (& Amazon Linux)
 "
 " Note for mappings:
-"  - Consider mappong Caps lock to Ctrl in the OS
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"  - Consider mapping Caps lock to Ctrl in the OS """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let mapleader=" "
 
@@ -31,7 +30,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
 " Functionality + Navigation
-Plug 'mhinz/vim-startify'
+Plug 'mhinz/vim-startify'           " on start page navigation
 Plug 'tpope/vim-sensible'           " sensible defaults for less cluttered vimrc
 Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -40,7 +39,7 @@ Plug 'junegunn/fzf.vim'             " optional external dependency on ag, ripgre
 Plug 'kien/ctrlp.vim'
 Plug 'mileszs/ack.vim'
 Plug 'majutsushi/tagbar'            " external install dependency
-Plug 'simnalamburt/vim-mundo'
+Plug 'simnalamburt/vim-mundo'       " keep undoing with a visual tree
 Plug 'justinmk/vim-sneak'           " prefer sneak over vim-easymotion
 Plug 'junegunn/vim-peekaboo'
 " Plug 'liuchengxu/vim-which-key'
@@ -53,13 +52,14 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 " General file-type/dev support
 Plug 'yggdroot/indentline'
 Plug 'tpope/vim-commentary'
-Plug 'godlygeek/tabular'
+Plug 'godlygeek/tabular'            " simplify tabular formating
+Plug 'chrisbra/csv.vim'             " simple csv viewer/analyzer in vim
 " Plug 'sheerun/vim-polyglot'
 
 " For Python/development and testing
 Plug 'w0rp/ale'
-Plug 'davidhalter/jedi-vim'
-Plug 'vim-test/vim-test'
+Plug 'davidhalter/jedi-vim'         " python autocomplete and fast navigation
+Plug 'vim-test/vim-test'            " TDD stuff
 
 " tmux,  job dispatch, REPL
 " Plug 'edkolev/tmuxline.vim'           " if you dont have an existing tmux theme
@@ -481,6 +481,28 @@ let g:tmuxcomplete#asyncomplete_source_options = {
             \     'truncate':        0
             \     }
             \ }
+
+" }}}
+
+" csv plugins {{{
+augroup filetype_csv_detect
+      au! BufRead,BufNewFile *.csv,*.dat    setfiletype csv
+augroup END
+
+" auto highlight current column
+let g:csv_highlight_column = 'y'
+
+" scan only fist few lines to determine the delimeter
+let g:csv_start = 1
+let g:csv_end = 100
+
+" run command: NewDelimiter <> in case of different delimiter
+let g:csv_delim_test = ',;'
+
+" Instead of manually running %ArrangeColumn every time 
+" automatically do it for small files
+let g:csv_autocmd_arrange      = 1
+let g:csv_autocmd_arrange_size = 1024*1024
 
 " }}}
 
