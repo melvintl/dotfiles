@@ -485,6 +485,12 @@ let g:tmuxcomplete#asyncomplete_source_options = {
 " }}}
 
 " csv plugins {{{
+
+" Instead of manually running %ArrangeColumn every time 
+" automatically do it for small files
+let g:csv_autocmd_arrange      = 1
+let g:csv_autocmd_arrange_size = 1024*1024
+
 augroup filetype_csv_detect
       au! BufRead,BufNewFile *.csv,*.dat    setfiletype csv
 augroup END
@@ -499,10 +505,6 @@ let g:csv_end = 100
 " run command: NewDelimiter <> in case of different delimiter
 let g:csv_delim_test = ',;'
 
-" Instead of manually running %ArrangeColumn every time 
-" automatically do it for small files
-let g:csv_autocmd_arrange      = 1
-let g:csv_autocmd_arrange_size = 1024*1024
 
 " }}}
 
