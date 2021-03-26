@@ -100,6 +100,7 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias v=vim
+alias c=clear
 
 # Base16 shell color theme
 BASE16_SHELL="$HOME/.config/base16-shell/"
@@ -109,3 +110,17 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
 
 # In order to avoid the green block color for directory names override the colors
 export LS_COLORS="$LS_COLORS:ow=1;34:tw=1;34:"
+
+# Use less as default pager (eg for psql)
+export PAGER="/usr/bin/less -S"
+
+setopt PROMPT_SUBST
+
+show_virtual_env() {
+  if [[ -n "$VIRTUAL_ENV" && -n "$DIRENV_DIR" ]]; then
+    echo "($(basename $VIRTUAL_ENV))"
+  fi
+}
+PS1='$(show_virtual_env)'$PS1
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

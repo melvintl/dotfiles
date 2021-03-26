@@ -6,10 +6,11 @@
 " Objectives of the .virmrc:
 "  - Minimal external installations outside of the vim plugins
 "  - Go anywhere. Do anything: Works on MacOS, Debian, CentOS (& Amazon Linux)
+"  - Streamline tmux based workflow
 "
 " Note for mappings:
-"  - Consider mappong Caps lock to Ctrl in the OS
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"  - Consider mapping Caps lock to Ctrl in the OS
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let mapleader=" "
 
@@ -26,12 +27,12 @@ call plug#begin()
 
 " Look and feel
 Plug 'joshdick/onedark.vim'
-" Plug 'morhetz/gruvbox'
+Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
 " Functionality + Navigation
-Plug 'mhinz/vim-startify'
+Plug 'mhinz/vim-startify'           " on start page navigation
 Plug 'tpope/vim-sensible'           " sensible defaults for less cluttered vimrc
 Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -40,7 +41,7 @@ Plug 'junegunn/fzf.vim'             " optional external dependency on ag, ripgre
 Plug 'kien/ctrlp.vim'
 Plug 'mileszs/ack.vim'
 Plug 'majutsushi/tagbar'            " external install dependency
-Plug 'simnalamburt/vim-mundo'
+Plug 'simnalamburt/vim-mundo'       " keep undoing with a visual tree
 Plug 'justinmk/vim-sneak'           " prefer sneak over vim-easymotion
 Plug 'junegunn/vim-peekaboo'
 " Plug 'liuchengxu/vim-which-key'
@@ -53,13 +54,14 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 " General file-type/dev support
 Plug 'yggdroot/indentline'
 Plug 'tpope/vim-commentary'
-Plug 'godlygeek/tabular'
+Plug 'godlygeek/tabular'            " simplify tabular formating
+Plug 'chrisbra/csv.vim'             " simple csv viewer/analyzer in vim
 " Plug 'sheerun/vim-polyglot'
 
 " For Python/development and testing
 Plug 'w0rp/ale'
-Plug 'davidhalter/jedi-vim'
-Plug 'vim-test/vim-test'
+Plug 'davidhalter/jedi-vim'         " python autocomplete and fast navigation
+Plug 'vim-test/vim-test'            " TDD stuff
 
 " tmux,  job dispatch, REPL
 " Plug 'edkolev/tmuxline.vim'           " if you dont have an existing tmux theme
@@ -269,6 +271,7 @@ vmap <C-c> "+y
 " map <C-p> "+p
 vmap <C-c> "+y
 vmap <C-x> "+c
+" ok so ive mapped Ctrl-v but that will supress vims native Ctrl-v to use control characters
 vmap <C-v> c<ESC>"+p
 imap <C-v> <ESC>"+pa
 " }}}
@@ -307,7 +310,7 @@ map <leader>m : NERDTreeToggle<CR>
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
-let g:airline#extensions#tabline#buffer_nr_show = 1
+" let g:airline#extensions#tabline#buffer_nr_show = 1
 " let g:airline#extensions#tabline#fnamemod = ':t'  " show only filename
 let g:airline#extensions#ale#enabled = 1
 " }}}
@@ -484,6 +487,30 @@ let g:tmuxcomplete#asyncomplete_source_options = {
 
 " }}}
 
+" csv plugins {{{
+
+" Instead of manually running %ArrangeColumn every time
+" automatically do it for small files
+let g:csv_autocmd_arrange      = 1
+let g:csv_autocmd_arrange_size = 1024*1024
+
+augroup filetype_csv_detect
+      au! BufRead,BufNewFile *.csv,*.dat    setfiletype csv
+augroup END
+
+" auto highlight current column
+let g:csv_highlight_column = 'y'
+
+" scan only fist few lines to determine the delimeter
+let g:csv_start = 1
+let g:csv_end = 100
+
+" run command: NewDelimiter <> in case of different delimiter
+let g:csv_delim_test = ',;'
+
+
+" }}}
+
 " other plugins {{{
 let g:mundo_right = 1
 let g:sneak#label = 1
@@ -509,11 +536,15 @@ augroup END
 imap <F5> <Esc>:w<CR>:Dispatch<CR>
 map <F5> :w<CR>:Dispatch<CR>
 
-" run make commands
-imap <F10> <Esc>:wa<CR>:!clear;make test_my<CR>
-map <F10> :wa<CR>:!clear;make test_my<CR>
 
-imap <F12> <Esc>:wa<CR>:!clear;make test<CR>
-map <F12> :wa<CR>:!clear;make test<CR>
+" TDD for python/pytest
+imap <F10> <Esc>:wa<CR>:!clear;python -m pytest tests/ -s --pdb -o log_cli=True -p no:warnings --picked<CR>
+map <F10> :wa<CR>:!clear;python -m pytest -s tests/ --pdb -o log_cli=True -p no:warnings --picked<CR>
+
+imap <F11> <Esc>:wa<CR>:!clear;python -m pytest tests/ -s --pdb -o log_cli=True -p no:warnings --testmon<CR>
+map <F11> :wa<CR>:!clear;python -m pytest -s tests/ --pdb -o log_cli=True -p no:warnings --testmon<CR>
+
+imap <F12> <Esc>:wa<CR>:!clear;python -m pytest tests/ -m "not integration" -s --pdb --cov-report term-missing --cov=src --cov-report html;<CR>
+map <F12> :wa<CR>:!clear;python -m pytest tests/ -m "not integration" -s --pdb --cov-report term-missing --cov=src --cov-report html;<CR>
 
 " }}}
