@@ -1,8 +1,6 @@
-[user]
-    name = melvintl
-
 [core]
     editor = vim
+	excludesfile = /home/ubuntu/.gitignore
 
 [alias]
     co = checkout
@@ -24,3 +22,6 @@
     f = "!git ls-files | grep -i"
     gr = grep -Ii
     al = "!git config -l | grep alias | cut -c 7-"
+[user]
+	email = melvin@xyz.com
+	name = Melvin

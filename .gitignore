@@ -1,2 +1,11 @@
 *.swp
-
+.venv/
+venv/
+.envrc
+.testmondata
+coverage.xml
+junit/
+.coverage
+htmlcov/
+.aws-sam/
+__pycache__/
