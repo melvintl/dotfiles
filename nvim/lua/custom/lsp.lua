@@ -1,6 +1,7 @@
 -- Setup language servers.
 local lspconfig = require('lspconfig')
-lspconfig.pyright.setup {}
+-- lspconfig.pyright.setup {}
+lspconfig.jedi_language_server.setup {}
 lspconfig.tsserver.setup {}
 lspconfig.rust_analyzer.setup {
   -- Server-specific settings. See `:help lspconfig-setup`
@@ -9,13 +10,12 @@ lspconfig.rust_analyzer.setup {
   },
 }
 
-
 -- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist)
+-- vim.keymap.set('n', '<space>l', vim.diagnostic.setloclist)
 
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
@@ -51,3 +51,12 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 -- Setup neovim lua configuration
 require('neodev').setup()
+
+-- The virtual text is annoying so hide it (eg with Pyright)
+vim.diagnostic.config({
+  virtual_text = false,
+  -- signs = true,
+  -- underline = true,
+  -- update_in_insert = false,
+  -- severity_sort = false,
+})

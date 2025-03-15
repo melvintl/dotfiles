@@ -1,23 +1,22 @@
 
 -- dont need the annoying .swp and and ~backup files
-vim.o.noswapfile = true
-vim.o.nobackup = true
+vim.opt.swapfile = true
+vim.opt.backup = false
 
 vim.o.splitbelow = true
 vim.o.splitright = true
 vim.o.hidden = true
 
-
 -- tabs and columns
 -- vim.o.tabstop=4
 -- vim.o.shiftwidth=4
 -- vim.o.softtabstop=4
--- vim.o.colorcolumn=80
+vim.o.colorcolumn="80"
 -- vim.o.expandtab = true
 
 
 -- Set highlight on search
-vim.o.hlsearch = false
+vim.o.hlsearch = true
 
 -- Make line numbers default
 vim.wo.number = true
@@ -27,8 +26,8 @@ vim.wo.relativenumber = true
 vim.o.mouse = 'a'
 
 -- Sync clipboard between OS and Neovim.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
+-- Remove this option if you want your OS clipboard to remain independent.
+-- See `:help 'clipboard'`
 vim.o.clipboard = 'unnamedplus'
 
 -- Enable break indent
@@ -55,7 +54,24 @@ vim.o.completeopt = 'menuone,noselect'
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 
+-- Highlight current rows
+vim.opt.cursorline = true 
+
+
+-- Set Alias
 vim.cmd [[
   command Q :qa!
   command W :w!
 ]]
+
+
+-- Code folding 
+-- Use indent for python/yaml navigation
+vim.opt.foldenable = false
+vim.opt.foldmethod = "indent"
+-- TO do review treestitter (not great for indent based files)
+-- vim.opt.foldmethod = "expr"
+-- vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+
+-- Align right with modified flag and file path 
+--vim.o.winbar="%=%m %f" 

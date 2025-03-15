@@ -16,6 +16,7 @@ return {
     -- See `:help lualine.txt`
     opts = {
       options = {
+        globalstatus = true,
         icons_enabled = false,
         theme = 'onedark',
         component_separators = '|',
@@ -32,5 +33,8 @@ return {
       show_trailing_blankline_indent = false,
     },
   },
+
+
+   'mhinz/vim-startify',
 
 }
