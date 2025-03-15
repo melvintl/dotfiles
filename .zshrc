@@ -1,8 +1,8 @@
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/local/bin:$PATH
+# export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/home/melvin/.oh-my-zsh"
+export ZSH="/home/ubuntu/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -70,7 +70,7 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git git-extras)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -100,27 +100,57 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias v=vim
-alias c=clear
+alias n=nvim
 
-# Base16 shell color theme
+
+# Base16 Shell
 BASE16_SHELL="$HOME/.config/base16-shell/"
 [ -n "$PS1" ] && \
     [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
-            eval "$("$BASE16_SHELL/profile_helper.sh")"
+        eval "$("$BASE16_SHELL/profile_helper.sh")"
 
-# In order to avoid the green block color for directory names override the colors
-export LS_COLORS="$LS_COLORS:ow=1;34:tw=1;34:"
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# Use less as default pager (eg for psql)
-export PAGER="/usr/bin/less -S"
+eval "$(direnv hook zsh)"
 
-setopt PROMPT_SUBST
+# . /usr/share/autojump/autojump.sh
 
-show_virtual_env() {
-  if [[ -n "$VIRTUAL_ENV" && -n "$DIRENV_DIR" ]]; then
-    echo "($(basename $VIRTUAL_ENV))"
+# This is to use shift arrow specifically for Putty
+# to see which keys on Putty work Ctrl+v, SHIFT+Arrow Keys
+# on macos->citrix->putty->zsh using Option+Command+< or >
+bindkey -e
+bindkey '^[.' forward-word
+bindkey '^[,' backward-word
+
+
+function cd() {
+  builtin cd "$@"
+
+  if [[ -z "$VIRTUAL_ENV" ]] ; then
+    ## If vurtualenv folder is found then activate the vitualenv
+      if [[ -d ./.venv ]] ; then
+        source ./.venv/bin/activate
+      fi
+  else
+    ## check the current folder belong to earlier VIRTUAL_ENV folder
+    # if yes then do nothing
+    # else deactivate
+      parentdir="$(dirname "$VIRTUAL_ENV")"
+      if [[ "$PWD"/ != "$parentdir"/* ]] ; then
+        deactivate
+      fi
   fi
 }
-PS1='$(show_virtual_env)'$PS1
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+# Auto activate virtual env in case of tmux split pane
+if [[ $TMUX ]]; then
+      if [[ -d ./.venv ]] ; then
+        source ./.venv/bin/activate
+      fi
+fi
+# export PATH="$PATH:/opt/mssql-tools18/bin"
+
+# Created by `pipx` on 2023-07-08 20:03:42
+export PATH="$PATH:/home/ubuntu/.local/bin"
+
+export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/"
