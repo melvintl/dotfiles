@@ -26,13 +26,22 @@ return {
   },
 
   {
-    -- Add indentation guides even on blank lines
-    'lukas-reineke/indent-blankline.nvim',
-    opts = {
-      char = '┊',
-      show_trailing_blankline_indent = false,
-    },
+      "lukas-reineke/indent-blankline.nvim",
+      main = "ibl",
+      ---@module "ibl"
+      ---@type ibl.config
+      opts = {},
   },
+
+  -- The below used to work before 2025
+  -- {
+  --   -- Add indentation guides even on blank lines
+  --   'lukas-reineke/indent-blankline.nvim',
+  --   -- opts = {
+  --   --   char = '┊',
+  --   --   show_trailing_blankline_indent = false,
+  --   -- },
+  -- },
 
 
    'mhinz/vim-startify',

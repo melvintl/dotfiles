@@ -14,6 +14,8 @@ vim.keymap.set("n", "<leader>w", ":w! <CR>")
 vim.keymap.set("n", "<leader>p", ":set wrap! <CR>")
 vim.keymap.set("n", "\\", ":noh<CR>")
 
+--TODO double check why its not defaulting to leader n
+vim.keymap.set("n", "<leader>mm", ":NERDTreeToggle <CR>")
 
 -- Alias
 vim.cmd 'command! Q qa!'

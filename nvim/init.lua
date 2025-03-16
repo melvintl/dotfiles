@@ -34,4 +34,4 @@ require('custom.lsp')
 require('custom.tree_sitter')
 require('custom.cmp')
 
-require('custom.null_ls')
+-- require('custom.null_ls')
