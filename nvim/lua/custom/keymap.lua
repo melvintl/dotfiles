@@ -14,6 +14,7 @@ vim.keymap.set("n", "<leader>w", ":w! <CR>")
 vim.keymap.set("n", "<leader>p", ":set wrap! <CR>")
 vim.keymap.set("n", "\\", ":noh<CR>")
 
+vim.keymap.set("n", "<leader>m", ":NERDTreeToggle <CR>")
 
 -- Alias
 vim.cmd 'command! Q qa!'
