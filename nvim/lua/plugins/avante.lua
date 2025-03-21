@@ -5,7 +5,7 @@ return {
   opts = {
     -- add any opts here
     -- for example
-    provider = "openai",
+    -- provider = "openai",
     openai = {
       endpoint = "https://api.openai.com/v1",
       model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
@@ -14,6 +14,29 @@ return {
       max_tokens = 4096,
       -- reasoning_effort = "high" -- only supported for reasoning models (o1, etc.)
     },
+
+    provider = "aimarketplace",
+    vendors = {
+      aimarketplace = {
+        __inherited_from = 'openai',
+        endpoint = os.getenv('AI_MARKETPLACE_URL'),
+        api_key_name = 'AI_MARKETPLACE_API_KEY',
+        model = 'openai_gpt4o_128k',
+      },
+      ai_marketplace_deepseek = {
+        __inherited_from = 'openai',
+        endpoint = os.getenv('AI_MARKETPLACE_URL'),
+        api_key_name = 'AI_MARKETPLACE_API_KEY',
+        model = 'deepseek_r1',
+      },
+      ai_marketplace_claude = {
+        __inherited_from = 'openai',
+        endpoint = os.getenv('AI_MARKETPLACE_URL'),
+        api_key_name = 'AI_MARKETPLACE_API_KEY',
+        model = 'anthropic_claude_3_opus_v1_0',
+      },
+    }
+
   },
   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
   build = "make",

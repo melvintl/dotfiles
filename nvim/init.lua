@@ -27,11 +27,18 @@ require("lazy").setup({
 -- Plugin specific setup
 require('custom.telescope')
 require('custom.set')
-require('custom.keymap')
 require('custom.experience')
+require('custom.startify')
 
+require('custom.ale')
 require('custom.lsp')
 require('custom.tree_sitter')
 require('custom.cmp')
 
--- require('custom.null_ls')
+require('custom.test')
+
+require('custom.autocmd')
+
+require('custom.keymap')
+
+vim.diagnostic.config{virual_text=false}
