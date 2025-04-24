@@ -17,6 +17,8 @@ nvm use --lts
 npm install -g typescript typescript-language-server
 ```
 
+Note: In Neovim's LSP configuration, this server is referred to as `tsserver`.
+
 ## Install ESLint for linting
 ```bash
 npm install -g eslint
