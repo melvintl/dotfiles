@@ -31,6 +31,21 @@ python3 -m pipx ensurepath
 pipx install jedi-language-server
 ```
 
+### To setup TypeScript language server:
+
+```bash
+# Install TypeScript language server
+npm install -g typescript typescript-language-server
+
+# Install ESLint for linting
+npm install -g eslint
+
+# Install Prettier for formatting
+npm install -g prettier
+```
+
+See `docs/typescript-setup.md` for more detailed TypeScript setup instructions.
+
 ## Fonts
 
 Install patched nerd fonts (eg JetBrans Mono) on the terminal 
