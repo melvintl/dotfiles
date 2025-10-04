@@ -14,26 +14,30 @@ return {
     -- add any opts here
     -- for example
     -- provider = "openai",
-    openai = {
-      endpoint = "https://api.openai.com/v1",
-      model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
-      timeout = 30000, -- timeout in milliseconds
-      temperature = 0, -- adjust if needed
-      max_tokens = 4096,
-      -- reasoning_effort = "high" -- only supported for reasoning models (o1, etc.)
-    },
-
     provider = "openrouter_sonnet",
     auto_suggestions_provider = "openrouter_sonnet",
 
-    vendors = {
+    providers = {
+      openai = {
+        endpoint = "https://api.openai.com/v1",
+        model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
+        timeout = 30000, -- timeout in milliseconds
+        extra_request_body = {
+          temperature = 0, -- adjust if needed
+          max_tokens = 4096,
+          -- reasoning_effort = "high" -- only supported for reasoning models (o1, etc.)
+        },
+      },
+      ollama = {
+        model = "deepseek-coder-v2",
+        -- model = "deepseek-r1:32b",
+      },
       openrouter_gemini_25_pro = {
         __inherited_from = 'openai',
         endpoint = 'https://openrouter.ai/api/v1',
         api_key_name = 'OPENROUTER_API_KEY',
         model = "google/gemini-2.5-pro-preview-03-25",
       },
-
       openrouter_open_ai_4o = {
         __inherited_from = 'openai',
         endpoint = 'https://openrouter.ai/api/v1',
@@ -52,7 +56,6 @@ return {
         api_key_name = 'OPENROUTER_API_KEY',
         model = "anthropic/claude-3.7-sonnet",
       },
-
       aimarketplace = {
         __inherited_from = 'openai',
         endpoint = os.getenv('AI_MARKETPLACE_URL'),
@@ -71,12 +74,6 @@ return {
         api_key_name = 'AI_MARKETPLACE_API_KEY',
         model = 'anthropic_claude_3_opus_v1_0',
       },
-    },
-
-    -- provider = "ollama",
-    ollama = {
-      model = "deepseek-coder-v2",
-      -- model = "deepseek-r1:32b",
     },
 
   },
