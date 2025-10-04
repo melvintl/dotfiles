@@ -9,3 +9,4 @@ junit/
 htmlcov/
 .aws-sam/
 __pycache__/
+.aider*
