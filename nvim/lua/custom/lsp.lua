@@ -2,7 +2,7 @@
 local lspconfig = require('lspconfig')
 -- lspconfig.pyright.setup {}
 lspconfig.jedi_language_server.setup {}
-lspconfig.tsserver.setup {}  -- This is the correct name for TypeScript server
+lspconfig.ts_ls.setup {} 
 lspconfig.eslint.setup {}
 lspconfig.rust_analyzer.setup {
   -- Server-specific settings. See `:help lspconfig-setup`
