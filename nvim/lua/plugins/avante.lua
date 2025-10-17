@@ -14,8 +14,9 @@ return {
     -- add any opts here
     -- for example
     -- provider = "openai",
-    provider = "openrouter_sonnet",
-    auto_suggestions_provider = "openrouter_sonnet",
+    -- provider = "openrouter_sonnet"
+    provider = "copilot", -- default provider for autocompletions
+    auto_suggestions_provider = "copilot",
 
     providers = {
       openai = {
