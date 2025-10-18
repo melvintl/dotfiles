@@ -1,10 +1,10 @@
 vim.g.ale_linters = {
-  ["python"] = {"pylint", "flake8", "mypy"},
+  ["python"] = {"ruff", "pylint", "flake8", "mypy"},
   ["typescript"] = {"eslint", "tsserver"},
   ["javascript"] = {"eslint"}
 }
 vim.g.ale_fixers = {
-  ["python"] = {'reorder-python-imports', 'black'},
+  ["python"] = {'ruff', 'reorder-python-imports', 'black'},
   ["typescript"] = {'eslint', 'prettier'},
   ["javascript"] = {'eslint', 'prettier'}
 }
