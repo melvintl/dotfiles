@@ -41,4 +41,4 @@ require('custom.autocmd')
 
 require('custom.keymap')
 
-vim.diagnostic.config{virual_text=false}
+vim.diagnostic.config{virtual_text=false}

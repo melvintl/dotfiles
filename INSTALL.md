@@ -1,0 +1,149 @@
+# Install Checklist
+
+Tools the configs in this repo expect on `PATH`. Copy the block for your platform — each section is one command (or one per package manager).
+
+Scope: dev-environment tooling only. The i3 window manager and its helpers (i3, i3status, i3lock, rofi, dmenu, arandr, feh, etc.) are Linux-desktop concerns and live in `README.md`, not here.
+
+---
+
+## macOS (Homebrew)
+
+```bash
+# Formulae
+brew install \
+  zsh tmux neovim vim universal-ctags \
+  fzf ripgrep the_silver_searcher fd bat jq jless ncdu yazi tldr \
+  direnv pipx zoxide \
+  pgcli pspg \
+  yamllint \
+  kanata \
+  lazygit git-delta gh \
+  visidata
+
+# Casks (fonts + kanata driver)
+brew install --cask \
+  font-jetbrains-mono-nerd-font \
+  font-fontawesome \
+  karabiner-elements
+
+# Activate the Karabiner virtual HID driver kanata needs (one-time):
+/Applications/.Karabiner-VirtualHIDDevice-Manager.app/Contents/MacOS/Karabiner-VirtualHIDDevice-Manager activate
+# Then approve in System Settings → General → Login Items & Extensions → Driver Extensions.
+# See .config/kanata/README.md for the full procedure.
+```
+
+---
+
+## Debian / Ubuntu (apt)
+
+```bash
+sudo apt update && sudo apt install -y \
+  zsh tmux neovim vim-gtk3 exuberant-ctags \
+  fzf ripgrep silversearcher-ag fd-find bat jq ncdu tldr \
+  direnv pipx zoxide \
+  pgcli pspg \
+  yamllint \
+  lazygit git-delta gh \
+  visidata \
+  git curl wget openssh-server build-essential
+```
+
+Notes:
+- `fd-find` installs the binary as `fdfind`; alias it: `ln -s $(which fdfind) ~/.local/bin/fd`.
+- `bat` installs as `batcat` on older Ubuntu; same trick: `ln -s $(which batcat) ~/.local/bin/bat`.
+- `lazygit`, `git-delta`, `gh` require recent Ubuntu (24.04+) or their respective PPAs; fall back to the GitHub releases on older distros.
+- `zoxide` shell integration is already wired up in `.zshrc` and only kicks in once the binary is on `PATH`.
+- `jless` isn't packaged on apt — install via `cargo install jless` or grab a binary from <https://github.com/PaulJuliusMartinez/jless/releases>.
+- `yazi` lands in apt only on Ubuntu 24.04+; on older releases use `cargo install --locked yazi-fm yazi-cli` or the GitHub releases.
+- Kanata isn't packaged on apt; grab the latest release binary from <https://github.com/jtroo/kanata/releases> if you want it on Linux.
+
+---
+
+## npm globals (language servers + JS tooling for Neovim)
+
+```bash
+npm install -g \
+  pyright \
+  typescript typescript-language-server \
+  vscode-langservers-extracted \
+  prettier eslint
+```
+
+`vscode-langservers-extracted` provides the `eslint` LSP that `nvim/lua/custom/lsp.lua` enables.
+
+---
+
+## pipx / pip (Python tooling for Neovim + CLI)
+
+```bash
+# pipx for tools you invoke as commands
+pipx install ruff
+pipx install pylint
+pipx install flake8
+pipx install mypy
+pipx install black
+pipx install reorder-python-imports
+pipx install jedi-language-server
+
+# pip (inside a venv / project) for libraries Neovim's DAP and pytest hooks load
+pip install debugpy pytest pytest-picked pytest-testmon
+```
+
+---
+
+## Rust (rust-analyzer LSP)
+
+```bash
+# If rustup is already installed:
+rustup component add rust-analyzer
+
+# Otherwise, install rustup first:
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+---
+
+## Manual / one-off
+
+- **oh-my-zsh**: `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
+- **base16-shell**: `git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell`
+
+---
+
+## AI tools
+
+CLIs for AI coding workflows. Install whichever you use.
+
+```bash
+# Claude Code — Anthropic's CLI coding agent (used by nvim/lua/plugins/claudecode.lua)
+curl -fsSL https://claude.ai/install.sh | bash        # macOS / Linux / WSL (auto-updates)
+
+# ollama — local LLM runtime
+brew install ollama                              # macOS
+# curl -fsSL https://ollama.com/install.sh | sh  # Linux
+
+# aider — CLI pair-programmer
+pipx install aider-chat
+
+# Pi — minimal terminal coding harness (pi.dev)
+curl -fsSL https://pi.dev/install.sh | sh
+```
+
+---
+
+## What each tool is for
+
+| Category | Tools |
+| --- | --- |
+| Shell | `zsh`, `oh-my-zsh` (theme `robbyrussell`, plugins `git`, `git-extras`), `base16-shell`, `direnv`, `tmux`, `fzf`, `zoxide`, `pipx` |
+| Editors | `vim`, `neovim`, `universal-ctags` |
+| Search / files | `ripgrep`, `the_silver_searcher` (`ag`), `fd`, `bat`, `jq`, `jless`, `ncdu`, `yazi`, `tldr`, `visidata` |
+| Neovim LSPs | `jedi-language-server`, `pyright`, `typescript-language-server`, `vscode-langservers-extracted` (eslint LSP), `rust-analyzer` |
+| Neovim linters / formatters (via ALE) | `ruff`, `pylint`, `flake8`, `mypy`, `black`, `reorder-python-imports`, `prettier`, `eslint` |
+| Neovim debug / test | `debugpy`, `pytest`, `pytest-picked`, `pytest-testmon` |
+| Git tooling | `lazygit`, `git-delta`, `gh` |
+| AI | `claude`, `ollama`, `aider`, `pi` |
+| Database | `pgcli`, `pspg` |
+| Lint | `yamllint` |
+| Keyboard | `kanata` (+ Karabiner driver on macOS) |
+| Fonts | JetBrainsMono Nerd Font (Mono), FontAwesome |

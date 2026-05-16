@@ -1,15 +1,20 @@
 -- Setup language servers.
-local lspconfig = require('lspconfig')
--- lspconfig.pyright.setup {}
-lspconfig.jedi_language_server.setup {}
-lspconfig.ts_ls.setup {} 
-lspconfig.eslint.setup {}
-lspconfig.rust_analyzer.setup {
-  -- Server-specific settings. See `:help lspconfig-setup`
+vim.lsp.config('jedi_language_server', {})
+vim.lsp.enable('jedi_language_server')
+
+vim.lsp.config('ts_ls', {})
+vim.lsp.enable('ts_ls')
+
+vim.lsp.config('eslint', {})
+vim.lsp.enable('eslint')
+
+vim.lsp.config('rust_analyzer', {
+  -- Server-specific settings. See `:help vim.lsp.config`
   settings = {
     ['rust-analyzer'] = {},
   },
-}
+})
+vim.lsp.enable('rust_analyzer')
 
 -- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions

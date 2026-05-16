@@ -1,6 +1,8 @@
 # dotfiles
 Repo contains the dotfiles I mostly use.
 
+For a consolidated, copy-pasteable list of every CLI tool these configs expect on `PATH`, see [INSTALL.md](INSTALL.md).
+
 ## Vim
 (Note: the below is only for Vim and not for the Neovim setup) 
 Plugins have minimal external depenencies except for the below:
