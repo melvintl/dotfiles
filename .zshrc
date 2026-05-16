@@ -113,7 +113,9 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
 
 eval "$(direnv hook zsh)"
 
-# . /usr/share/autojump/autojump.sh
+# zoxide (smart cd; `z <pattern>` jumps to most-frecent match, `zi` for interactive)
+# Not bound to `cd` because the custom cd() below handles venv auto-activation.
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
 # This is to use shift arrow specifically for Putty
 # to see which keys on Putty work Ctrl+v, SHIFT+Arrow Keys
