@@ -4,7 +4,12 @@ vim.g.ale_linters = {
   ["javascript"] = {"eslint"}
 }
 vim.g.ale_fixers = {
-  ["python"] = {'ruff', 'reorder-python-imports', 'black'},
+  ["python"] = {
+    'ruff',
+    'reorder-python-imports',
+    'ruff_format',
+    -- 'black',  -- uncomment to use Black instead of ruff_format
+  },
   ["typescript"] = {'eslint', 'prettier'},
   ["javascript"] = {'eslint', 'prettier'}
 }
