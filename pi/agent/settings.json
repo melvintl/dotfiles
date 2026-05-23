@@ -1,0 +1,7 @@
+{
+  "defaultProvider": "ollama",
+  "defaultModel": "gemma4",
+  "lastChangelogVersion": "0.75.4",
+  "defaultThinkingLevel": "minimal",
+  "packages": []
+}
