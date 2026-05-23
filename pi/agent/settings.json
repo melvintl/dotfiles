@@ -1,6 +1,6 @@
 {
   "defaultProvider": "ollama",
-  "defaultModel": "gemma4",
+  "defaultModel": "qwen2.5-coder:14b-instruct",
   "lastChangelogVersion": "0.75.4",
   "defaultThinkingLevel": "minimal",
   "packages": []
