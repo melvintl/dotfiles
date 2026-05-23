@@ -400,6 +400,8 @@ bind-key -T copy-mode-vi 'C-k' select-pane -U
 bind-key -T copy-mode-vi 'C-l' select-pane -R
 bind-key -T copy-mode-vi 'C-\' select-pane -l
 
+# Jump to / resume a claude code session (fzf picker over `claude agents --json`)
+bind-key j display-popup -E -w 80% -h 60% "$HOME/myprojects/dotfiles/bin/claude-jump"
 
 set-environment -g COLORTERM truecolor
 

@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+# claude-jump: fzf picker over `claude agents --json` that jumps to the tmux
+# pane hosting a live Claude Code session, or resumes the session in a new
+# tmux window if it's not currently attached anywhere.
+
+set -euo pipefail
+
+for dep in claude fzf jq tmux ps; do
+  command -v "$dep" >/dev/null || { echo "claude-jump: '$dep' required" >&2; exit 1; }
+done
+
+sessions=$(claude agents --json 2>/dev/null || echo "[]")
+[[ "$(jq 'length' <<<"$sessions")" -eq 0 ]] && { echo "No live claude sessions." >&2; exit 0; }
+
+now_ms=$(($(date +%s) * 1000))
+
+# Render: <display>\t<sessionId>\t<pid>\t<cwd>
+rows=$(jq -r --argjson now "$now_ms" '
+  def age($started):
+    (($now - $started) / 1000 | floor) as $s
+    | if   $s < 60    then "\($s)s"
+      elif $s < 3600  then "\($s/60   | floor)m"
+      elif $s < 86400 then "\($s/3600 | floor)h"
+      else                  "\($s/86400 | floor)d" end;
+  def pad($w; $s): $s + (" " * (($w - ($s|length)) | if . < 0 then 0 else . end));
+  def icon:
+    if   .status == "busy"    then "[31m●[0m"
+    elif .status == "waiting" then "[33m○[0m"
+    else                            "[32m◆[0m" end;
+  .[] |
+    [
+      ( icon
+        + " " + pad(8;  .status)
+        + " " + (.kind | .[0:1])
+        + " " + pad(5;  age(.startedAt))
+        + "  " + pad(20; (.cwd | split("/") | .[-1]))
+        + "  " + (.name // (.sessionId | .[0:8]))
+      ),
+      .sessionId,
+      (.pid | tostring),
+      .cwd
+    ] | @tsv
+' <<<"$sessions")
+
+selected=$(printf '%s\n' "$rows" | fzf \
+  --ansi \
+  --delimiter=$'\t' \
+  --with-nth=1 \
+  --header='status         kind age   cwd                   label' \
+  --preview='printf "session: %s\npid:     %s\ncwd:     %s\n" {2} {3} {4}' \
+  --preview-window=down:4:wrap \
+  --no-multi --no-mouse) || exit 0
+
+[[ -z "$selected" ]] && exit 0
+
+IFS=$'\t' read -r _ sid pid cwd <<<"$selected"
+
+# Walk up the process tree from $pid, collecting ancestors.
+ancestors=("$pid")
+p="$pid"
+while :; do
+  p=$(ps -o ppid= -p "$p" 2>/dev/null | tr -d ' ' || true)
+  [[ -z "$p" || "$p" == "0" || "$p" == "1" ]] && break
+  ancestors+=("$p")
+done
+
+# Look for a tmux pane whose pane_pid is an ancestor.
+target=""
+if panes=$(tmux list-panes -aF "#{pane_pid} #{session_name}:#{window_index}.#{pane_index}" 2>/dev/null); then
+  while IFS=' ' read -r pane_pid pane_target; do
+    for a in "${ancestors[@]}"; do
+      if [[ "$a" == "$pane_pid" ]]; then
+        target="$pane_target"
+        break 2
+      fi
+    done
+  done <<<"$panes"
+fi
+
+if [[ -n "$target" ]]; then
+  # Jump to existing pane.
+  tmux switch-client -t "$target" 2>/dev/null || true
+  tmux select-window -t "$target"
+  tmux select-pane   -t "$target"
+elif [[ -n "${TMUX:-}" ]]; then
+  # Inside tmux but the session isn't attached anywhere: open a new window.
+  tmux new-window -c "$cwd" "claude --resume '$sid'"
+else
+  # Standalone shell: resume in place.
+  cd "$cwd" && exec claude --resume "$sid"
+fi
