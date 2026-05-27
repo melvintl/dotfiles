@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+# claude-jump: fzf picker over `claude agents --json` that jumps to the tmux
+# pane hosting a live Claude Code session, or resumes the session in a new
+# tmux window if it's not currently attached anywhere.
+#
+# Pane resolution works by walking up the process tree from the agent's pid
+# until we hit a process that matches some tmux pane's pane_pid (which is the
+# shell tmux launched in that pane). The agent registry doesn't record tmux
+# coordinates, so this walk is how we bridge "claude pid" → "tmux pane".
+# The walk happens inside jq against pre-built ppid + pane_pid lookup tables,
+# so every picker row already knows its pane location before you pick.
+
+set -euo pipefail
+
+for dep in claude fzf jq tmux ps; do
+  command -v "$dep" >/dev/null || { echo "claude-jump: '$dep' required" >&2; exit 1; }
+done
+
+# Snapshot the process tree as {"pid":"ppid", ...}. The key set also doubles as
+# the set of live pids — no separate liveness check needed.
+ppid_json=$(ps -axo pid=,ppid= | awk 'NF==2{print $1, $2}' \
+  | jq -Rn '[inputs | split(" ") | {(.[0]): .[1]}] | add // {}')
+
+# Snapshot tmux panes as {"pane_pid":"session:w.p", ...}. Empty if no server.
+pane_json=$(tmux list-panes -aF "#{pane_pid} #{session_name}:#{window_index}.#{pane_index}" 2>/dev/null \
+  | jq -Rn '[inputs | capture("^(?<p>\\d+) (?<t>.+)$") | {(.p): .t}] | add // {}' \
+  || echo "{}")
+
+# One pass: trim the registry down to "real, jumpable sessions" and enrich each
+# row with its tmux pane.
+#   - kind == "interactive"  — drop background SDK subagents (they live inside
+#     another claude.exe and have no terminal of their own).
+#   - pid is in $ppid        — registry can retain entries after a crash; only
+#     keep ones whose pid appears in our live process snapshot.
+#   - pane via find_pane     — walk pid → ppid → … in jq until we hit a
+#     pane_pid or run off the top of the tree. Result is "main:2.0" or null.
+#   - group_by sessionId     — two shells doing `claude --resume <id>` create
+#     duplicate rows; collapse with: busy > waiting > else, then newest
+#     startedAt. `busy` flags the shell actively driving the session right now;
+#     newest startedAt tiebreaks toward the most recently opened terminal.
+sessions=$(
+  { claude agents --json 2>/dev/null || echo "[]"; } \
+  | jq --argjson ppid "$ppid_json" --argjson panes "$pane_json" '
+      ($ppid | keys) as $live
+      | def find_pane:
+          until(. == "0" or . == "1" or . == "" or in($panes);
+                $ppid[.] // "")
+          | $panes[.] // null;
+      [ .[]
+        | select(.kind == "interactive")
+        | select(((.pid // -1) | tostring) as $p | $live | index($p))
+        | . + {pane: ((.pid // 0) | tostring | find_pane)} ]
+      | group_by(.sessionId)
+      | map(
+          sort_by([
+            ({"busy":0, "waiting":1}[.status] // 2),
+            -(.startedAt // 0)
+          ])[0]
+        )
+    '
+)
+
+[[ "$(jq 'length' <<<"$sessions")" -eq 0 ]] && { echo "No live claude sessions." >&2; exit 0; }
+
+now_ms=$(($(date +%s) * 1000))
+
+# Render: <display>\t<sessionId>\t<pid>\t<cwd>\t<target>
+rows=$(jq -r --argjson now "$now_ms" '
+  def age($started):
+    (($now - $started) / 1000 | floor) as $s
+    | if   $s < 60    then "\($s)s"
+      elif $s < 3600  then "\($s/60   | floor)m"
+      elif $s < 86400 then "\($s/3600 | floor)h"
+      else                  "\($s/86400 | floor)d" end;
+  def pad($w; $s): $s + (" " * (($w - ($s|length)) | if . < 0 then 0 else . end));
+  def icon:
+    if   .status == "busy"    then "[31m●[0m"
+    elif .status == "waiting" then "[33m○[0m"
+    else                            "[32m◆[0m" end;
+  .[] |
+    [
+      ( icon
+        + " " + pad(8;  .status)
+        + " " + (.kind | .[0:1])
+        + " " + pad(5;  age(.startedAt))
+        + "  " + pad(20; (.cwd | split("/") | .[-1]))
+        + "  " + pad(10; (.pane // "—"))
+        + "  " + (.name // (.sessionId | .[0:8]))
+      ),
+      .sessionId,
+      (.pid | tostring),
+      .cwd,
+      (.pane // "")
+    ] | @tsv
+' <<<"$sessions")
+
+selected=$(printf '%s\n' "$rows" | fzf \
+  --ansi \
+  --delimiter=$'\t' \
+  --with-nth=1 \
+  --header='status         kind age   cwd                   pane        label' \
+  --preview='printf "session: %s\npid:     %s\ncwd:     %s\npane:    %s\n" {2} {3} {4} {5}' \
+  --preview-window=down:5:wrap \
+  --no-multi --no-mouse) || exit 0
+
+[[ -z "$selected" ]] && exit 0
+
+IFS=$'\t' read -r _ sid pid cwd target <<<"$selected"
+
+# Three dispatch cases, in priority order:
+if [[ -n "$target" ]]; then
+  # Pane resolved upstream → jump to it. All three tmux calls tolerate failure
+  # (e.g. when run outside tmux) since the no-op is harmless.
+  tmux switch-client -t "$target" 2>/dev/null || true
+  tmux select-window -t "$target" 2>/dev/null || true
+  tmux select-pane   -t "$target" 2>/dev/null || true
+elif [[ -n "${TMUX:-}" ]]; then
+  # No pane but we're inside tmux: session is registered without a terminal.
+  # Spin up a fresh window and resume by sessionId so state persists.
+  tmux new-window -c "$cwd" "claude --resume '$sid'"
+else
+  # No pane, not in tmux: take over this shell with --resume. cd first so the
+  # resumed session keeps its original cwd (matters for CLAUDE.md / skills).
+  cd "$cwd" || { echo "claude-jump: cwd gone: $cwd" >&2; exit 1; }
+  exec claude --resume "$sid"
+fi

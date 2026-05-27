@@ -1,0 +1,11 @@
+{
+  "defaultProvider": "ollama",
+  "defaultModel": "qwen2.5-coder:14b-instruct",
+  "lastChangelogVersion": "0.75.4",
+  "defaultThinkingLevel": "minimal",
+  "packages": [
+    "git:github.com/Michaelliv/pi-generative-ui",
+    "npm:pi-web-access",
+    "npm:pi-web-fetch"
+  ]
+}
