@@ -14,7 +14,7 @@ My personal config across shell, editor, multiplexer, and a few small tools.
 | `pi/agent/` | `pi` coding-agent config (skills, prompts, models, themes) |
 | `.config/kanata/` | Kanata keyboard remap — see [`.config/kanata/README.md`](.config/kanata/README.md) |
 | `.config/i3/`, `.config/i3status/` | i3 window manager + status bar (Linux) |
-| `.config/pgcli/`, `.config/yazi/`, `.config/yamllint/` | Misc tool configs |
+| `.config/<>` | Misc tool configs |
 | `bin/` | Small scripts |
 | `INSTALL.md` | Every CLI tool the configs expect on `PATH` |
 
