@@ -1,57 +1,52 @@
 # dotfiles
-Repo contains the dotfiles I mostly use.
 
-For a consolidated, copy-pasteable list of every CLI tool these configs expect on `PATH`, see [INSTALL.md](INSTALL.md).
+My personal config across shell, editor, multiplexer, and a few small tools.
 
-## Vim
-(Note: the below is only for Vim and not for the Neovim setup) 
-Plugins have minimal external depenencies except for the below:
+## Layout
 
-### MacOS
-```
-brew install ctags
-brew install ag fzf ripgrep
-```
+| Path | What's there |
+| --- | --- |
+| `.zshrc`, `.bashrc` | Shell config (oh-my-zsh, base16, zoxide, direnv, fzf) |
+| `.tmux.conf`, `.tmux.conf.local` | tmux config (based on oh-my-tmux) |
+| `.vimrc` | Legacy Vim config — kept around but Neovim is the daily driver |
+| `.gitconfig` | Git config (delta as pager, aliases) |
+| `nvim/` | Neovim setup — see [`nvim/README.md`](nvim/README.md) |
+| `pi/agent/` | `pi` coding-agent config (skills, prompts, models, themes) |
+| `.config/kanata/` | Kanata keyboard remap — see [`.config/kanata/README.md`](.config/kanata/README.md) |
+| `.config/i3/`, `.config/i3status/` | i3 window manager + status bar (Linux) |
+| `.config/<>` | Misc tool configs |
+| `bin/` | Small scripts |
+| `INSTALL.md` | Every CLI tool the configs expect on `PATH` |
 
-### Debian
-```
-apt-get install gvim
+## Install
 
-sudo apt-get install exuberant-ctags ack-grep
-sudo apt-get install silversearcher-ag
-```
+See [INSTALL.md](INSTALL.md) for the full per-platform tooling list (macOS Homebrew, Debian apt, npm globals, pipx, Rust, AI tools).
 
-## i3
+Symlink the bits you want into place, e.g.:
 
-### Debian:
-```
-sudo apt-get install i3 i3status suckless-tools i3lock rofi
-sudo apt-get install arandr
-sudo apt-get install xbacklight alsa-utils pulseaudio
-sudo apt-get install gnome-sound-applet indicator-sound
-sudo apt-get install volumeicon-alsa
-```
-
-Other Install(debian):
-```
-apt install zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-```
-https://github.com/chriskempson/base16-shell
-
-
-
-Other utils
-```
-#CSV Viewer
-apt install visidata
+```bash
+ln -s ~/myprojects/dotfiles/.zshrc       ~/.zshrc
+ln -s ~/myprojects/dotfiles/.tmux.conf   ~/.tmux.conf
+ln -s ~/myprojects/dotfiles/.gitconfig   ~/.gitconfig
+ln -s ~/myprojects/dotfiles/nvim         ~/.config/nvim
+ln -s ~/myprojects/dotfiles/.config/kanata ~/.config/kanata
 ```
 
+`bin/quick_setup.sh`, `bin/new_debian.sh`, and `bin/new_centos.sh` are starting points for bootstrapping a fresh box — read them before running.
 
-Notes:
-- On Windows install:
- - Windows Terminal
-     - Install `JetBrainsMono Nerd Font Mono` patched font
-     - Set theme to `One Half Dark`
-     - Latest terminal version and Unbuntu 24+ takes care of clipboard without any other dependencies
- 
+
+## Linux desktop (i3)
+
+The i3 window manager config in `.config/i3/` expects these system packages on Debian/Ubuntu:
+
+```bash
+sudo apt-get install i3 i3status suckless-tools i3lock rofi \
+                     arandr xbacklight alsa-utils pulseaudio \
+                     gnome-sound-applet indicator-sound volumeicon-alsa
+```
+
+## Windows notes
+
+- Use Windows Terminal with the `JetBrainsMono Nerd Font Mono` patched font.
+- Theme: `One Half Dark`.
+- Recent Windows Terminal + Ubuntu 24+ handles clipboard with no extra setup.
