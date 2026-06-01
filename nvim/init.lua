@@ -28,7 +28,6 @@ require("lazy").setup({
 require('custom.telescope')
 require('custom.set')
 require('custom.experience')
-require('custom.startify')
 
 require('custom.ale')
 require('custom.lsp')

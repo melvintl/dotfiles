@@ -1,6 +1,9 @@
 local api = vim.api
 local cmd = vim.cmd
 
+-- cd to the git root when opening a file (replaces startify's change_to_vcs_root)
+api.nvim_create_autocmd("BufReadPost", { callback = function() local root = vim.fs.root(0, ".git"); if root then vim.cmd.cd(root) end end })
+
 -- go to last loc when opening a buffer
 api.nvim_create_autocmd(
     "BufReadPost",
