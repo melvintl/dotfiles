@@ -10,8 +10,6 @@ return {
     },
   },
 
---[[   {'jose-elias-alvarez/null-ls.nvim'}, ]]
-
   {
     'dense-analysis/ale',
     config = function()

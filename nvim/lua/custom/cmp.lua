@@ -31,6 +31,8 @@ cmp.setup {
     end, { 'i', 's' }),
   },
   sources = {
+    -- lazydev completions for the nvim Lua API (require paths, vim.*)
+    { name = 'lazydev', group_index = 0 },
     { name = 'nvim_lsp' },
   },
 }
