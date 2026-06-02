@@ -50,6 +50,16 @@ return {
       vim.api.nvim_set_hl(0, 'DiffviewDiffChange', { bg = '#2d3d4a' })
       vim.api.nvim_set_hl(0, 'DiffText', { bg = '#4a5a2d', fg = '#e5c07b', bold = true })
       vim.api.nvim_set_hl(0, 'DiffviewDiffModifiedAsChar', { bg = '#3d4d5a', fg = '#61afef', bold = true })
+
+      -- Refresh the open diffview when files change on disk, so a coding agent's edits show live
+      vim.api.nvim_create_autocmd("FileChangedShellPost", {
+        callback = function()
+          local ok, lib = pcall(require, "diffview.lib")
+          if ok and lib.get_current_view() then
+            require("diffview.actions").refresh_files()
+          end
+        end,
+      })
     end,
   },
 

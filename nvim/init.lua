@@ -38,6 +38,8 @@ require('custom.test')
 
 require('custom.autocmd')
 
+require('custom.autoread')
+
 require('custom.keymap')
 
 vim.diagnostic.config{virtual_text=false}

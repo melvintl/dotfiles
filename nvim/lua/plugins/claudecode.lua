@@ -9,7 +9,7 @@ return {
     track_selection = true,
     terminal = {
       split_side = "right",
-      split_width_percentage = 0.30,
+      split_width_percentage = 0.40,
       provider = "auto",
       auto_close = true,
     },
