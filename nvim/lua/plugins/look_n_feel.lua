@@ -7,7 +7,20 @@ return {
     "folke/snacks.nvim",
     opts = {
       bigfile = { enabled = false },
-      dashboard = { enabled = false },  -- Keep vim-startify
+      dashboard = {                     -- Replaces vim-startify (numbered recent files)
+        enabled = true,
+        formats = {
+          -- Show paths relative to cwd (":.") instead of relative to home ("~")
+          file = function(item, ctx)
+            local fname = vim.fn.fnamemodify(item.file, ":.")
+            local dir, base = fname:match("^(.*/)(.+)$")
+            return dir and { { dir, hl = "dir" }, { base, hl = "file" } } or { { fname, hl = "file" } }
+          end,
+        },
+        sections = {
+          { section = "recent_files", cwd = true, limit = 8, padding = 1 },
+        },
+      },
       explorer = { enabled = false },   -- Keep NERDTree
       indent = { enabled = false },     -- Keep indent-blankline
       notifier = { enabled = false },
@@ -50,7 +63,5 @@ return {
       ---@type ibl.config
       opts = {},
   },
-
-   'mhinz/vim-startify',
 
 }

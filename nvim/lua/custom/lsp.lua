@@ -55,9 +55,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
 
--- Setup neovim lua configuration
-require('neodev').setup()
-
 -- The virtual text is annoying so hide it (eg with Pyright)
 vim.diagnostic.config({
   virtual_text = false,

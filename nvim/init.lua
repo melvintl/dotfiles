@@ -28,7 +28,6 @@ require("lazy").setup({
 require('custom.telescope')
 require('custom.set')
 require('custom.experience')
-require('custom.startify')
 
 require('custom.ale')
 require('custom.lsp')
@@ -38,6 +37,8 @@ require('custom.cmp')
 require('custom.test')
 
 require('custom.autocmd')
+
+require('custom.autoread')
 
 require('custom.keymap')
 
