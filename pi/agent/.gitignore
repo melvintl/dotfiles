@@ -1,0 +1,18 @@
+# Local Pi secrets and generated state; do not commit.
+auth.json
+trust.json
+sessions/
+npm/
+git/
+models-store.json
+*.log
+pi-tui-crash.log
+extensions/**/logs/
+
+# Build/dependency output from skills and extensions.
+**/node_modules/
+**/dist/
+**/.cache/
+**/.turbo/
+**/.parcel-cache/
+.DS_Store
