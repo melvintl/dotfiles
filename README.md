@@ -6,7 +6,8 @@ My personal config across shell, editor, multiplexer, and a few small tools.
 
 | Path | What's there |
 | --- | --- |
-| `.zshrc`, `.bashrc` | Shell config (oh-my-zsh, base16, zoxide, direnv, fzf) |
+| `.bashrc` | Bash config (Omarchy defaults + personal aliases) |
+| `.zshrc` | Legacy zsh config (oh-my-zsh, base16, zoxide, direnv, fzf) — not installed by `quick_setup.sh` |
 | `.tmux.conf`, `.tmux.conf.local` | tmux config (based on oh-my-tmux) |
 | `.vimrc` | Legacy Vim config — kept around but Neovim is the daily driver |
 | `.gitconfig` | Git config (delta as pager, aliases) |

@@ -1,6 +1,6 @@
 [core]
-    editor = vim
-	excludesfile = /home/ubuntu/.gitignore
+    editor = nvim
+	excludesfile = ~/.gitignore
 
 [alias]
     co = checkout
