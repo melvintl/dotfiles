@@ -22,7 +22,7 @@ My personal config across shell, editor, multiplexer, and a few small tools.
 
 ## Install
 
-See [INSTALL.md](INSTALL.md) for the full per-platform tooling list (macOS Homebrew, Debian apt, npm globals, pipx, Rust, AI tools).
+See [INSTALL.md](INSTALL.md) for the full per-platform tooling list (macOS Homebrew, Debian apt, Arch pacman/AUR, npm globals, pipx, Rust, AI tools).
 
 Symlink the bits you want into place, e.g.:
 
