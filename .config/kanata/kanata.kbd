@@ -1,6 +1,7 @@
-;; Home row mods on D F J K
+;; Home row mods on A D F J K ;
 ;; Tap = normal letter, Hold = modifier
 ;;
+;;   A = Super (left)    ; = Super (right)
 ;;   D = Shift (left)    K = Shift (right)
 ;;   F = Ctrl  (left)    J = Ctrl  (right)
 ;;
@@ -8,23 +9,30 @@
 ;; the hold-timeout OR press-and-release another key while holding.
 ;; This is the sweet spot for fast typists — plain `tap-hold` triggers
 ;; the modifier too eagerly on quick rolls like "df" or "jk".
+;;
+;; The pinky mods (A / ;) are the misfire-prone ones: same-hand rolls
+;; like "as", "ad", "ol", "p;" can trip them. If that bites, bump their
+;; hold-timeout above 150 or switch them to tap-hold-release-keys with
+;; the same-hand letters listed as early-tap keys.
 
 (defcfg
   process-unmapped-keys yes)
 
 (defsrc
-  caps d f j k rmet)
+  caps a d f j k scln rmet)
 
 (defalias
   ;; caps: tap = Esc, hold = Ctrl
   hrm-caps (tap-hold-press 200 150 esc lctl)
   ;; tap-hold-release <tap-timeout-ms> <hold-timeout-ms> <tap-action> <hold-action>
+  hrm-a (tap-hold-release 200 150 a lmet)
   hrm-d (tap-hold-release 200 150 d lsft)
   hrm-f (tap-hold-release 200 150 f lctl)
   hrm-j (tap-hold-release 200 150 j rctl)
   hrm-k (tap-hold-release 200 150 k rsft)
+  hrm-scln (tap-hold-release 200 150 scln rmet)
   ;; right Cmd → Ctrl+a (tmux prefix)
   tmux  (macro C-a))
 
 (deflayer base
-  @hrm-caps @hrm-d @hrm-f @hrm-j @hrm-k @tmux)
+  @hrm-caps @hrm-a @hrm-d @hrm-f @hrm-j @hrm-k @hrm-scln @tmux)
