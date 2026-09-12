@@ -1,11 +1,16 @@
 {
-  "defaultProvider": "ollama",
-  "defaultModel": "qwen2.5-coder:14b-instruct",
-  "lastChangelogVersion": "0.75.4",
-  "defaultThinkingLevel": "minimal",
+  "theme": "omarchy-system",
+  "lastChangelogVersion": "0.85.1",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
+  "_defaultProvider": "ollama",
+  "_defaultModel": "qwen2.5-coder:14b-instruct",
   "packages": [
-    "git:github.com/Michaelliv/pi-generative-ui",
     "npm:pi-web-access",
-    "npm:pi-web-fetch"
-  ]
+    "npm:pi-subagents",
+    "npm:pi-context-view",
+    "npm:@narumitw/pi-plan-mode",
+    "npm:@gotgenes/pi-permission-system"
+  ],
+  "quietStartup": true
 }
