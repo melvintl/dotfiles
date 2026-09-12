@@ -59,6 +59,50 @@ Notes:
 
 ---
 
+## Arch Linux (pacman + AUR)
+
+Omarchy and other Arch boxes. Most Neovim language servers and linters are in the
+official repos here, so prefer pacman over `npm -g` / `pipx` on this platform.
+
+```bash
+# Base dev tooling (official repos)
+sudo pacman -S --needed \
+  zsh tmux neovim vim ctags \
+  fzf ripgrep the_silver_searcher fd bat jq jless ncdu yazi tldr \
+  direnv python-pipx zoxide \
+  pgcli \
+  yamllint \
+  lazygit git-delta github-cli \
+  visidata \
+  git curl wget openssh base-devel
+
+# Language servers + linters/formatters for Neovim (official repos)
+sudo pacman -S --needed \
+  jedi-language-server typescript-language-server pyright rust-analyzer lua-language-server \
+  ruff python-pylint python-flake8 mypy python-black \
+  prettier eslint \
+  python-debugpy
+
+# AUR (via yay, shipped with Omarchy)
+yay -S vscode-langservers-extracted pspg
+# kanata is AUR too, if you want it on Linux: yay -S kanata
+```
+
+Notes:
+- `ctags` on Arch *is* universal-ctags — no separate package, no `exuberant-ctags`.
+- `vscode-langservers-extracted` provides `vscode-eslint-language-server`, the binary
+  the `eslint` server in `nvim/lua/custom/lsp.lua` actually runs. The repo `eslint`
+  package is the CLI that ALE calls — you want both.
+- `reorder-python-imports` (an ALE Python fixer) isn't packaged: `pipx install reorder-python-imports`.
+- `rust-analyzer` from pacman is standalone and needs no rustup. If you install the
+  Rust toolchain via `rustup` instead, use `rustup component add rust-analyzer` and
+  skip the pacman package to avoid two copies on `PATH`.
+- Skip the npm-globals section below on Arch unless a tool is missing from the repos —
+  and note that if `node` comes from a version manager (mise, nvm, asdf), `npm -g`
+  binaries live inside that runtime's directory and disappear when you change versions.
+
+---
+
 ## npm globals (language servers + JS tooling for Neovim)
 
 ```bash

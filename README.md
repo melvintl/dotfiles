@@ -6,7 +6,8 @@ My personal config across shell, editor, multiplexer, and a few small tools.
 
 | Path | What's there |
 | --- | --- |
-| `.zshrc`, `.bashrc` | Shell config (oh-my-zsh, base16, zoxide, direnv, fzf) |
+| `.bashrc` | Bash config (Omarchy defaults + personal aliases) |
+| `.zshrc` | Legacy zsh config (oh-my-zsh, base16, zoxide, direnv, fzf) — not installed by `quick_setup.sh` |
 | `.tmux.conf`, `.tmux.conf.local` | tmux config (based on oh-my-tmux) |
 | `.vimrc` | Legacy Vim config — kept around but Neovim is the daily driver |
 | `.gitconfig` | Git config (delta as pager, aliases) |
@@ -14,13 +15,14 @@ My personal config across shell, editor, multiplexer, and a few small tools.
 | `pi/agent/` | `pi` coding-agent config (skills, prompts, models, themes) |
 | `.config/kanata/` | Kanata keyboard remap — see [`.config/kanata/README.md`](.config/kanata/README.md) |
 | `.config/i3/`, `.config/i3status/` | i3 window manager + status bar (Linux) |
+| `.config/omarchy/themes/one-dark/` | Omarchy (Hyprland) theme matching the nvim/tmux One Dark palette — see [`its README`](.config/omarchy/themes/one-dark/README.md) |
 | `.config/<>` | Misc tool configs |
 | `bin/` | Small scripts |
 | `INSTALL.md` | Every CLI tool the configs expect on `PATH` |
 
 ## Install
 
-See [INSTALL.md](INSTALL.md) for the full per-platform tooling list (macOS Homebrew, Debian apt, npm globals, pipx, Rust, AI tools).
+See [INSTALL.md](INSTALL.md) for the full per-platform tooling list (macOS Homebrew, Debian apt, Arch pacman/AUR, npm globals, pipx, Rust, AI tools).
 
 Symlink the bits you want into place, e.g.:
 
@@ -30,6 +32,7 @@ ln -s ~/myprojects/dotfiles/.tmux.conf   ~/.tmux.conf
 ln -s ~/myprojects/dotfiles/.gitconfig   ~/.gitconfig
 ln -s ~/myprojects/dotfiles/nvim         ~/.config/nvim
 ln -s ~/myprojects/dotfiles/.config/kanata ~/.config/kanata
+ln -s ~/myprojects/dotfiles/.config/omarchy/themes/one-dark ~/.config/omarchy/themes/one-dark
 ```
 
 `bin/quick_setup.sh`, `bin/new_debian.sh`, and `bin/new_centos.sh` are starting points for bootstrapping a fresh box — read them before running.

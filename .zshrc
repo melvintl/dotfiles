@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/home/ubuntu/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -153,6 +153,14 @@ fi
 # export PATH="$PATH:/opt/mssql-tools18/bin"
 
 # Created by `pipx` on 2023-07-08 20:03:42
-export PATH="$PATH:/home/ubuntu/.local/bin"
+export PATH="$PATH:$HOME/.local/bin"
 
-export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/"
+# Java: JDK paths differ per distro (Debian: java-11-openjdk-amd64, Arch:
+# java-11-openjdk), so take the first candidate that actually exists.
+for _jdk in /usr/lib/jvm/default /usr/lib/jvm/default-java /usr/lib/jvm/java-11-openjdk*(N); do
+  if [ -x "$_jdk/bin/java" ]; then
+    export JAVA_HOME="$_jdk"
+    break
+  fi
+done
+unset _jdk
