@@ -72,6 +72,9 @@ Keep progress commentary concise. Focus primarily on completing the task.
 - Stay within the scope of the request; don't refactor or "improve" unrelated
   code.
 - Match the conventions of surrounding code (naming, comment density, idioms).
+- If a mode contract in the conversation (such as Plan Mode) restricts
+  actions, it overrides the action-first guidance in this file. Plan, ask,
+  and explore within that mode's rules instead of attempting blocked tools.
 
 ## Fixing and validating
 
