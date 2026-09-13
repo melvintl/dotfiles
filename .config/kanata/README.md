@@ -1,5 +1,13 @@
 # Kanata (macOS)
 
+Two configs live here:
+
+- `kanata.kbd` — generic home-row mods, portable across machines. Linux picks
+  it up by default from `~/.config/kanata/kanata.kbd`.
+- `kanata_macos.kbd` — MacBook Pro-specific: drops the misfire-prone pinky
+  mods (A / ;) and adds the F-row media/brightness layer. Must be passed
+  explicitly via `--cfg`.
+
 Kanata needs the Karabiner virtual HID driver to grab keyboard input on macOS.
 
 ## Install (once)
@@ -31,7 +39,7 @@ Grant **Input Monitoring** to both the `kanata` binary and your terminal: **Syst
 2. Start kanata:
 
    ```bash
-   sudo kanata --cfg ~/.config/kanata/kanata.kbd
+   sudo kanata --cfg ~/.config/kanata/kanata_macos.kbd
    ```
 
 ## Gotchas
