@@ -9,7 +9,7 @@ let test#strategy = "vimux"
 let test#python#runner = 'pytest'
 ]]
 
-vim.keymap.set('n', 'tt', '<cmd>TestFile <CR>')
-vim.keymap.set('n', 'ts', '<cmd>TestSuite <CR>')
-vim.keymap.set('n', 'tl', '<cmd>TestLast <CR>')
-vim.keymap.set('n', 'tn', '<cmd>TestNearest <CR>')
+vim.keymap.set('n', '<leader>tt', '<cmd>TestFile<CR>', { desc = 'Test file' })
+vim.keymap.set('n', '<leader>ts', '<cmd>TestSuite<CR>', { desc = 'Test suite' })
+vim.keymap.set('n', '<leader>tl', '<cmd>TestLast<CR>', { desc = 'Test last' })
+vim.keymap.set('n', '<leader>tn', '<cmd>TestNearest<CR>', { desc = 'Test nearest' })
