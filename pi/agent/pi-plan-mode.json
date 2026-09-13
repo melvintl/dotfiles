@@ -1,0 +1,9 @@
+{
+  "thinkingLevel": "high",
+  "defaultPlanTools": ["read", "bash", "grep", "find", "ls", "web_search", "fetch_content", "get_search_content"],
+  "implementationPlanRetention": "clear-after-first-run",
+  "safeSubcommands": {
+    "git": ["rev-parse", "blame", "merge-base"],
+    "gh": ["pr view", "issue view"]
+  }
+}
