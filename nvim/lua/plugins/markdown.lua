@@ -1,7 +1,13 @@
 return {
   "iamcco/markdown-preview.nvim",
   cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-  build = "cd app && yarn install",
+  -- Downloads the prebuilt server binary; no yarn/node build step needed.
+  -- The plugin is lazy-loaded, so put it on the rtp first or the autoload
+  -- function is unknown at build time.
+  build = function(plugin)
+    vim.opt.rtp:append(plugin.dir)
+    vim.fn["mkdp#util#install"]()
+  end,
   -- https://github.com/iamcco/markdown-preview.nvim/pull/9
   init = function()
     vim.g.mkdp_filetypes = { "markdown" }
