@@ -46,6 +46,11 @@
     "contact_supervisor": "allow",
     "plan_mode_question": "allow",
     "plan_mode_complete": "allow",
+    "goal_complete": "allow",
+    "goal_blocked": "allow",
+    "goal_wait": "allow",
+    "lsp_diagnostics": "allow",
+    "lsp_fix": "allow",
 
     "bash": {
       "*": "ask",
@@ -68,6 +73,10 @@
       "exit*": "allow",
       "test *": "allow",
       "[ *": "allow",
+
+      "for *": "allow",
+      "while *": "allow",
+      "if *": "allow",
       "set *": "allow",
       "export *": "allow",
       "date*": "allow",
@@ -319,15 +328,25 @@
       "/tmp/*": "allow"
     },
     "external_directory_read": {
+      "~/myprojects": "allow",
       "~/myprojects/*": "allow",
+      "~/Work": "allow",
       "~/Work/*": "allow",
+      "~/.pi/agent": "allow",
       "~/.pi/agent/*": "allow",
+      "~/.local/share/mise": "allow",
       "~/.local/share/mise/*": "allow",
+      "~/.cache": "allow",
       "~/.cache/*": "allow",
+      "~/.npm": "allow",
       "~/.npm/*": "allow",
+      "~/.cargo": "allow",
       "~/.cargo/*": "allow",
+      "~/.rustup": "allow",
       "~/.rustup/*": "allow",
+      "/usr": "allow",
       "/usr/*": "allow",
+      "/opt": "allow",
       "/opt/*": "allow"
     }
   }
