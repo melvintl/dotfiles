@@ -1,6 +1,6 @@
 
 -- dont need the annoying .swp and and ~backup files
-vim.opt.swapfile = true
+vim.opt.swapfile = false
 vim.opt.backup = false
 
 vim.o.splitbelow = true
