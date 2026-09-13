@@ -17,11 +17,18 @@ nvm use --lts
 npm install -g typescript typescript-language-server
 ```
 
-Note: In Neovim's LSP configuration, this server is referred to as `tsserver`.
+Note: `lua/custom/lsp.lua` enables this server under the name `ts_ls`
+(nvim-lspconfig renamed it from `tsserver` in 2024).
 
 ## Install ESLint for linting
 ```bash
 npm install -g eslint
+```
+
+The `eslint` entry in `lua/custom/lsp.lua` is the ESLint *language server*,
+which is a separate package from the `eslint` CLI:
+```bash
+npm install -g vscode-langservers-extracted
 ```
 
 ## Install Prettier for formatting
@@ -33,25 +40,24 @@ npm install -g prettier
 For a TypeScript project, initialize ESLint:
 ```bash
 npm init -y
-npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin prettier eslint-config-prettier eslint-plugin-prettier
+npm install --save-dev eslint typescript-eslint prettier eslint-config-prettier eslint-plugin-prettier
 ```
 
-Create a `.eslintrc.js` file in your project:
+ESLint 9+ uses the flat config format. Create an `eslint.config.js` file in
+your project (the legacy `.eslintrc.*` files are no longer read by default):
 ```javascript
-module.exports = {
-  parser: '@typescript-eslint/parser',
-  extends: [
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-  ],
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: 'module',
+import tseslint from 'typescript-eslint';
+import prettier from 'eslint-plugin-prettier/recommended';
+
+export default tseslint.config(
+  ...tseslint.configs.recommended,
+  prettier,
+  {
+    rules: {
+      // Custom rules
+    },
   },
-  rules: {
-    // Custom rules
-  },
-};
+);
 ```
 
 Create a `.prettierrc` file:
