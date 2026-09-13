@@ -1,5 +1,5 @@
 {
-  "theme": "omarchy-system",
+  "theme": "one-dark-tmux",
   "lastChangelogVersion": "0.85.1",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
@@ -14,5 +14,6 @@
     "npm:@narumitw/pi-goal",
     "npm:@narumitw/pi-lsp"
   ],
-  "quietStartup": true
+  "quietStartup": true,
+  "tuiMode": "fullscreen"
 }
