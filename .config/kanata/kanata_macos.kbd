@@ -1,0 +1,47 @@
+;; Home row mods on A D F J K ;
+;; Tap = normal letter, Hold = modifier
+;;
+;;   A = Super (left)    ; = Super (right)
+;;   D = Shift (left)    K = Shift (right)
+;;   F = Ctrl  (left)    J = Ctrl  (right)
+;;
+;; Using tap-hold-release: the hold action only fires if you hold past
+;; the hold-timeout OR press-and-release another key while holding.
+;; This is the sweet spot for fast typists — plain `tap-hold` triggers
+;; the modifier too eagerly on quick rolls like "df" or "jk".
+;;
+;; The pinky mods (A / ;) are the misfire-prone ones: same-hand rolls
+;; like "as", "ad", "ol", "p;" can trip them. If that bites, bump their
+;; hold-timeout above 150 or switch them to tap-hold-release-keys with
+;; the same-hand letters listed as early-tap keys.
+
+(defcfg
+  process-unmapped-keys yes)
+
+(defsrc
+  caps d f j k rmet
+  f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12)
+
+(defalias
+  ;; caps: tap = Esc, hold = Ctrl
+  hrm-caps (tap-hold-press 200 150 esc lctl)
+  ;; tap-hold-release <tap-timeout-ms> <hold-timeout-ms> <tap-action> <hold-action>
+  hrm-a (tap-hold-release 200 150 a lmet)
+  hrm-d (tap-hold-release 200 150 d lsft)
+  hrm-f (tap-hold-release 200 150 f lctl)
+  hrm-j (tap-hold-release 200 150 j rctl)
+  hrm-k (tap-hold-release 200 150 k rsft)
+  hrm-scln (tap-hold-release 200 150 scln rmet)
+  ;; right Cmd → Ctrl+a (tmux prefix)
+  tmux  (macro C-a))
+
+;; F-row → macOS media/brightness functions.
+;; Requires System Settings → Keyboard → "Use F1, F2, etc. keys as standard
+;; function keys" = ON, so the top row sends plain F1–F12 to kanata. kanata
+;; then re-emits the consumer keys below (outputting media/volume works through
+;; the virtual device; brightness may or may not, depending on the macOS HID).
+;; F3–F6 (Mission Control / Spotlight / etc.) can't be emitted by kanata, so
+;; they stay as plain function keys.
+(deflayer base
+  @hrm-caps @hrm-d @hrm-f @hrm-j @hrm-k @tmux
+  brdown brup f3 f4 f5 f6 prev pp next mute vold volu)
