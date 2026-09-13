@@ -159,7 +159,7 @@ rustup component add rust-analyzer
 CLIs for AI coding workflows. Install whichever you use.
 
 ```bash
-# Claude Code — Anthropic's CLI coding agent (used by nvim/lua/plugins/claudecode.lua)
+# Claude Code — Anthropic's CLI coding agent
 curl -fsSL https://claude.ai/install.sh | bash        # macOS / Linux / WSL (auto-updates)
 
 # ollama — local LLM runtime

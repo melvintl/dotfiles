@@ -1,6 +1,5 @@
 {
   "ale": { "branch": "master", "commit": "178fe113564d31cba304263765aeb21e7ed23a7e" },
-  "claudecode.nvim": { "branch": "main", "commit": "781f3ab6c17f73e11794a651758275566b2fb167" },
   "cmp-nvim-lsp": { "branch": "main", "commit": "cbc7b02bb99fae35cb42f514762b89b5126651ef" },
   "copilot.lua": { "branch": "master", "commit": "1d457ad5f267b8ef855a6b8b3fe152403cb00947" },
   "diffview.nvim": { "branch": "main", "commit": "4516612fe98ff56ae0415a259ff6361a89419b0a" },

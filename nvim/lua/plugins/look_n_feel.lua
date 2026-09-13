@@ -2,8 +2,7 @@ return {
  "folke/which-key.nvim",
 
   {
-    -- Snacks.nvim - Required dependency for claudecode.nvim
-    -- Only terminal module enabled to avoid conflicts with existing plugins
+    -- Snacks.nvim - only the dashboard is used (replaces vim-startify)
     "folke/snacks.nvim",
     opts = {
       bigfile = { enabled = false },
