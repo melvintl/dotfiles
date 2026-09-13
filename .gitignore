@@ -10,3 +10,6 @@ htmlcov/
 .aws-sam/
 __pycache__/
 .aider*
+
+# Claude Code per-machine permissions
+**/.claude/settings.local.json

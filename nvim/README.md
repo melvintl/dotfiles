@@ -1,9 +1,11 @@
 # Setup
 
 ## Point to NeoVim setup
-- Need the latest version of Neovim(may not be able to get 10.1+ via apt install)
-- `mkdir -p {~/.config/}`
-- `cd ~/config && ln -s ~/myprojects/dotfiles/nvim nvim`
+- Needs Neovim 0.11+ (`vim.lsp.config`/`vim.lsp.enable` and the nvim-treesitter
+  `main` branch require it). Distro packages are often older; use the
+  [official release](https://github.com/neovim/neovim/releases) if so.
+- `mkdir -p ~/.config`
+- `ln -s ~/myprojects/dotfiles/nvim ~/.config/nvim`
 
 
 ## Other binaries that are required
