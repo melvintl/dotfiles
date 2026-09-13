@@ -21,7 +21,9 @@ LINK_ITEMS=(
   APPEND_SYSTEM.md
   settings.json
   models.json
+  pi-lsp.json
   extensions
+  prompts
   skills
   themes
 )
