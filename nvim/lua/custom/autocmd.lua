@@ -30,8 +30,8 @@ map <F12> :wa<CR>:!clear;python -m pytest -s tests/ --pdb -o log_cli=True -p no:
 
 
 nmap <F4> :lopen<CR>
-imap <F5> <Esc>:w<CR>:Dispatch<CR>
-map <F5> :w<CR>:Dispatch<CR>
+imap <F11> <Esc>:w<CR>:Dispatch<CR>
+map <F11> :w<CR>:Dispatch<CR>
 " Get rid of the annoying diagnostic from Pyright
 nmap <F6> :lua vim.diagnostic.hide()<CR>
 ]]
