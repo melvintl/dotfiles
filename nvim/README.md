@@ -10,17 +10,12 @@
 
 ## Other binaries that are required
 
-```bash
-# LazyVim will install via build so has other binary dependency 
-sudo apt install make build-essential
+Install these with your system's package manager:
 
-# Search utils:
-sudo apt install fzf
-sudo apt install ripgrep silversearcher-ag
-
-# Others:
-sudo apt install direnv
-```
+- `git`, `make` and a C compiler: lazy.nvim clones plugins and some have a
+  build step.
+- `ripgrep`: used by Telescope live grep.
+- `fzf` and `direnv`: optional, used outside Neovim.
 
 ## Language servers
 

@@ -11,12 +11,8 @@ cmp.setup {
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     },
-    -- Tab: Accept Copilot suggestion if visible, otherwise navigate cmp items
     ['<Tab>'] = cmp.mapping(function(fallback)
-      local copilot_suggestion = require("copilot.suggestion")
-      if copilot_suggestion.is_visible() then
-        copilot_suggestion.accept()
-      elseif cmp.visible() then
+      if cmp.visible() then
         cmp.select_next_item()
       else
         fallback()
