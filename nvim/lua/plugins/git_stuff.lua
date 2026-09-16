@@ -21,9 +21,11 @@ return {
         untracked    = { text = '' }, -- Dont want new files to look noisy
       },
       on_attach = function(bufnr)
-        vim.keymap.set('n', '<leader>gp', require('gitsigns').prev_hunk, { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
-        vim.keymap.set('n', '<leader>gn', require('gitsigns').next_hunk, { buffer = bufnr, desc = '[G]o to [N]ext Hunk' })
-        vim.keymap.set('n', '<leader>gh', require('gitsigns').preview_hunk, { buffer = bufnr, desc = '[G]it preview [H]unk' })
+        local gs = require('gitsigns')
+        -- next_hunk/prev_hunk are deprecated; nav_hunk takes the direction as an argument
+        vim.keymap.set('n', '<leader>gp', function() gs.nav_hunk('prev') end, { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
+        vim.keymap.set('n', '<leader>gn', function() gs.nav_hunk('next') end, { buffer = bufnr, desc = '[G]o to [N]ext Hunk' })
+        vim.keymap.set('n', '<leader>gh', gs.preview_hunk, { buffer = bufnr, desc = '[G]it preview [H]unk' })
       end,
     },
   },
