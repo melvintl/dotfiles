@@ -7,7 +7,8 @@ vim.opt.autoread = true
 vim.api.nvim_create_autocmd(
   { "FocusGained", "TermLeave", "BufEnter", "CursorHold", "CursorHoldI" },
   { callback = function()
-      if vim.fn.mode() ~= "c" then vim.cmd.checktime() end
+      -- checktime raises E11 inside the command-line window (q:)
+      if vim.fn.mode() ~= "c" and vim.fn.getcmdwintype() == "" then vim.cmd.checktime() end
   end }
 )
 

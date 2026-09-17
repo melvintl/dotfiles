@@ -74,11 +74,12 @@ No Claude attribution in commits or PRs.
     skips the server with one `lsp.log` line, no notification. Needed item 1's
     `ale_disable_lsp`, otherwise ALE's own copy reports `vim` as undefined.
 
-- [ ] **7. Guard the autoread poll in the command-line window** (NOT verified)
-  - `lua/custom/autoread.lua` runs `checktime` on CursorHold. Inside `q:` this
-    should raise E11. Headless Neovim would not enter the cmdwin, so this was
-    not reproduced. Reproduce interactively first: open `q:`, wait 250 ms.
-  - Fix: also require `vim.fn.getcmdwintype() == ''`.
+- [x] **7. Guard the autoread poll in the command-line window** (verified)
+  - `lua/custom/autoread.lua` runs `checktime` on CursorHold. Reproduced in a
+    detached tmux session (headless cannot enter the cmdwin): open `q:`, wait,
+    and CursorHold raises `E11: Invalid in command-line window`.
+  - Done: also require `vim.fn.getcmdwintype() == ''`. Re-ran the same test:
+    no error, `:messages` empty.
 
 ## Dead weight
 
