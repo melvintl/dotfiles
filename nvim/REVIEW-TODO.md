@@ -122,10 +122,19 @@ No Claude attribution in commits or PRs.
 NERDTree, vim-startify (reverted to on purpose in PR #24), ALE alongside LSP,
 `:w!` on `<leader>w`.
 
-## Not measured
+## Startup time (measured 2026-09-17)
 
-Startup time. `--startuptime` produced an empty log in headless mode. Measure
-interactively with `nvim --startuptime /tmp/st.log` if it matters.
+Measured inside a detached tmux session, because `--startuptime` writes an
+empty log in headless mode. Neovim 0.12.5, warm cache, 5 runs.
+
+- Opening `init.lua`: 111-124 ms, median 115 ms.
+- No file argument (startify screen): 74 ms.
+- `nvim --clean`: 6 ms.
+- Where the time goes when opening a Lua file: `init.lua` and every plugin,
+  60 ms (nothing is lazy-loaded); opening the buffer, 19 ms (treesitter, LSP
+  attach, gitsigns); the Lua ftplugin, 7 ms; first screen draw, 6 ms.
+- Biggest single plugin: NERDTree at 2.7 ms. No plugin stands out.
+- Verdict: no action. Lazy-loading everything would save at most ~40 ms.
 
 ## Verify after the fixes
 
