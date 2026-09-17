@@ -94,8 +94,9 @@ No Claude attribution in commits or PRs.
 - [ ] `lua/plugins/copilot.lua_temp_remove`: delete, git history keeps it.
 - [x] Stale Pyright comments: `init.lua` lines 1-2 and the F6 comment in
       `lua/custom/autocmd.lua`. The config uses jedi.
-- [ ] Empty `config = function() end` in `lua/plugins/linter_fixer.lua` (ALE)
-      and `lua/plugins/testing.lua` (vim-test).
+- [x] Empty `config = function() end` in `lua/plugins/linter_fixer.lua` (ALE)
+      and `lua/plugins/testing.lua` (vim-test). Done: removed. No behaviour
+      change, lazy.nvim runs nothing without `config`/`opts`.
 - [x] Large commented-out flash.nvim block in `lua/plugins/nav_search.lua`.
 
 ## README drift
