@@ -46,22 +46,19 @@ See `docs/typescript-setup.md` for more detailed TypeScript setup instructions.
 ### To setup the Lua language server (optional):
 
 Used by `lazydev.nvim` to give completion/hover/diagnostics for the Neovim Lua
-API (`vim.*`) while editing this config. `lazydev` is installed but stays inert
-until `lua_ls` is running.
+API (`vim.*`) while editing this config. `lua_ls` is already enabled in
+`lua/custom/lsp.lua`; it only needs the binary. Without it Neovim skips the
+server silently (one line in `lsp.log`) and `lazydev` stays inert.
 
 ```bash
+# Arch
+sudo pacman -S lua-language-server
+
 # macOS
 brew install lua-language-server
 
 # Debian/Ubuntu (or download a release from the LuaLS GitHub)
 # sudo apt install lua-language-server
-```
-
-Then enable it in `lua/custom/lsp.lua` alongside the other servers:
-
-```lua
-vim.lsp.config('lua_ls', {})
-vim.lsp.enable('lua_ls')
 ```
 
 ## Fonts

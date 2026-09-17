@@ -16,6 +16,11 @@ vim.lsp.config('rust_analyzer', {
 })
 vim.lsp.enable('rust_analyzer')
 
+-- Drives lazydev.nvim (vim.* completion/hover while editing this config).
+-- Skipped silently when lua-language-server is not installed.
+vim.lsp.config('lua_ls', {})
+vim.lsp.enable('lua_ls')
+
 -- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
