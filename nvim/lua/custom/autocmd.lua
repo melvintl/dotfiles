@@ -4,11 +4,15 @@ local cmd = vim.cmd
 -- go to last loc when opening a buffer
 api.nvim_create_autocmd(
     "BufReadPost",
-    { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
+    {
+        group = api.nvim_create_augroup("last_loc", { clear = true }),
+        command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]],
+    }
 )
 
 cmd [[
 augroup run_buffer
+    autocmd!
     autocmd FileType python map <buffer> <Leader>x :call VimuxRunCommand("clear;python " . bufname("%"))<CR>
     autocmd FileType python let b:dispatch = 'python %'
 
