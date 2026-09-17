@@ -63,7 +63,7 @@ brew install lua-language-server
 
 ## Fonts
 
-Install patched nerd fonts (eg JetBrans Mono) on the terminal 
+Install patched nerd fonts (eg JetBrains Mono) on the terminal 
 Change the below in the `lua/plugins/look_n_feel.lua` file if you dont want to show icons
 ```lua
         icons_enabled = false,
