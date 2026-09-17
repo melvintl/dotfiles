@@ -88,9 +88,10 @@ No Claude attribution in commits or PRs.
       (`e5e58a6`) and was never configured.
 - [x] `trouble.nvim` has no keymaps. Done: removed. README-template spec from
       2023-07-08 (`e5e58a6`), never configured; loclist + Telescope cover it.
-- [ ] `lua/custom/startify.lua`: first `g:startify_list_order` assignment is
+- [x] `lua/custom/startify.lua`: first `g:startify_list_order` assignment is
       overwritten by the second. `list_order` is the legacy name; the plugin
-      converts it to `g:startify_lists`. Migrate to `startify_lists`.
+      converts it to `g:startify_lists`. Done: migrated to `startify_lists`,
+      same two lists and headers (`autoload/startify.vim:450` conversion).
 - [ ] `lua/plugins/copilot.lua_temp_remove`: delete, git history keeps it.
 - [x] Stale Pyright comments: `init.lua` lines 1-2 and the F6 comment in
       `lua/custom/autocmd.lua`. The config uses jedi.
@@ -110,8 +111,11 @@ No Claude attribution in commits or PRs.
 
 - [x] `lua/custom/set.lua`: `command Q` / `command W` lack `!`, so re-sourcing
       errors. Use `command!` or `nvim_create_user_command`.
-- [ ] `lua/custom/autocmd.lua`: `augroup run_buffer` has no `autocmd!`, so
+- [x] `lua/custom/autocmd.lua`: `augroup run_buffer` has no `autocmd!`, so
       autocmds duplicate on re-source. The `BufReadPost` autocmd has no group.
+      Done: added `autocmd!` and a `last_loc` group. Checked: after two extra
+      sources the counts stay at 5 and 1. Test the last-location jump on a
+      file outside `/tmp`, the `shada` option has `r/tmp/`.
 - [x] `lua/custom/autocmd.lua`: F10/F12 pytest maps are global and use
       recursive `map`/`imap`. Done differently (User's call on 2026-09-17):
       commented out, they were no longer used. If revived, make them
