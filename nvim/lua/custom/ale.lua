@@ -1,8 +1,12 @@
 vim.g.ale_linters = {
   ["python"] = {"ruff", "pylint", "flake8", "mypy"},
-  ["typescript"] = {"eslint", "tsserver"},
+  ["typescript"] = {"eslint"},
   ["javascript"] = {"eslint"}
 }
+-- Language servers are run by vim.lsp.enable (lua/custom/lsp.lua). The default
+-- "auto" only detects lspconfig's legacy setup(), so ALE would start a second
+-- copy of each server.
+vim.g.ale_disable_lsp = 1
 vim.g.ale_fixers = {
   ["python"] = {
     'ruff',
