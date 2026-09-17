@@ -70,7 +70,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
 
--- The virtual text is annoying so hide it (eg with Pyright)
+-- The virtual text is annoying so hide it
 vim.diagnostic.config({
   virtual_text = false,
   -- signs = true,
