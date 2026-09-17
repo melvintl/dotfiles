@@ -1,3 +1,8 @@
+-- Advertise nvim-cmp's completion capabilities to every server.
+vim.lsp.config('*', {
+  capabilities = require('cmp_nvim_lsp').default_capabilities(),
+})
+
 -- Setup language servers.
 vim.lsp.config('jedi_language_server', {})
 vim.lsp.enable('jedi_language_server')
@@ -39,6 +44,22 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+    -- Nvim only maps <C-s> to signature help in insert/select mode by default.
+    -- Servers only answer signature help between the call's parentheses, so
+    -- fall back to hover when the cursor is on the name instead.
+    vim.keymap.set('n', '<C-s>', function()
+      vim.lsp.buf_request_all(ev.buf, 'textDocument/signatureHelp', function(client)
+        return vim.lsp.util.make_position_params(0, client.offset_encoding)
+      end, function(results)
+        for _, response in pairs(results) do
+          local result = response.result
+          if result and result.signatures and #result.signatures > 0 then
+            return vim.lsp.buf.signature_help()
+          end
+        end
+        vim.lsp.buf.hover()
+      end)
+    end, opts)
     vim.keymap.set('n', '<leader>td', vim.lsp.buf.type_definition, opts)
     vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
     vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, opts)
