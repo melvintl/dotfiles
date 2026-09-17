@@ -19,11 +19,11 @@ augroup run_buffer
 augroup END
 
 " TDD for python/pytest
-imap <F10> <Esc>:wa<CR>:!clear;python -m pytest tests/ -s --pdb -o log_cli=True -p no:warnings --picked<CR>
-map <F10> :wa<CR>:!clear;python -m pytest -s tests/ --pdb -o log_cli=True -p no:warnings --picked<CR>
+" imap <F10> <Esc>:wa<CR>:!clear;python -m pytest tests/ -s --pdb -o log_cli=True -p no:warnings --picked<CR>
+" map <F10> :wa<CR>:!clear;python -m pytest -s tests/ --pdb -o log_cli=True -p no:warnings --picked<CR>
 
-imap <F12> <Esc>:wa<CR>:!clear;python -m pytest tests/ -s --pdb -o log_cli=True -p no:warnings --testmon<CR>
-map <F12> :wa<CR>:!clear;python -m pytest -s tests/ --pdb -o log_cli=True -p no:warnings --testmon<CR>
+" imap <F12> <Esc>:wa<CR>:!clear;python -m pytest tests/ -s --pdb -o log_cli=True -p no:warnings --testmon<CR>
+" map <F12> :wa<CR>:!clear;python -m pytest -s tests/ --pdb -o log_cli=True -p no:warnings --testmon<CR>
 
 
 nmap <F4> :lopen<CR>

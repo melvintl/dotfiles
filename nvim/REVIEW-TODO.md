@@ -112,8 +112,10 @@ No Claude attribution in commits or PRs.
       errors. Use `command!` or `nvim_create_user_command`.
 - [ ] `lua/custom/autocmd.lua`: `augroup run_buffer` has no `autocmd!`, so
       autocmds duplicate on re-source. The `BufReadPost` autocmd has no group.
-- [ ] `lua/custom/autocmd.lua`: F10/F12 pytest maps are global and use
-      recursive `map`/`imap`. Make them `noremap` and Python-buffer-local.
+- [x] `lua/custom/autocmd.lua`: F10/F12 pytest maps are global and use
+      recursive `map`/`imap`. Done differently (User's call on 2026-09-17):
+      commented out, they were no longer used. If revived, make them
+      `noremap` and Python-buffer-local.
 
 ## Leave alone (deliberate choices)
 
