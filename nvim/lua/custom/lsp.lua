@@ -1,8 +1,3 @@
--- Advertise nvim-cmp's completion capabilities to every server.
-vim.lsp.config('*', {
-  capabilities = require('cmp_nvim_lsp').default_capabilities(),
-})
-
 -- Setup language servers.
 vim.lsp.config('jedi_language_server', {})
 vim.lsp.enable('jedi_language_server')
@@ -39,6 +34,19 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local function opts(desc)
       return { buffer = ev.buf, desc = desc }
+    end
+    -- Built-in completion (replaces nvim-cmp). Autotrigger only fires on the
+    -- server's trigger characters (`.`, `:`), so add identifier characters to
+    -- get the popup while typing a name, as cmp did.
+    local client = assert(vim.lsp.get_client_by_id(ev.data.client_id))
+    if client:supports_method('textDocument/completion') then
+      local provider = client.server_capabilities.completionProvider
+      local chars = vim.list_extend({}, provider.triggerCharacters or {})
+      for _, c in ipairs(vim.split('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_', '')) do
+        table.insert(chars, c)
+      end
+      provider.triggerCharacters = chars
+      vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
     end
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts('LSP declaration'))
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts('LSP definition'))

@@ -48,8 +48,9 @@ vim.o.updatetime = 250
 vim.o.timeout = true
 vim.o.timeoutlen = 300
 
--- Set completeopt to have a better completion experience
-vim.o.completeopt = 'menuone,noselect'
+-- Built-in completion: menu even for one match, nothing preselected (Enter is
+-- mapped to pick the first item), docs in a side popup, fuzzy matching.
+vim.o.completeopt = 'menuone,noselect,popup,fuzzy'
 
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
