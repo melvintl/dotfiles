@@ -9,8 +9,7 @@ No Claude attribution in commits or PRs.
 
 ## Fixes, in priority order
 
-- [~] **1. ALE starts duplicate language servers** (verified; servers done,
-      ESLint duplication below still open)
+- [x] **1. ALE starts duplicate language servers** (verified)
   - `ale_disable_lsp` is `"auto"`, which checks `require('lspconfig.configs')`.
     Under `vim.lsp.enable` that table is empty (confirmed: returns `{}`), so
     ALE never skips its own servers.
@@ -20,8 +19,11 @@ No Claude attribution in commits or PRs.
   - Done in `lua/custom/ale.lua`: set `vim.g.ale_disable_lsp = 1`, removed
     `"tsserver"` from the typescript linters. Checked: one client each for
     Lua, TS, Rust; Python CLI linters (ruff/pylint/flake8/mypy) unaffected.
-  - STILL OPEN (User deferred on 2026-09-17): ESLint runs twice, ALE CLI
-    `eslint` and the `eslint` language server in `lua/custom/lsp.lua`.
+  - ESLint ran twice, ALE CLI `eslint` and the `eslint` language server in
+    `lua/custom/lsp.lua`. Done 2026-09-18 with option A: removed the server
+    from `lsp.lua` and `vscode-langservers-extracted` from `INSTALL.md`.
+    Checked in a project with a local eslint 10.10.0: one client (`ts_ls`),
+    eslint diagnostics only in namespace `ale`.
     Measured with eslint 10.10.0 and a flat config:
     - Project with local `node_modules/eslint`: every problem shows twice
       (4 in namespace `ale` + 4 in `nvim.lsp.eslint`).
@@ -31,7 +33,7 @@ No Claude attribution in commits or PRs.
     - Only the server gives code actions (`Disable <rule> for this line`,
       `Show documentation`, `Fix this problem`). Fix-on-save is ALE's fixers
       and survives either choice.
-    - Option A (suggested): delete the two `eslint` lines in `lsp.lua`. Loses
+    - Option A (taken): delete the two `eslint` lines in `lsp.lua`. Loses
       the code actions, drops the need for AUR `vscode-langservers-extracted`.
     - Option B: remove `"eslint"` from both `ale_linters` lists, keep the
       fixers. Keeps code actions, but no linting without a local eslint.

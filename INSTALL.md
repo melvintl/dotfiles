@@ -84,15 +84,12 @@ sudo pacman -S --needed \
   python-debugpy
 
 # AUR (via yay, shipped with Omarchy)
-yay -S vscode-langservers-extracted pspg
+yay -S pspg
 # kanata is AUR too, if you want it on Linux: yay -S kanata
 ```
 
 Notes:
 - `ctags` on Arch *is* universal-ctags — no separate package, no `exuberant-ctags`.
-- `vscode-langservers-extracted` provides `vscode-eslint-language-server`, the binary
-  the `eslint` server in `nvim/lua/custom/lsp.lua` actually runs. The repo `eslint`
-  package is the CLI that ALE calls — you want both.
 - `reorder-python-imports` (an ALE Python fixer) isn't packaged: `pipx install reorder-python-imports`.
 - `rust-analyzer` from pacman is standalone and needs no rustup. If you install the
   Rust toolchain via `rustup` instead, use `rustup component add rust-analyzer` and
@@ -109,11 +106,8 @@ Notes:
 npm install -g \
   pyright \
   typescript typescript-language-server \
-  vscode-langservers-extracted \
   prettier eslint
 ```
-
-`vscode-langservers-extracted` provides the `eslint` LSP that `nvim/lua/custom/lsp.lua` enables.
 
 ---
 
@@ -182,7 +176,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 | Shell | `zsh`, `oh-my-zsh` (theme `robbyrussell`, plugins `git`, `git-extras`), `base16-shell`, `direnv`, `tmux`, `fzf`, `zoxide`, `pipx` |
 | Editors | `vim`, `neovim`, `universal-ctags` |
 | Search / files | `ripgrep`, `the_silver_searcher` (`ag`), `fd`, `bat`, `jq`, `jless`, `ncdu`, `yazi`, `tldr`, `visidata` |
-| Neovim LSPs | `jedi-language-server`, `pyright`, `typescript-language-server`, `vscode-langservers-extracted` (eslint LSP), `rust-analyzer` |
+| Neovim LSPs | `jedi-language-server`, `pyright`, `typescript-language-server`, `rust-analyzer` |
 | Neovim linters / formatters (via ALE) | `ruff`, `pylint`, `flake8`, `mypy`, `black`, `reorder-python-imports`, `prettier`, `eslint` |
 | Neovim debug / test | `debugpy`, `pytest`, `pytest-picked`, `pytest-testmon` |
 | Git tooling | `lazygit`, `git-delta`, `gh` |

@@ -10,9 +10,6 @@ vim.lsp.enable('jedi_language_server')
 vim.lsp.config('ts_ls', {})
 vim.lsp.enable('ts_ls')
 
-vim.lsp.config('eslint', {})
-vim.lsp.enable('eslint')
-
 vim.lsp.config('rust_analyzer', {
   -- Server-specific settings. See `:help vim.lsp.config`
   settings = {
