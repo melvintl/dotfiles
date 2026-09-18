@@ -1,5 +1,20 @@
 return {
- "folke/which-key.nvim",
+  {
+    -- Shows pending keymaps after <leader>; every map needs a `desc` to be useful here.
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    -- Icon provider; already installed for render-markdown, but lazy-loaded there.
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      spec = {
+        { "<leader>c", group = "code" },
+        { "<leader>g", group = "git" },
+        { "<leader>h", group = "help" },
+        { "<leader>t", group = "test" },
+        { "<leader>y", group = "yank" },
+      },
+    },
+  },
 
   {
     -- Theme inspired by Atom

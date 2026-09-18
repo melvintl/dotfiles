@@ -30,7 +30,6 @@ require('custom.startify')
 require('custom.ale')
 require('custom.lsp')
 require('custom.tree_sitter')
-require('custom.cmp')
 
 require('custom.test')
 
