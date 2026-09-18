@@ -1,6 +1,3 @@
--- Installation required:
--- npm i -g pyright
-
 -- Set <space> as the leader key
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -8,7 +5,7 @@ vim.g.maplocalleader = ' '
 -- Install package manager
 -- https://github.com/folke/lazy.nvim
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
   vim.fn.system {
     'git',
     'clone',
@@ -42,5 +39,3 @@ require('custom.autocmd')
 require('custom.autoread')
 
 require('custom.keymap')
-
-vim.diagnostic.config{virtual_text=false}

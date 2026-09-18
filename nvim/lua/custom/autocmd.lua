@@ -4,11 +4,15 @@ local cmd = vim.cmd
 -- go to last loc when opening a buffer
 api.nvim_create_autocmd(
     "BufReadPost",
-    { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
+    {
+        group = api.nvim_create_augroup("last_loc", { clear = true }),
+        command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]],
+    }
 )
 
 cmd [[
 augroup run_buffer
+    autocmd!
     autocmd FileType python map <buffer> <Leader>x :call VimuxRunCommand("clear;python " . bufname("%"))<CR>
     autocmd FileType python let b:dispatch = 'python %'
 
@@ -19,16 +23,16 @@ augroup run_buffer
 augroup END
 
 " TDD for python/pytest
-imap <F10> <Esc>:wa<CR>:!clear;python -m pytest tests/ -s --pdb -o log_cli=True -p no:warnings --picked<CR>
-map <F10> :wa<CR>:!clear;python -m pytest -s tests/ --pdb -o log_cli=True -p no:warnings --picked<CR>
+" imap <F10> <Esc>:wa<CR>:!clear;python -m pytest tests/ -s --pdb -o log_cli=True -p no:warnings --picked<CR>
+" map <F10> :wa<CR>:!clear;python -m pytest -s tests/ --pdb -o log_cli=True -p no:warnings --picked<CR>
 
-imap <F12> <Esc>:wa<CR>:!clear;python -m pytest tests/ -s --pdb -o log_cli=True -p no:warnings --testmon<CR>
-map <F12> :wa<CR>:!clear;python -m pytest -s tests/ --pdb -o log_cli=True -p no:warnings --testmon<CR>
+" imap <F12> <Esc>:wa<CR>:!clear;python -m pytest tests/ -s --pdb -o log_cli=True -p no:warnings --testmon<CR>
+" map <F12> :wa<CR>:!clear;python -m pytest -s tests/ --pdb -o log_cli=True -p no:warnings --testmon<CR>
 
 
 nmap <F4> :lopen<CR>
 imap <F11> <Esc>:w<CR>:Dispatch<CR>
 map <F11> :w<CR>:Dispatch<CR>
-" Get rid of the annoying diagnostic from Pyright
+" Hide all diagnostics
 nmap <F6> :lua vim.diagnostic.hide()<CR>
 ]]
