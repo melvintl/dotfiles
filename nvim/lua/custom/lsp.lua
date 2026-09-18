@@ -67,7 +67,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
         vim.lsp.buf.hover()
       end)
     end, opts('LSP signature help or hover'))
-    vim.keymap.set('n', '<leader>ct', vim.lsp.buf.type_definition, opts('LSP type definition'))
     vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts('LSP rename'))
     vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, opts('Code action'))
     vim.keymap.set('n', '<leader>cf', function()
