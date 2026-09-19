@@ -408,3 +408,7 @@ set-environment -g COLORTERM truecolor
 set -g default-terminal "xterm-256color"
 set -ga terminal-overrides ",xterm*:Tc"
 # set -ga terminal-overrides ",*256col*:Tc"
+
+# Accept OSC 52 clipboard writes from apps (pi, etc.): stored as a tmux
+# paste buffer and forwarded to the outer terminal's clipboard
+set -g set-clipboard on
