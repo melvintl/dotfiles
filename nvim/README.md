@@ -17,6 +17,8 @@ Install these with your system's package manager:
   build step.
 - `ripgrep`: used by Telescope live grep.
 - `fzf` and `direnv`: optional, used outside Neovim.
+- [`hunk`](https://github.com/modem-dev/hunk): optional, the diff reviewer behind
+  `<leader>gt`. `bin/quick_setup.sh` installs it, or see `INSTALL.md`.
 
 ## Language servers
 

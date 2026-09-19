@@ -17,7 +17,7 @@ brew install \
   pgcli pspg \
   yamllint \
   kanata \
-  lazygit git-delta gh \
+  lazygit git-delta gh hunk \
   visidata
 
 # Casks (fonts + kanata driver)
@@ -55,6 +55,7 @@ Notes:
 - `zoxide` shell integration is already wired up in `.zshrc` and only kicks in once the binary is on `PATH`.
 - `jless` isn't packaged on apt — install via `cargo install jless` or grab a binary from <https://github.com/PaulJuliusMartinez/jless/releases>.
 - `yazi` lands in apt only on Ubuntu 24.04+; on older releases use `cargo install --locked yazi-fm yazi-cli` or the GitHub releases.
+- `hunk` isn't packaged on apt: `curl -fsSL https://hunk.dev/install.sh | sh` (standalone binary in `~/.hunk`) or `mise use -g hunk`.
 - Kanata isn't packaged on apt; grab the latest release binary from <https://github.com/jtroo/kanata/releases> if you want it on Linux.
 
 ---
@@ -90,6 +91,7 @@ yay -S pspg
 
 Notes:
 - `ctags` on Arch *is* universal-ctags — no separate package, no `exuberant-ctags`.
+- `hunk` ships with Omarchy through mise. On other Arch boxes: `mise use -g hunk` or `curl -fsSL https://hunk.dev/install.sh | sh`.
 - `reorder-python-imports` (an ALE Python fixer) isn't packaged: `pipx install reorder-python-imports`.
 - `rust-analyzer` from pacman is standalone and needs no rustup. If you install the
   Rust toolchain via `rustup` instead, use `rustup component add rust-analyzer` and
@@ -179,7 +181,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 | Neovim LSPs | `jedi-language-server`, `pyright`, `typescript-language-server`, `rust-analyzer` |
 | Neovim linters / formatters (via ALE) | `ruff`, `pylint`, `flake8`, `mypy`, `black`, `reorder-python-imports`, `prettier`, `eslint` |
 | Neovim debug / test | `debugpy`, `pytest`, `pytest-picked`, `pytest-testmon` |
-| Git tooling | `lazygit`, `git-delta`, `gh` |
+| Git tooling | `lazygit`, `git-delta`, `gh`, `hunk` (diff review of agent changes, toggled in Neovim with `<leader>gt`) |
 | AI | `claude`, `ollama`, `aider`, `pi` |
 | Database | `pgcli`, `pspg` |
 | Lint | `yamllint` |
