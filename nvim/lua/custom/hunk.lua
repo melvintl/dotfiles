@@ -58,7 +58,7 @@ local function start()
 
   hunk_buf, hunk_job = buf, job
   vim.bo[buf].filetype = 'hunk'
-  vim.keymap.set('t', '<leader>gt', toggle, { buffer = buf, desc = 'Toggle persistent Hunk review' })
+  vim.keymap.set('t', '<leader>gd', toggle, { buffer = buf, desc = 'Toggle persistent Hunk review' })
   return true
 end
 
@@ -84,4 +84,4 @@ toggle = function()
   vim.cmd.startinsert()
 end
 
-vim.keymap.set('n', '<leader>gt', toggle, { desc = 'Toggle persistent Hunk review' })
+vim.keymap.set('n', '<leader>gd', toggle, { desc = 'Toggle persistent Hunk review' })

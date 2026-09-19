@@ -181,7 +181,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 | Neovim LSPs | `jedi-language-server`, `pyright`, `typescript-language-server`, `rust-analyzer` |
 | Neovim linters / formatters (via ALE) | `ruff`, `pylint`, `flake8`, `mypy`, `black`, `reorder-python-imports`, `prettier`, `eslint` |
 | Neovim debug / test | `debugpy`, `pytest`, `pytest-picked`, `pytest-testmon` |
-| Git tooling | `lazygit`, `git-delta`, `gh`, `hunk` (diff review of agent changes, toggled in Neovim with `<leader>gt`) |
+| Git tooling | `lazygit`, `git-delta`, `gh`, `hunk` (diff review of agent changes, toggled in Neovim with `<leader>gd`) |
 | AI | `claude`, `ollama`, `aider`, `pi` |
 | Database | `pgcli`, `pspg` |
 | Lint | `yamllint` |
