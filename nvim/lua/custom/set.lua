@@ -62,7 +62,6 @@ vim.opt.cursorline = true
 -- Set Alias
 vim.cmd [[
   command! Q :qa!
-  command! W :w!
 ]]
 
 
