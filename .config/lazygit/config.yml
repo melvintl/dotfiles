@@ -1,0 +1,8 @@
+git:
+  # Cycle through these with | in the diff view
+  diffRenderers:
+    # --no-gitconfig skips side-by-side from ~/.gitconfig, too wide for lazygit's panel
+    - command: delta --no-gitconfig --dark --paging=never
+      name: delta
+    - command: delta --no-gitconfig --dark --paging=never --side-by-side
+      name: delta side-by-side

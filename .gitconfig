@@ -1,6 +1,17 @@
 [core]
     editor = nvim
 	excludesfile = ~/.gitignore
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+    side-by-side = true
+
+[merge]
+    conflictstyle = zdiff3
 
 [alias]
     co = checkout
@@ -8,6 +19,7 @@
     coo = !git fetch && git checkout
     br = branch
     d = diff --
+    dft = -c diff.external=difft diff
     merged = branch --merged
     s = status
     aa = add -A .
