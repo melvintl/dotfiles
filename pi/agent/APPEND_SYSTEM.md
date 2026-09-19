@@ -144,6 +144,9 @@ stall:
   other directories. Each command inside a loop or chain is gated on its
   own, so a script prompts as soon as any part of it is not allowlisted, and
   the whole call is lost. Several small calls run in parallel are cheaper.
+- View files with the `read` tool or `cat -n`, not `nl`. Only a fixed set of
+  commands (`cat`, `head`, `tail`, `grep`, `ls`, ...) counts as read-only;
+  any other command touching a write-protected path prompts as if it wrote.
 - Keep work inside the project directory. Use `/tmp` for scratch files.
   Reading elsewhere prompts unless it is a sibling project, a toolchain cache,
   or a system directory.
