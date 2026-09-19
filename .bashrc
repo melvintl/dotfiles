@@ -16,6 +16,7 @@
 # Make an alias for invoking commands you use constantly
 # alias p='python'
 
+export PATH="$HOME/.cargo/bin:$PATH"
 export EDITOR=nvim
 export VISUAL="$EDITOR"
 export SUDO_EDITOR="$EDITOR"
