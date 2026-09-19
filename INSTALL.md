@@ -17,7 +17,7 @@ brew install \
   pgcli pspg \
   yamllint \
   kanata \
-  lazygit git-delta gh hunk \
+  lazygit git-delta gh hunk difftastic \
   visidata
 
 # Casks (fonts + kanata driver)
@@ -56,6 +56,7 @@ Notes:
 - `jless` isn't packaged on apt — install via `cargo install jless` or grab a binary from <https://github.com/PaulJuliusMartinez/jless/releases>.
 - `yazi` lands in apt only on Ubuntu 24.04+; on older releases use `cargo install --locked yazi-fm yazi-cli` or the GitHub releases.
 - `hunk` isn't packaged on apt: `curl -fsSL https://hunk.dev/install.sh | sh` (standalone binary in `~/.hunk`) or `mise use -g hunk`.
+- `difftastic` (`difft`, behind the `git dft` alias) isn't packaged on apt — install via `cargo install --locked difftastic`.
 - Kanata isn't packaged on apt; grab the latest release binary from <https://github.com/jtroo/kanata/releases> if you want it on Linux.
 
 ---
@@ -73,7 +74,7 @@ sudo pacman -S --needed \
   direnv python-pipx zoxide \
   pgcli \
   yamllint \
-  lazygit git-delta github-cli \
+  lazygit git-delta github-cli difftastic \
   visidata \
   git curl wget openssh base-devel
 
@@ -181,7 +182,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 | Neovim LSPs | `jedi-language-server`, `pyright`, `typescript-language-server`, `rust-analyzer` |
 | Neovim linters / formatters (via ALE) | `ruff`, `pylint`, `flake8`, `mypy`, `black`, `reorder-python-imports`, `prettier`, `eslint` |
 | Neovim debug / test | `debugpy`, `pytest`, `pytest-picked`, `pytest-testmon` |
-| Git tooling | `lazygit`, `git-delta`, `gh`, `hunk` (diff review of agent changes, toggled in Neovim with `<leader>gt`) |
+| Git tooling | `lazygit`, `git-delta`, `gh`, `difftastic` (`difft`, syntax-aware diffs via `git dft`), `hunk` (diff review of agent changes, toggled in Neovim with `<leader>gd`) |
 | AI | `claude`, `ollama`, `aider`, `pi` |
 | Database | `pgcli`, `pspg` |
 | Lint | `yamllint` |
