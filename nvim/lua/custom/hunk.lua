@@ -36,6 +36,9 @@ local function start()
   job = vim.fn.jobstart({ 'hunk', 'diff', '--watch' }, {
     term = true,
     cwd = vim.fn.getcwd(),
+    -- Hunk's `e` runs $EDITOR inside this terminal; send the file to this Neovim instead of nesting one.
+    -- Hunk only passes +LINE when the command's program is named nvim/vim/vi
+    env = { EDITOR = ('nvim --clean -l "%s/lua/custom/hunk_edit.lua"'):format(vim.fn.stdpath('config')) },
     on_exit = function()
       vim.schedule(function()
         -- A late exit from an old session must not clear a newer one
@@ -85,3 +88,16 @@ toggle = function()
 end
 
 vim.keymap.set('n', '<leader>gd', toggle, { desc = 'Toggle persistent Hunk review' })
+
+local M = {}
+
+-- Called over RPC by hunk_edit.lua: show the file in Hunk's window, which hides Hunk and keeps it running
+function M.open(file, line)
+  local win = hunk_buf and vim.fn.bufwinid(hunk_buf) or -1
+  if win ~= -1 then vim.api.nvim_set_current_win(win) end
+  vim.cmd.stopinsert()
+  vim.cmd.edit(vim.fn.fnameescape(file))
+  vim.api.nvim_win_set_cursor(0, { math.min(line, vim.api.nvim_buf_line_count(0)), 0 })
+end
+
+return M
