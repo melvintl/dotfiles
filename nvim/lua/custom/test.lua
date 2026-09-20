@@ -1,8 +1,8 @@
 -- make test commands execute using vimux
 vim.g['test#strategy'] = 'vimux'
 
--- I have projects where tests are written in pythons UnitTest
--- but want to run the tests using pytest
+-- I have projects where tests are written with Python's unittest
+-- but want to run them using pytest
 vim.g['test#python#runner'] = 'pytest'
 
 vim.keymap.set('n', '<leader>tt', '<cmd>TestFile<CR>', { desc = 'Test file' })

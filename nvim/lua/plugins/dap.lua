@@ -53,7 +53,7 @@ return {
     -- Install golang specific config
     --require('dap-go').setup()
     --
-    -- for python need to do 'pip install debugpy' either in the local venv (not great) or point to another venv/global python 
+    -- For Python, install debugpy in the active environment or point this to a dedicated/global Python.
     require('dap-python').setup()
     -- require('dap-python').setup('/Users/melvinl/learn/nvim_python/.venv/bin/python')
     -- require('dap-python').setup('/Library/Frameworks/Python.framework/Versions/3.7/bin/python3')
