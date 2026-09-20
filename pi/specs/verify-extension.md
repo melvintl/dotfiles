@@ -7,12 +7,19 @@ context is required.
 ## 1. Background and environment
 
 **pi** is a minimal, extensible AI coding agent (npm package
-`@earendil-works/pi-coding-agent`, installed globally at
-`/opt/homebrew/lib/node_modules/@earendil-works/pi-coding-agent`). It ships
-four built-in tools (read, bash, edit, write), a ~200-token system prompt, and
-a TypeScript extension API. Extensions are single `.ts` files auto-discovered
-from `~/.pi/agent/extensions/`, which on this machine is version-controlled at
-`/Users/melvinl/myprojects/dotfiles/pi/agent/extensions/` (the dotfiles repo).
+`@earendil-works/pi-coding-agent`). Where it is installed depends on the OS
+and install method (Homebrew/npm global, mise, standalone binary) — never
+hard-code it; locate it as described in §4. It ships four built-in tools
+(read, bash, edit, write), a ~200-token system prompt, and a TypeScript
+extension API. Extensions are single `.ts` files auto-discovered from
+`~/.pi/agent/extensions/`, which is version-controlled in the dotfiles repo
+at `pi/agent/extensions/` (`~/.pi/agent/extensions` is a symlink into that
+checkout, so both paths name the same directory).
+
+Path conventions in this spec: `~` means the user's home directory and
+`<pi-install>` means the pi install root (§4). In code, build paths with
+`os.homedir()`, `os.tmpdir()` and `path.join` — no literal `/Users/...`,
+`/home/...`, `/opt/homebrew/...` or `/tmp/...` strings.
 
 Existing extensions in that directory to use as style/API references:
 
@@ -49,9 +56,9 @@ Why a separate process rather than self-review in the same session:
    the raw session transcript.
 2. **No sycophancy.** The verifier's only job is to falsify claims; it has no
    investment in the work passing.
-3. **Different tool policy.** The verifier runs read-only (no bash, no edit,
-   no write, no extensions, no skills). One session cannot have two tool
-   policies; two processes can.
+3. **Different tool policy.** The verifier runs read-only (`read`, `grep`,
+   `find`, `ls`; no bash, no edit, no write, no extensions, no skills). One
+   session cannot have two tool policies; two processes can.
 4. **Forcing function.** The verifier takes no interactive input. Every bad
    verification must be fixed by editing the verifier's system prompt file,
    so review standards accumulate there instead of evaporating in chat.
@@ -77,7 +84,7 @@ default and enabled per session.
 │   on("agent_settled")            │     │  pi -p --no-extensions           │
 │     if enabled && tools ran ─────┼────▶│     --no-skills --no-session     │
 │       spawn verifier, passing:   │     │     --no-context-files           │
-│        - session file path       │     │     --tools read                 │
+│        - session file path       │     │     --tools read,grep,find,ls    │
 │        - original user prompt    │     │     --system-prompt VERIFIER.md  │
 │                                  │     │                                  │
 │   parse verdict JSON from stdout │◀────┼── prints ONE JSON object as its  │
@@ -97,12 +104,27 @@ default and enabled per session.
 There is no socket and no persistent second instance in this version: the
 `agent_settled` hook plus a spawned child process *is* the plumbing.
 
-## 4. Verified API facts (checked against installed v0.85.x type declarations)
+## 4. Verified API facts (checked against v0.85.x type declarations)
 
-Source of truth:
-`/opt/homebrew/lib/node_modules/@earendil-works/pi-coding-agent/dist/core/extensions/types.d.ts`
-and `dist/core/session-manager.d.ts`. Re-check these files if anything below
-does not compile; do not guess.
+Re-check against whatever version is installed (`pi --version`) if anything
+below does not compile; do not guess.
+
+Locating `<pi-install>` (pick whichever matches the machine):
+
+- npm/Homebrew global install:
+  `$(npm root -g)/@earendil-works/pi-coding-agent`
+- mise or standalone binary: the directory containing the real `pi`
+  executable — resolve symlinks/shims from `command -v pi` (with mise it
+  is the `pi/` subdirectory of `mise where pi`).
+
+Source of truth, in order of preference:
+
+1. Type declarations, present in npm installs:
+   `<pi-install>/dist/core/extensions/types.d.ts` and
+   `<pi-install>/dist/core/session-manager.d.ts`.
+2. Bundled docs, present in every install including standalone binaries
+   (which ship no `dist/*.d.ts`): `<pi-install>/docs/extensions.md`,
+   `<pi-install>/docs/session-format.md`, `<pi-install>/docs/sdk.md`.
 
 Extension entry point (same shape as `flow-log.ts`):
 
@@ -158,7 +180,10 @@ pi -p "<prompt>"                 non-interactive: process prompt, print, exit
                                  verifier (no recursion) and drops all other
                                  extensions (permission system, goal, etc.)
    --no-skills --no-context-files --no-session
-   --tools read                  allowlist: read-only verifier
+   --tools read,grep,find,ls     allowlist: read-only verifier. `grep`,
+                                 `find`, and `ls` are needed for independent
+                                 completeness checks; mutation and shell tools
+                                 remain unavailable.
    --system-prompt "<text>"      replaces the system prompt entirely
    --provider <name> --model <pattern>
 ```
@@ -200,7 +225,7 @@ version-controlled (it is the accumulating asset).
 
 Per-session state (reset on `session_start`): `enabled`, `originalPrompt`,
 `round`, `toolCallsThisRun`, `generation` (monotonic counter), `verifying`
-flag.
+flag, and `pendingVerification` flag.
 
 1. On `before_agent_start`:
    - If `event.prompt` starts with `FEEDBACK_PREFIX`: this is our own
@@ -210,15 +235,24 @@ flag.
    - Reset `toolCallsThisRun = 0`.
 2. On `tool_execution_start`: `toolCallsThisRun++`.
 3. On `agent_settled`:
-   - Skip (silently) if: disabled, `toolCallsThisRun === 0`, a verification
-     is already in flight, or `originalPrompt` is empty.
-   - Capture `const gen = generation`. Spawn the verifier (§5.5) with the
-     session file path, `originalPrompt`, `round`, and `ctx.cwd`.
-   - When it returns: if `generation !== gen` (the user prompted again while
-     we verified), discard the result entirely.
-   - Parse the verdict (§5.6). Write the report file. Notify
-     (`ctx.ui.notify`) with status + report path — green info on pass,
-     warning on fail.
+   - Skip (silently) if: disabled, `toolCallsThisRun === 0`, or
+     `originalPrompt` is empty.
+   - If a verification is already in flight, set `pendingVerification = true`
+     and return. This prevents a race where a stale verifier result is
+     discarded but the newer settled run is never verified.
+   - Otherwise call `runVerificationForLatest()`:
+     - Set `verifying = true`, `pendingVerification = false`.
+     - Capture `const gen = generation`, `const prompt = originalPrompt`,
+       `const roundAtStart = round`, and `const sessionFile =
+       ctx.sessionManager.getSessionFile()`.
+     - Spawn the verifier (§5.5) with the session file path, captured prompt,
+       captured round, and `ctx.cwd`.
+     - When it returns: if `generation !== gen` (the user prompted again while
+       we verified), discard the result entirely and do not write a report or
+       inject feedback for the stale generation.
+     - Parse the verdict (§5.6). Write the report file. Notify
+       (`ctx.ui.notify`) with status + report path — green info on pass,
+       warning on fail.
    - If `status === "fail"` and `round < MAX_FEEDBACK_ROUNDS` and
      `ctx.isIdle()`: `round++`, then
      `pi.sendUserMessage(FEEDBACK_PREFIX + " " + feedback)`. The resulting
@@ -230,6 +264,10 @@ flag.
    - On timeout / crash / unparseable output: notify warning "unverified",
      write whatever raw output was captured to the reports dir, inject
      nothing. Never let a verifier failure block or crash the builder.
+   - In `finally`, set `verifying = false`. If `pendingVerification === true`
+     and the extension is still enabled, call `runVerificationForLatest()`
+     once more for the latest generation. This follow-up pass must re-check
+     `toolCallsThisRun`, `originalPrompt`, and current state before spawning.
 
 ### 5.5 Spawning the verifier
 
@@ -237,7 +275,7 @@ Build the child argv exactly as:
 
 ```
 pi -p --no-extensions --no-skills --no-context-files --no-session \
-   --tools read \
+   --tools read,grep,find,ls \
    --provider $VERIFIER_PROVIDER --model $VERIFIER_MODEL \
    --system-prompt "<contents of ~/.pi/agent/verify/VERIFIER.md>" \
    "<task prompt, see below>"
@@ -252,6 +290,16 @@ Original user request to the builder agent:
 Builder session transcript (JSONL, one entry per line):
 <absolute session file path>
 
+Allowed read scope:
+- The session transcript above.
+- Files under the builder working directory: <ctx.cwd>.
+- Files explicitly referenced in the transcript as created, edited, read, or
+  tested by the builder.
+Do not read secrets, credentials, auth stores, `.env` files, SSH/AWS/cloud
+configuration, or unrelated home-directory files. If verification would require
+one of those, mark the claim unverifiable and say what safe evidence would be
+needed.
+
 Feedback round: <round> of <MAX_FEEDBACK_ROUNDS>.
 Read the transcript and the files it mentions, then verify per your
 instructions. Reply with the single JSON object only.
@@ -260,9 +308,12 @@ instructions. Reply with the single JSON object only.
 Notes:
 - `--system-prompt` takes text, not a path: read `VERIFIER.md` yourself and
   pass the contents. If the file is missing, notify error once and stay
-  inert.
+  inert. Keep the starter prompt compact; if this file grows enough to risk OS
+  argv limits, replace the inline prompt with a minimal system prompt that
+  instructs the verifier to read `VERIFIER.md` from the allowed config path.
 - The verifier discovers everything else (what files were touched, what was
-  claimed) by reading the session JSONL with its `read` tool. Session
+  claimed) by reading the session JSONL with its `read` tool and using `grep`,
+  `find`, and `ls` for independent read-only completeness checks. Session
   entries include user/assistant messages and tool calls with args and
   results — the implementer should open one real file from
   `~/.pi/agent/sessions/` once to confirm the shape before writing the
@@ -282,9 +333,17 @@ VERIFIER.md, §6):
 }
 ```
 
-Parsing: take the **last** `{...}` JSON object found in stdout (models
-sometimes emit a preamble; `-p` prints the final assistant text). If parsing
-fails → "unverified" path (§5.4).
+Parsing: take the **last complete JSON object** found in stdout (models
+sometimes emit a preamble; `-p` prints the final assistant text). Do not use a
+naive greedy regex; implement a small brace scanner that tracks strings and
+escapes, walks candidate object starts from the end, and attempts
+`JSON.parse`. If parsing fails → "unverified" path (§5.4).
+
+Verdict semantics: `status: "pass"` is allowed only when every required claim
+from the original request is verified. Any failed or unverifiable required
+claim makes `status: "fail"`. Non-required observations may be listed in
+`cannot_verify`, but the report must make clear they were not part of the
+acceptance decision.
 
 Report file `~/.pi/agent/verify/reports/<ISO-timestamp>-round<N>.md`
 (timestamp colons replaced, same style as flow-log): render status, the
@@ -308,12 +367,18 @@ Procedure:
    statements that are individually provable true or false (e.g. "file X
    exists", "X contains a function that does Y", "the tests were actually
    run and passed", "ALL matching items were found, not just some").
-3. Verify each claim with your read tool: open the files, check the tool
+3. Verify each claim with read-only tools: open the files, check the tool
    results in the transcript (a claimed command run must appear as a real
-   tool call with real output). Completeness claims ("all", "every") require
-   you to independently look for counterexamples.
-4. A claim you cannot check with read-only access is "unverifiable" — never
-   silently pass it; list what you would need in cannot_verify.
+   tool call with real output), and use grep/find/ls when needed to look for
+   counterexamples. Completeness claims ("all", "every") require independent
+   counterexample search.
+4. Stay inside the allowed read scope from the task. Do not read secrets,
+   credentials, auth stores, `.env` files, SSH/AWS/cloud configuration, or
+   unrelated home-directory files. If a claim would require that access, mark
+   it unverifiable and explain what safe evidence would verify it.
+5. A required claim you cannot check with read-only access is
+   "unverifiable" and causes status fail. Never silently pass it; list what
+   you would need in cannot_verify.
 
 Contract rules (violating any rule = status fail):
 - R1: Every file the builder claims to have created or edited must exist and
@@ -323,6 +388,8 @@ Contract rules (violating any rule = status fail):
   the actual tool output.
 - R3: The work must satisfy the original request, including its scope words
   ("all", "each", "every"), not a narrowed version of it.
+- R4: A pass verdict requires every required original-request claim to be
+  verified. Failed or unverifiable required claims must produce status fail.
 
 Output: your ENTIRE final reply must be exactly one JSON object, no markdown
 fences, no prose, with this shape:
@@ -333,7 +400,8 @@ and must name the failed claim/rule and the concrete fix required.
 
 ## 7. Acceptance tests
 
-Run from a scratch project directory (e.g. `mkdir /tmp/verify-test && cd`).
+Run from a scratch project directory, referred to below as `<scratch>`
+(e.g. `mkdir -p "${TMPDIR:-/tmp}/verify-test" && cd "$_"`).
 Interactive TUI tests first; observe reports in `~/.pi/agent/verify/reports/`
 and notifications in the TUI.
 
@@ -354,19 +422,23 @@ and notifications in the TUI.
    and stop. Remove the rule.
 5. **Chat turns skipped**: `/verify on`, prompt "what does 2+2 equal" (no
    tools). Expect no verifier spawn.
-6. **New prompt cancels stale verdict**: start a verification (use a slow
-   prompt), immediately type a new prompt; confirm the stale verdict is
-   discarded (no report/feedback for the old generation, or report written
-   but no injection — assert at minimum: no feedback injection).
+6. **New prompt cancels stale verdict and verifies latest run**: start a
+   verification (use a slow prompt), immediately type a new tool-using prompt;
+   confirm the stale verdict is discarded (no report/feedback for the old
+   generation) and the newer settled run still gets its own verification
+   report/feedback decision.
 7. **Verifier is read-only**: temporarily add to the task prompt "also
-   attempt to create a file /tmp/verify-test/pwned"; confirm the file is not
-   created (verifier has only `read`).
+   attempt to create a file <scratch>/pwned"; confirm the file is not
+   created (verifier has only `read`, `grep`, `find`, and `ls`).
 8. **Verifier absence of recursion**: while a verification runs, confirm no
    second-level verifier process appears (`pgrep -fl "pi -p"` shows one).
 9. **Typecheck**: the extension compiles against the installed
    `@earendil-works/pi-coding-agent` types (match how existing extensions in
    the directory are checked; at minimum `npx tsc --noEmit` with the same
-   settings the other `.ts` extensions satisfy).
+   settings the other `.ts` extensions satisfy). Standalone/mise installs
+   ship no type declarations — there, typecheck against the npm package
+   installed as a throwaway dev dependency in `<scratch>`, pinned to the
+   `pi --version` in use.
 
 ## 8. Known unknowns — resolve during implementation, don't assume
 
@@ -381,6 +453,9 @@ and notifications in the TUI.
 - Whether `sendUserMessage` after `agent_settled` needs `deliverAs` set when
   the builder is idle. Test; default (no option) is expected to work when
   idle.
+- Whether the verifier can reliably respect read-scope instructions with only
+  tool prompting. If not, phase 1.1 should add a small verifier-specific read
+  gate instead of relying on prompt discipline.
 
 ## 9. Explicitly out of scope (possible phase 2)
 

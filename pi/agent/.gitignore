@@ -8,6 +8,7 @@ models-store.json
 *.log
 pi-tui-crash.log
 extensions/**/logs/
+verify/reports/
 
 # Build/dependency output from skills and extensions.
 **/node_modules/
