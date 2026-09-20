@@ -37,6 +37,4 @@ require('custom.autocmd')
 
 require('custom.autoread')
 
-require('custom.hunk')
-
 require('custom.keymap')

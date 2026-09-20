@@ -1,5 +1,5 @@
 
--- dont need the annoying .swp and and ~backup files
+-- Don't need the annoying .swp and ~ backup files
 vim.opt.swapfile = false
 vim.opt.backup = false
 
@@ -69,7 +69,7 @@ vim.cmd [[
 -- Use indent for python/yaml navigation
 vim.opt.foldenable = false
 vim.opt.foldmethod = "indent"
--- TO do review treestitter (not great for indent based files)
+-- TODO: review treesitter folding; not great for indent-based files
 -- vim.opt.foldmethod = "expr"
 -- vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 

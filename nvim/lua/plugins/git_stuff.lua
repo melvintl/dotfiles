@@ -7,7 +7,7 @@ return {
   -- **************************************
   'tpope/vim-fugitive',
   {
-    -- Adds git releated signs to the gutter, as well as utilities for managing changes
+    -- Adds git-related signs to the gutter, as well as utilities for managing changes
     -- common commands :Gitsigns diffthis
     'lewis6991/gitsigns.nvim',
     opts = {

@@ -1,6 +1,6 @@
 {
   "theme": "one-dark-tmux",
-  "lastChangelogVersion": "0.85.1",
+  "lastChangelogVersion": "0.86.0",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
   "_defaultProvider": "ollama",
@@ -17,5 +17,6 @@
     "npm:@narumitw/pi-usage"
   ],
   "quietStartup": true,
-  "tuiMode": "fullscreen"
+  "tuiMode": "fullscreen",
+  "hideThinkingBlock": false
 }

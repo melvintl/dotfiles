@@ -8,6 +8,12 @@ models-store.json
 *.log
 pi-tui-crash.log
 extensions/**/logs/
+verify/reports/
+
+# Machine-local integrations: a symlink into the mise hunk install, and a
+# file herdr installs and overwrites itself.
+skills/hunk-review
+extensions/herdr-agent-state.ts
 
 # Build/dependency output from skills and extensions.
 **/node_modules/

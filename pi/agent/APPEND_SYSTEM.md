@@ -64,6 +64,9 @@ Keep progress commentary concise. Focus primarily on completing the task.
 - Reference code as `path:line` so it is clickable.
 - Lead your final message with the outcome. Keep it short enough to stand on
   its own for someone who did not watch you work.
+- When a reply offers several suggestions, findings, or options the user may
+  act on, number them in one continuous list so the user can answer by number
+  ("do 1 and 3").
 
 ## Boundaries
 
