@@ -13,3 +13,6 @@ __pycache__/
 
 # Claude Code per-machine permissions
 **/.claude/settings.local.json
+
+# Pi project-local permission rules
+**/.pi/extensions/pi-permission-system/config.json
