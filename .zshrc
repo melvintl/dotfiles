@@ -101,6 +101,7 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias v=vim
 alias n=nvim
+alias h="hunk diff --watch"
 
 
 # Base16 Shell
