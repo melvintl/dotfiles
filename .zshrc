@@ -102,6 +102,7 @@ source $ZSH/oh-my-zsh.sh
 alias v=vim
 alias n=nvim
 alias h="hunk diff --watch"
+alias wm=workmux
 
 
 # Base16 Shell

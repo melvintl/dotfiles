@@ -24,3 +24,4 @@ export SUDO_EDITOR="$EDITOR"
 alias cc=claude
 alias ll=ls # specifically for omarchy
 alias l=lazygit
+alias wm=workmux

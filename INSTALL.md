@@ -27,6 +27,11 @@ brew install \
 # and without the CLI every Neovim startup re-downloads all parsers and fails
 # to compile them ("ENOENT: 'tree-sitter'").
 
+# workmux — git-worktree + tmux orchestration for parallel agents
+# (tapped formula; the `.tmux.conf.local` prefix+a dashboard popup and the
+# pi coordinator/worktree/merge skills expect it on PATH)
+brew install raine/workmux/workmux
+
 # Casks (fonts + kanata driver)
 brew install --cask \
   font-jetbrains-mono-nerd-font \
@@ -66,6 +71,7 @@ Notes:
 - `difftastic` (`difft`, behind the `git dft` alias) isn't packaged on apt — install via `cargo install --locked difftastic`.
 - Kanata isn't packaged on apt; grab the latest release binary from <https://github.com/jtroo/kanata/releases> if you want it on Linux.
 - `tree-sitter` CLI (needed by nvim-treesitter to build parsers) isn't packaged on apt — install via `npm install -g tree-sitter-cli` or `cargo install tree-sitter-cli`.
+- `workmux` isn't packaged on apt — install via `curl -fsSL https://raw.githubusercontent.com/raine/workmux/main/scripts/install.sh | bash`, `cargo install workmux`, or Homebrew on Linux (`brew install raine/workmux/workmux`).
 
 ---
 
@@ -106,6 +112,7 @@ Notes:
 - `rust-analyzer` from pacman is standalone and needs no rustup. If you install the
   Rust toolchain via `rustup` instead, use `rustup component add rust-analyzer` and
   skip the pacman package to avoid two copies on `PATH`.
+- `workmux` isn't in the official repos — install via `mise use -g cargo:raine/workmux` (fits Omarchy) or `cargo install workmux`.
 - Skip the npm-globals section below on Arch unless a tool is missing from the repos —
   and note that if `node` comes from a version manager (mise, nvm, asdf), `npm -g`
   binaries live inside that runtime's directory and disappear when you change versions.
@@ -191,7 +198,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 | Neovim LSPs | `jedi-language-server`, `pyright`, `typescript-language-server`, `rust-analyzer` |
 | Neovim linters / formatters (via ALE) | `ruff`, `pylint`, `flake8`, `mypy`, `black`, `reorder-python-imports`, `prettier`, `eslint` |
 | Neovim debug / test | `debugpy`, `pytest`, `pytest-picked`, `pytest-testmon` |
-| Git tooling | `lazygit`, `git-delta`, `gh`, `difftastic` (`difft`, syntax-aware diffs via `git dft`), `hunk` (diff review of agent changes) |
+| Git tooling | `lazygit`, `git-delta`, `gh`, `difftastic` (`difft`, syntax-aware diffs via `git dft`), `hunk` (diff review of agent changes), `workmux` (git-worktree + tmux orchestration for parallel agents; tmux prefix+a dashboard) |
 | AI | `claude`, `ollama`, `aider`, `pi` |
 | Database | `pgcli`, `pspg` |
 | Lint | `yamllint` |
