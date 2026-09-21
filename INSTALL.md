@@ -28,8 +28,8 @@ brew install \
 # to compile them ("ENOENT: 'tree-sitter'").
 
 # workmux — git-worktree + tmux orchestration for parallel agents
-# (tapped formula; the `.tmux.conf.local` prefix+a dashboard popup and the
-# pi coordinator/worktree/merge skills expect it on PATH)
+# (tapped formula; the `.tmux.conf.local` prefix+a dashboard popup expects it
+# on PATH)
 brew install raine/workmux/workmux
 
 # Casks (fonts + kanata driver)
