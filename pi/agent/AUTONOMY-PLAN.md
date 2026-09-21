@@ -54,6 +54,9 @@ Config lives in `~/myprojects/dotfiles/pi/agent/` and is symlinked into
     bubblewrap with path and domain allowlists, never auto-grants.
   - Once on, allow package installs and `curl` inside the project directory;
     the blast radius is the sandbox, not `$HOME`.
+  - Note 2026-09-19: the "loosen the allowlist" half is likely superseded by
+    the `/allow` extension (see log): global config stays tight, grants are
+    per-project. Re-evaluate when the sandbox lands.
 
 - [ ] 5. tmux-backed bash and pi-side-agents (only when running parallel or
   long jobs)
@@ -70,7 +73,9 @@ Config lives in `~/myprojects/dotfiles/pi/agent/` and is symlinked into
 
 - [x] `APPEND_SYSTEM.md`: run one simple command per bash call (done
   2026-09-13, plus `for *`/`while *`/`if *` allows so the scaffolding of a
-  loop no longer asks; inner commands stay gated).
+  loop no longer asks; inner commands stay gated). The loop allows were
+  reverted to `ask` on 2026-09-19 with the tight-global / per-project-`/allow`
+  strategy (see log); the APPEND_SYSTEM.md line stays.
 - [ ] Headless runs: `pi -p` denies every `ask` and skips project config while
   `defaultProjectTrust` is `"ask"`. For cron or scripts pass `--approve`, narrow
   with `--tools read,grep,find,ls` for analysis, or run in pi-sandbox for
@@ -180,3 +185,24 @@ Config lives in `~/myprojects/dotfiles/pi/agent/` and is symlinked into
   Global AGENTS.md deferred: it would duplicate APPEND_SYSTEM.md; the two
   missing git rules (never `git add -A`, no attribution trailers) are a
   two-line addition to the Boundaries section instead.
+
+- 2026-09-19: permission strategy shift. Wrote `extensions/perm-allow.ts`
+  (committed b701ab9): a `/allow` command that saves a permission prompt the
+  user just approved as a project-level rule in
+  `<cwd>/.pi/extensions/pi-permission-system/config.json`, suggesting an
+  editable wildcard pattern and re-adding any overlapped global denies after
+  the new allow so they still win (project maps shallow-merge over global,
+  last match wins). Durable approvals upstream: gotgenes/pi-packages#799.
+  Consequence: the global allowlist stays tight and grants are per-project,
+  instead of loosening the global config after pi-sandbox (step 4 premise).
+  Accordingly tightened the global config back to `ask` for the broad
+  execute-anything rules: `for */while */if *` (reverting the 2026-09-13
+  loop allows), `touch/cp/mv/chmod/tee`, `npm run`/`npm install`/`npm ci`,
+  `pnpm run`/`pnpm install`/`pnpm i`, `yarn run`, `bun run`, `node`,
+  `python`/`python3`, `make`, `cargo run`, `go run`. Read-only, test, lint,
+  and build rules unchanged. APPEND_SYSTEM.md's permission section slightly
+  overstates what runs silently now (loop scaffolding prompts again); its
+  "one simple command per bash call" guidance already discourages loops, so
+  left as is.
+- 2026-09-19: removed the dangling `~/.pi/agent/personas` symlink; its
+  target `pi/agent/personas` was never committed.

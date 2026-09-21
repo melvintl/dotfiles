@@ -12,6 +12,7 @@ Scope: dev-environment tooling only. The i3 window manager and its helpers (i3, 
 # Formulae
 brew install \
   zsh tmux neovim vim universal-ctags \
+  tree-sitter-cli \
   fzf ripgrep the_silver_searcher fd bat jq jless ncdu yazi tldr \
   direnv pipx zoxide \
   pgcli pspg \
@@ -19,6 +20,12 @@ brew install \
   kanata \
   lazygit git-delta gh hunk difftastic \
   visidata
+
+# NB: `tree-sitter-cli` is the binary nvim-treesitter (main branch) shells out
+# to when building parsers. The similarly named `tree-sitter` formula is the C
+# library only — installing it does NOT put a `tree-sitter` command on PATH,
+# and without the CLI every Neovim startup re-downloads all parsers and fails
+# to compile them ("ENOENT: 'tree-sitter'").
 
 # Casks (fonts + kanata driver)
 brew install --cask \
@@ -58,6 +65,7 @@ Notes:
 - `hunk` isn't packaged on apt: `curl -fsSL https://hunk.dev/install.sh | sh` (standalone binary in `~/.hunk`) or `mise use -g hunk`.
 - `difftastic` (`difft`, behind the `git dft` alias) isn't packaged on apt — install via `cargo install --locked difftastic`.
 - Kanata isn't packaged on apt; grab the latest release binary from <https://github.com/jtroo/kanata/releases> if you want it on Linux.
+- `tree-sitter` CLI (needed by nvim-treesitter to build parsers) isn't packaged on apt — install via `npm install -g tree-sitter-cli` or `cargo install tree-sitter-cli`.
 
 ---
 
@@ -70,6 +78,7 @@ official repos here, so prefer pacman over `npm -g` / `pipx` on this platform.
 # Base dev tooling (official repos)
 sudo pacman -S --needed \
   zsh tmux neovim vim ctags \
+  tree-sitter-cli \
   fzf ripgrep the_silver_searcher fd bat jq jless ncdu yazi tldr \
   direnv python-pipx zoxide \
   pgcli \
@@ -177,7 +186,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 | Category | Tools |
 | --- | --- |
 | Shell | `zsh`, `oh-my-zsh` (theme `robbyrussell`, plugins `git`, `git-extras`), `base16-shell`, `direnv`, `tmux`, `fzf`, `zoxide`, `pipx` |
-| Editors | `vim`, `neovim`, `universal-ctags` |
+| Editors | `vim`, `neovim`, `universal-ctags`, `tree-sitter-cli` (parser builds for nvim-treesitter) |
 | Search / files | `ripgrep`, `the_silver_searcher` (`ag`), `fd`, `bat`, `jq`, `jless`, `ncdu`, `yazi`, `tldr`, `visidata` |
 | Neovim LSPs | `jedi-language-server`, `pyright`, `typescript-language-server`, `rust-analyzer` |
 | Neovim linters / formatters (via ALE) | `ruff`, `pylint`, `flake8`, `mypy`, `black`, `reorder-python-imports`, `prettier`, `eslint` |

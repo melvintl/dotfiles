@@ -15,6 +15,14 @@ Install these with your system's package manager:
 
 - `git`, `make` and a C compiler: lazy.nvim clones plugins and some have a
   build step.
+- `tree-sitter` CLI: the nvim-treesitter `main` branch shells out to it to
+  build parsers. Without it, every startup re-downloads all parsers and fails
+  compiling with `ENOENT: no such file or directory (cmd): 'tree-sitter'`.
+  - macOS: `brew install tree-sitter-cli` — note the `-cli` suffix; the plain
+    `tree-sitter` formula is only the C library and ships no binary.
+  - Arch: `sudo pacman -S tree-sitter-cli`
+  - Debian/Ubuntu: not packaged; use `npm install -g tree-sitter-cli` or
+    `cargo install tree-sitter-cli`.
 - `ripgrep`: used by Telescope live grep.
 - `fzf` and `direnv`: optional, used outside Neovim.
 
