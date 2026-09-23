@@ -99,10 +99,10 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias v=vim
-alias n=nvim
-alias h="hunk diff --watch"
-alias wm=workmux
+
+# Shared with .bashrc; :A resolves the ~/.zshrc symlink back to the repo
+DOTFILES="${${(%):-%N}:A:h}"
+[[ -r "$DOTFILES/shell/common.sh" ]] && source "$DOTFILES/shell/common.sh"
 
 
 # Base16 Shell
@@ -152,11 +152,6 @@ if [[ $TMUX ]]; then
         source ./.venv/bin/activate
       fi
 fi
-# export PATH="$PATH:/opt/mssql-tools18/bin"
-
-# Created by `pipx` on 2023-07-08 20:03:42
-export PATH="$PATH:$HOME/.local/bin"
-
 # Java: JDK paths differ per distro (Debian: java-11-openjdk-amd64, Arch:
 # java-11-openjdk), so take the first candidate that actually exists.
 for _jdk in /usr/lib/jvm/default /usr/lib/jvm/default-java /usr/lib/jvm/java-11-openjdk*(N); do
@@ -166,3 +161,6 @@ for _jdk in /usr/lib/jvm/default /usr/lib/jvm/default-java /usr/lib/jvm/java-11-
   fi
 done
 unset _jdk
+
+# Machine-local (untracked): API keys, client PATHs. Keep last so it wins.
+[[ -r ~/.zshrc.local ]] && source ~/.zshrc.local
