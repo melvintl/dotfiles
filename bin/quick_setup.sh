@@ -8,21 +8,65 @@ set -euo pipefail
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$DOTFILES"
 
-ln -s -f "$DOTFILES/.bashrc" ~/.bashrc
+BACKUP_DIR="${BACKUP_DIR:-$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)}"
+
+backup_path() {
+  local target="$1"
+
+  if [[ ! -e "$target" && ! -L "$target" ]]; then
+    return 0
+  fi
+
+  local relative="${target#$HOME/}"
+  local backup="$BACKUP_DIR/$relative"
+  mkdir -p "$(dirname "$backup")"
+
+  mv "$target" "$backup"
+  echo ">> Backed up $target to $backup"
+}
+
+link_file() {
+  local source="$1"
+  local target="$2"
+
+  if [[ -L "$target" && "$(readlink "$target")" == "$source" ]]; then
+    echo ">> $target already links to $source"
+    return 0
+  fi
+
+  backup_path "$target"
+  ln -s "$source" "$target"
+}
+
+copy_file() {
+  local source="$1"
+  local target="$2"
+
+  # ! -L: a symlink whose content matches is still not the independent copy we want
+  if [[ -f "$target" && ! -L "$target" ]] && cmp -s "$source" "$target"; then
+    echo ">> $target already matches $source"
+    return 0
+  fi
+
+  backup_path "$target"
+  cp "$source" "$target"
+}
+
+link_file "$DOTFILES/.bashrc" ~/.bashrc
 # ~/.tmux.conf takes precedence over ~/.config/tmux/tmux.conf, so don't shadow
 # a config another tool owns (Omarchy ships one there)
 if [[ -e ~/.config/tmux/tmux.conf ]]; then
   echo ">> ~/.config/tmux/tmux.conf exists; leaving tmux config alone"
 else
-  ln -s -f "$DOTFILES/.tmux.conf" ~/.tmux.conf
-  ln -s -f "$DOTFILES/.tmux.conf.local" ~/.tmux.conf.local
+  link_file "$DOTFILES/.tmux.conf" ~/.tmux.conf
+  link_file "$DOTFILES/.tmux.conf.local" ~/.tmux.conf.local
 fi
-ln -s -f "$DOTFILES/.vimrc" ~/.vimrc
-ln -s -f "$DOTFILES/bin/tmux-session" ~/.tmux-session
-ln -s -f "$DOTFILES/.gitconfig" ~/.gitconfig
-ln -s -f "$DOTFILES/.gitignore" ~/.gitignore
+link_file "$DOTFILES/.vimrc" ~/.vimrc
+link_file "$DOTFILES/bin/tmux-session" ~/.tmux-session
+link_file "$DOTFILES/.gitconfig" ~/.gitconfig
+link_file "$DOTFILES/.gitignore" ~/.gitignore
 # zsh is the Mac shell; only link it where zsh exists
-command -v zsh >/dev/null && ln -s -f "$DOTFILES/.zshrc" ~/.zshrc
+command -v zsh >/dev/null && link_file "$DOTFILES/.zshrc" ~/.zshrc
 
 # Per-machine layer: identity + secrets live in ~/*.local, never in the repo.
 if [[ ! -f ~/.gitconfig.local ]]; then
@@ -37,15 +81,15 @@ for rc in ~/.bashrc.local ~/.zshrc.local; do
 done
 
 mkdir -p ~/.config/yamllint/
-cp ./.config/yamllint/config ~/.config/yamllint/
+copy_file "$DOTFILES/.config/yamllint/config" ~/.config/yamllint/config
 
 mkdir -p ~/.config/pgcli/
-cp ./.config/pgcli/config ~/.config/pgcli/
+copy_file "$DOTFILES/.config/pgcli/config" ~/.config/pgcli/config
 
 # Link the file, not the directory: hunk keeps per-machine state.json next to its config
 mkdir -p ~/.config/lazygit/ ~/.config/hunk/
-ln -s -f "$DOTFILES/.config/lazygit/config.yml" ~/.config/lazygit/config.yml
-ln -s -f "$DOTFILES/.config/hunk/config.toml" ~/.config/hunk/config.toml
+link_file "$DOTFILES/.config/lazygit/config.yml" ~/.config/lazygit/config.yml
+link_file "$DOTFILES/.config/hunk/config.toml" ~/.config/hunk/config.toml
 
 # Hunk diff reviewer. Omarchy already ships it through mise
 if ! command -v hunk >/dev/null; then
