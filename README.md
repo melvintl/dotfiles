@@ -34,6 +34,22 @@ ln -s ~/myprojects/dotfiles/.config/omarchy/themes/one-dark ~/.config/omarchy/th
 
 `bin/quick_setup.sh`, `bin/new_debian.sh`, and `bin/new_centos.sh` are starting points for bootstrapping a fresh box — read them before running.
 
+## Health check
+
+Run the non-destructive repo checks before pushing changes:
+
+```bash
+bash bin/check.sh
+```
+
+The same check runs in GitHub Actions. It fails on syntax/config errors and only warns when optional local tools are missing.
+
+When changing Neovim config, opt into a heavier headless startup smoke test:
+
+```bash
+RUN_NVIM_SMOKE=1 bash bin/check.sh
+```
+
 ## Per-machine layer
 
 Identity and secrets never go in this repo. Each config sources an untracked `~/*.local` file last:

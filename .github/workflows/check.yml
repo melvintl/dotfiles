@@ -1,0 +1,21 @@
+name: check
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  dotfiles:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install check dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zsh lua5.4
+
+      - name: Run dotfiles health checks
+        run: bash bin/check.sh
