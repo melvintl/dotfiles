@@ -4,23 +4,18 @@ My personal config across shell, editor, multiplexer, and a few small tools.
 
 ## Layout
 
-| Path | What's there |
-| --- | --- |
-| `.bashrc` | Bash config (Linux/Omarchy) |
-| `.zshrc` | zsh config (macOS: oh-my-zsh, base16, zoxide, direnv, fzf) |
-| `shell/common.sh` | Aliases and exports shared by both shells |
-| `.tmux.conf`, `.tmux.conf.local` | tmux config (based on oh-my-tmux) |
-| `.vimrc` | Legacy Vim config — kept around but Neovim is the daily driver |
-| `.gitconfig` | Git config (delta as pager, aliases) — no identity, see below |
-| `.gitconfig.local.example` | Template for the untracked per-machine git identity |
-| `nvim/` | Neovim setup — see [`nvim/README.md`](nvim/README.md) |
-| `pi/agent/` | `pi` coding-agent config (skills, prompts, models, themes) |
-| `.config/kanata/` | Kanata keyboard remap — see [`.config/kanata/README.md`](.config/kanata/README.md) |
-| `.config/i3/`, `.config/i3status/` | i3 window manager + status bar (Linux) |
-| `.config/omarchy/themes/one-dark/` | Omarchy (Hyprland) theme matching the nvim/tmux One Dark palette — see [`its README`](.config/omarchy/themes/one-dark/README.md) |
-| `.config/<>` | Misc tool configs |
-| `bin/` | Small scripts |
-| `INSTALL.md` | Every CLI tool the configs expect on `PATH` |
+```text
+.bashrc / .zshrc     bash (Linux/Omarchy) and zsh (macOS); shared aliases/PATH in shell/common.sh
+.tmux.conf[.local]   tmux, based on oh-my-tmux
+.gitconfig           delta as pager, aliases — identity stays in ~/.gitconfig.local (see below)
+.vimrc               legacy; Neovim is the daily driver
+nvim/                Neovim setup
+pi/agent/            pi coding-agent config (skills, prompts, models, themes)
+.config/             kanata keyboard remap · i3 + i3status (Linux) · omarchy One Dark theme · misc tools
+bin/                 small scripts
+```
+
+More detail in the sub-READMEs: [`nvim/`](nvim/README.md), [`kanata`](.config/kanata/README.md), [`omarchy One Dark theme`](.config/omarchy/themes/one-dark/README.md).
 
 ## Install
 
