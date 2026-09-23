@@ -17,7 +17,9 @@ __pycache__/
 .bashrc.local
 .zshrc.local
 
-# Claude Code per-machine permissions
+# Claude Code per-machine permissions; .claude/ because this file doubles as
+# the global core.excludesfile (~/.gitignore symlinks here)
+.claude/
 **/.claude/settings.local.json
 
 # Pi project-local permission rules
