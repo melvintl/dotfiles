@@ -22,3 +22,12 @@ __pycache__/
 
 # Pi project-local permission rules
 **/.pi/extensions/pi-permission-system/config.json
+
+# Installed by workmux (`workmux setup`), not hand-maintained
+pi/agent/extensions/workmux-status.ts
+pi/agent/skills/coordinator/
+pi/agent/skills/merge/
+pi/agent/skills/open-pr/
+pi/agent/skills/rebase/
+pi/agent/skills/workmux/
+pi/agent/skills/worktree/
