@@ -154,6 +154,8 @@ fi
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh --cmd cd)"
 
 command -v workmux >/dev/null 2>&1 && eval "$(workmux completions zsh)"
+
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 # Java: JDK paths differ per distro (Debian: java-11-openjdk-amd64, Arch:
 # java-11-openjdk), so take the first candidate that actually exists.
 for _jdk in /usr/lib/jvm/default /usr/lib/jvm/default-java /usr/lib/jvm/java-11-openjdk*(N); do

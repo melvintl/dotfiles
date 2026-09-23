@@ -11,6 +11,7 @@ path_add() {
 }
 path_add "$HOME/.cargo/bin"
 path_add "$HOME/.local/bin"
+path_add "$HOME/.bun/bin"
 
 alias v=vim
 alias n=nvim
