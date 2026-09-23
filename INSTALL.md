@@ -27,6 +27,10 @@ brew install \
 # and without the CLI every Neovim startup re-downloads all parsers and fails
 # to compile them ("ENOENT: 'tree-sitter'").
 
+# fzf keybindings: .zshrc sources ~/.fzf.zsh, which brew doesn't create.
+# Generate it once:
+"$(brew --prefix)/opt/fzf/install" --key-bindings --completion --no-update-rc
+
 # workmux — git-worktree + tmux orchestration for parallel agents
 # (tapped formula; the `.tmux.conf.local` prefix+a dashboard popup expects it
 # on PATH)
@@ -61,6 +65,8 @@ sudo apt update && sudo apt install -y \
 ```
 
 Notes:
+- apt `neovim` is usually older than the 0.12+ this nvim config needs (see `nvim/README.md`); use the [official release](https://github.com/neovim/neovim/releases) if so.
+- apt `fzf` doesn't create the `~/.fzf.zsh` that `.zshrc` sources — clone upstream and run its installer instead: `git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install --key-bindings --completion --no-update-rc`.
 - `fd-find` installs the binary as `fdfind`; alias it: `ln -s $(which fdfind) ~/.local/bin/fd`.
 - `bat` installs as `batcat` on older Ubuntu; same trick: `ln -s $(which batcat) ~/.local/bin/bat`.
 - `lazygit`, `git-delta`, `gh` require recent Ubuntu (24.04+) or their respective PPAs; fall back to the GitHub releases on older distros.
@@ -121,6 +127,9 @@ Notes:
 
 ## npm globals (language servers + JS tooling for Neovim)
 
+Assumes `node`/`npm` on `PATH` — none of the platform lists above install it.
+Use mise (`mise use -g node@lts`, ships with Omarchy) or nvm.
+
 ```bash
 npm install -g \
   pyright \
@@ -164,6 +173,7 @@ rustup component add rust-analyzer
 
 - **oh-my-zsh**: `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
 - **base16-shell**: `git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell`
+- **bun** (optional JS runtime): `curl -fsSL https://bun.sh/install | bash` — `shell/common.sh` puts `~/.bun/bin` on `PATH` and `.zshrc` loads its completions when present.
 
 ---
 
@@ -200,6 +210,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 | Neovim debug / test | `debugpy`, `pytest`, `pytest-picked`, `pytest-testmon` |
 | Git tooling | `lazygit`, `git-delta`, `gh`, `difftastic` (`difft`, syntax-aware diffs via `git dft`), `hunk` (diff review of agent changes), `workmux` (git-worktree + tmux orchestration for parallel agents; tmux prefix+a dashboard) |
 | AI | `claude`, `ollama`, `aider`, `pi` |
+| JS runtime | `node` (via mise/nvm; npm globals need it), `bun` (optional) |
 | Database | `pgcli`, `pspg` |
 | Lint | `yamllint` |
 | Keyboard | `kanata` (+ Karabiner driver on macOS) |

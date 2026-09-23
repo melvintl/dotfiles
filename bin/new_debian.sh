@@ -1,17 +1,35 @@
-apt update && apt install -y git
-apt install -y openssh-server vim wget curl
-# apt install -y python3-dev  python3-venv
+#!/usr/bin/env bash
+# Bootstrap a fresh Debian/Ubuntu box. Mirrors INSTALL.md (the source of
+# truth for the tool list and fallbacks) — read both before running.
 
-# sudo apt-get install gvim
-apt install -y  vim-gtk3
-apt install -y exuberant-ctags ack-grep silversearcher-ag ripgrep
+sudo apt update
 
-# apt install -y fzf
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install
+# NB: apt `neovim` is usually older than the 0.12+ this nvim config needs;
+# grab the official release instead if so — see nvim/README.md.
+sudo apt install -y \
+  zsh tmux neovim vim-gtk3 exuberant-ctags \
+  ripgrep silversearcher-ag fd-find bat jq ncdu tldr \
+  direnv pipx zoxide \
+  pgcli pspg \
+  yamllint \
+  lazygit git-delta gh \
+  visidata \
+  git curl wget openssh-server build-essential
 
-apt install -y ncdu ranger tldr jq
-wget https://github.com/sharkdp/bat/releases/download/v0.16.0/bat_0.16.0_amd64.deb
-dpkg -i bat_0.16.0_amd64.deb
+# fd and bat install under different names on Debian/older Ubuntu
+mkdir -p ~/.local/bin
+command -v fd  >/dev/null || ln -sf "$(command -v fdfind)" ~/.local/bin/fd
+command -v bat >/dev/null || { command -v batcat >/dev/null && ln -sf "$(command -v batcat)" ~/.local/bin/bat; }
 
-apt-get install yamllinti pspg direnv
+# fzf from upstream: the apt package doesn't create the ~/.fzf.zsh that .zshrc sources
+[ -d ~/.fzf ] || git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install --key-bindings --completion --no-update-rc
+
+# yazi is in apt only on Ubuntu 24.04+; cargo/release fallbacks in INSTALL.md
+sudo apt install -y yazi || echo ">> yazi not packaged here; see INSTALL.md"
+
+# hunk — standalone binary in ~/.hunk (shell/common.sh puts it on PATH)
+command -v hunk >/dev/null || curl -fsSL https://hunk.dev/install.sh | sh
+
+# Not packaged on apt — see INSTALL.md for install options:
+#   jless, difftastic, kanata, tree-sitter-cli (npm/cargo), workmux
