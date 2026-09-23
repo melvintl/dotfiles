@@ -1,0 +1,9 @@
+# Copy to ~/.gitconfig.local (untracked)
+
+[user]
+    name = Your Name
+    email = you@personal.example
+
+# Different identity for work repos, keyed on directory (trailing slash matters)
+# [includeIf "gitdir:~/work/"]
+#     path = ~/.gitconfig.work

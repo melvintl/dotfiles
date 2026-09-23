@@ -11,17 +11,11 @@
 # (don't mess with these directly, just overwrite them here!)
 [[ -r "$OMARCHY_PATH/default/bash/rc" ]] && source "$OMARCHY_PATH/default/bash/rc"
 
-# Add your own exports, aliases, and functions here.
-#
-# Make an alias for invoking commands you use constantly
-# alias p='python'
+# Shared with .zshrc
+DOTFILES="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+[[ -r "$DOTFILES/shell/common.sh" ]] && source "$DOTFILES/shell/common.sh"
 
-export PATH="$HOME/.cargo/bin:$PATH"
-export EDITOR=nvim
-export VISUAL="$EDITOR"
-export SUDO_EDITOR="$EDITOR"
-
-alias cc=claude
 alias ll=ls # specifically for omarchy
-alias l=lazygit
-alias wm=workmux
+
+# Machine-local (untracked): API keys, client PATHs. Keep last so it wins.
+[[ -r ~/.bashrc.local ]] && source ~/.bashrc.local

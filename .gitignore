@@ -11,6 +11,12 @@ htmlcov/
 __pycache__/
 .aider*
 
+# Per-machine identity and secrets (not *.local: .tmux.conf.local is tracked)
+.gitconfig.local
+.gitconfig.work
+.bashrc.local
+.zshrc.local
+
 # Claude Code per-machine permissions
 **/.claude/settings.local.json
 

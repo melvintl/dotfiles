@@ -6,11 +6,13 @@ My personal config across shell, editor, multiplexer, and a few small tools.
 
 | Path | What's there |
 | --- | --- |
-| `.bashrc` | Bash config (Omarchy defaults + personal aliases) |
-| `.zshrc` | Legacy zsh config (oh-my-zsh, base16, zoxide, direnv, fzf) — not installed by `quick_setup.sh` |
+| `.bashrc` | Bash config (Linux/Omarchy) |
+| `.zshrc` | zsh config (macOS: oh-my-zsh, base16, zoxide, direnv, fzf) |
+| `shell/common.sh` | Aliases and exports shared by both shells |
 | `.tmux.conf`, `.tmux.conf.local` | tmux config (based on oh-my-tmux) |
 | `.vimrc` | Legacy Vim config — kept around but Neovim is the daily driver |
-| `.gitconfig` | Git config (delta as pager, aliases) |
+| `.gitconfig` | Git config (delta as pager, aliases) — no identity, see below |
+| `.gitconfig.local.example` | Template for the untracked per-machine git identity |
 | `nvim/` | Neovim setup — see [`nvim/README.md`](nvim/README.md) |
 | `pi/agent/` | `pi` coding-agent config (skills, prompts, models, themes) |
 | `.config/kanata/` | Kanata keyboard remap — see [`.config/kanata/README.md`](.config/kanata/README.md) |
@@ -36,6 +38,15 @@ ln -s ~/myprojects/dotfiles/.config/omarchy/themes/one-dark ~/.config/omarchy/th
 ```
 
 `bin/quick_setup.sh`, `bin/new_debian.sh`, and `bin/new_centos.sh` are starting points for bootstrapping a fresh box — read them before running.
+
+## Per-machine layer
+
+Identity and secrets never go in this repo. Each config sources an untracked `~/*.local` file last:
+
+- `~/.gitconfig.local` — name/email, signing key, `includeIf` for work dirs (template: `.gitconfig.local.example`)
+- `~/.bashrc.local`, `~/.zshrc.local` — API keys, client PATHs
+
+`quick_setup.sh` seeds them if missing; `.gitignore` keeps them out of every repo.
 
 
 ## Linux desktop (i3)
