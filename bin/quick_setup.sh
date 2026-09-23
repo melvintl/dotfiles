@@ -9,8 +9,14 @@ DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$DOTFILES"
 
 ln -s -f "$DOTFILES/.bashrc" ~/.bashrc
-ln -s -f "$DOTFILES/.tmux.conf" ~/.tmux.conf
-ln -s -f "$DOTFILES/.tmux.conf.local" ~/.tmux.conf.local
+# ~/.tmux.conf takes precedence over ~/.config/tmux/tmux.conf, so don't shadow
+# a config another tool owns (Omarchy ships one there)
+if [[ -e ~/.config/tmux/tmux.conf ]]; then
+  echo ">> ~/.config/tmux/tmux.conf exists; leaving tmux config alone"
+else
+  ln -s -f "$DOTFILES/.tmux.conf" ~/.tmux.conf
+  ln -s -f "$DOTFILES/.tmux.conf.local" ~/.tmux.conf.local
+fi
 ln -s -f "$DOTFILES/.vimrc" ~/.vimrc
 ln -s -f "$DOTFILES/bin/tmux-session" ~/.tmux-session
 ln -s -f "$DOTFILES/.gitconfig" ~/.gitconfig
