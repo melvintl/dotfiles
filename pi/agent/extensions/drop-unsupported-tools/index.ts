@@ -7,8 +7,8 @@
  * degrading gracefully.
  *
  * The capability is generic; the model->tool mapping is machine-local and
- * lives in drop-unsupported-tools.local.json next to this file (gitignored,
- * see drop-unsupported-tools.local.json.example). No config file -> no-op.
+ * lives in config.local.json next to this file (gitignored, see
+ * config.local.json.example). No config file -> no-op.
  * Rules are read once per pi process; restart pi after editing the config.
  */
 
@@ -22,7 +22,8 @@ type Rule = { modelPrefixes: string[]; dropTools: string[]; reason?: string };
 const CONFIG_PATH = join(
 	process.env.PI_CODING_AGENT_DIR ?? join(homedir(), ".pi", "agent"),
 	"extensions",
-	"drop-unsupported-tools.local.json",
+	"drop-unsupported-tools",
+	"config.local.json",
 );
 
 function loadRules(): Rule[] {
