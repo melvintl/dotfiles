@@ -17,7 +17,7 @@ extensions/herdr-agent-state.ts
 
 # Machine-local extension config (client-specific values); tracked extensions
 # read these and no-op when absent. Examples ship as *.local.json.example.
-extensions/*.local.json
+extensions/**/*.local.json
 
 # Build/dependency output from skills and extensions.
 **/node_modules/
