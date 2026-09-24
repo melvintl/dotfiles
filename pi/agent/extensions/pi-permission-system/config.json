@@ -389,6 +389,10 @@
       "/tmp/*": "allow"
     },
     "external_directory_read": {
+      "~/code": "allow",
+      "~/code/*": "allow",
+      "~/mynotes": "allow",
+      "~/mynotes/*": "allow",
       "~/myprojects": "allow",
       "~/myprojects/*": "allow",
       "~/Work": "allow",
