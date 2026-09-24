@@ -9,6 +9,9 @@
 [delta]
     navigate = true
     side-by-side = true
+    light = false
+    line-numbers = true
+    syntax-theme = zenburn
 
 [merge]
     conflictstyle = zdiff3

@@ -20,3 +20,9 @@ alias l=lazygit
 alias h="hunk diff --watch"
 alias wm=workmux
 alias cc=claude
+
+# Copy a file's contents (or stdin) to the local clipboard via OSC 52
+# (works over SSH without X11 forwarding/xclip; in tmux needs `set-clipboard on`)
+clipcopy() {
+  printf '\033]52;c;%s\a' "$( { [ $# -ge 1 ] && cat -- "$1" || cat; } | base64 | tr -d '\n')"
+}
