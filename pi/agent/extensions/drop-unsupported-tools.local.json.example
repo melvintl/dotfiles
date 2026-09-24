@@ -1,0 +1,9 @@
+{
+	"rules": [
+		{
+			"modelPrefixes": ["some_gateway_model", "another_prefix_"],
+			"dropTools": ["web_search", "source_check", "fetch_content", "get_search_content"],
+			"reason": "gateway rewrites web_search into params the backend rejects"
+		}
+	]
+}
