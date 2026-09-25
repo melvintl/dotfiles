@@ -32,7 +32,7 @@ ln -s ~/myprojects/dotfiles/.config/kanata ~/.config/kanata
 ln -s ~/myprojects/dotfiles/.config/omarchy/themes/one-dark ~/.config/omarchy/themes/one-dark
 ```
 
-`bin/quick_setup.sh`, `bin/new_debian.sh`, and `bin/new_centos.sh` are starting points for bootstrapping a fresh box — read them before running.
+`bin/quick_setup.sh` links the configs into place. `bin/new_macos.sh`, `bin/new_debian.sh`, and `bin/new_centos.sh` install the tooling per platform — read them before running. The macOS one is idempotent, so re-run it to upgrade the listed tools.
 
 ## Health check
 

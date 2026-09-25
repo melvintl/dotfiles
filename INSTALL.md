@@ -8,6 +8,8 @@ Scope: dev-environment tooling only. The i3 window manager and its helpers (i3, 
 
 ## macOS (Homebrew)
 
+`bin/new_macos.sh` runs everything below except the Python linters and the Karabiner driver step. Safe to re-run; it upgrades the listed tools when they are outdated.
+
 ```bash
 # Formulae
 brew install \
