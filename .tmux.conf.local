@@ -330,11 +330,15 @@ tmux_conf_copy_to_os_clipboard=false
 # -- user customizations -------------------------------------------------------
 # this is the place to override or undo settings
 
-# Enable extended-keys support
-set -g extended-keys on
+# Extended keys + passthrough so TUI agents (Claude Code, pi) get Shift+Enter,
+# modifier combos and OSC sequences through tmux. `always` (not `on`) also
+# requests the mode from the outer terminal (iTerm2, Ghostty).
+set -s extended-keys always
+set -as terminal-features 'xterm*:extkeys'
+set -g allow-passthrough on
 
-# increase history size
-#set -g history-limit 10000
+# increase history size (agent output is long; oh-my-tmux default is 5000)
+set -g history-limit 50000
 
 # start with mouse mode enabled
 set -g mouse on
