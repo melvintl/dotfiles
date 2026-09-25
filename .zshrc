@@ -1,6 +1,6 @@
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
-plugins=(git git-extras)
+plugins=(git git-extras zsh-autosuggestions zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -25,34 +25,23 @@ bindkey -e
 bindkey '^[.' forward-word
 bindkey '^[,' backward-word
 
-function cd() {
-  builtin cd "$@"
-
-  if [[ -z "$VIRTUAL_ENV" ]] ; then
-    ## If vurtualenv folder is found then activate the vitualenv
-      if [[ -d ./.venv ]] ; then
-        source ./.venv/bin/activate
-      fi
-  else
-    ## check the current folder belong to earlier VIRTUAL_ENV folder
-    # if yes then do nothing
-    # else deactivate
-      parentdir="$(dirname "$VIRTUAL_ENV")"
-      if [[ "$PWD"/ != "$parentdir"/* ]] ; then
-        deactivate
-      fi
+# Auto-activate a project .venv on directory change and deactivate on leaving.
+# A chpwd hook rather than a cd() wrapper: zoxide (below) defines its own cd()
+# and would silently replace a wrapper, but chpwd fires for cd, z, zi and pushd.
+_venv_auto() {
+  if [[ -n "$VIRTUAL_ENV" ]]; then
+    [[ "$PWD"/ == "${VIRTUAL_ENV:h}"/* ]] && return
+    # deactivate is undefined when VIRTUAL_ENV was inherited (new tmux pane)
+    if typeset -f deactivate >/dev/null; then deactivate; else unset VIRTUAL_ENV; fi
   fi
+  [[ -d ./.venv ]] && source ./.venv/bin/activate
 }
+autoload -Uz add-zsh-hook
+add-zsh-hook chpwd _venv_auto
+_venv_auto   # new shells and tmux splits start inside a project directory
 
-# Auto activate virtual env in case of tmux split pane
-if [[ $TMUX ]]; then
-      if [[ -d ./.venv ]] ; then
-        source ./.venv/bin/activate
-      fi
-fi
-
-# zoxide (smart cd; `zi` for interactive picker). Bound to `cd`, so it
-# overrides the venv-activating cd() above — must stay below that function.
+# zoxide (smart cd; `cdi` for interactive picker). Bound to `cd`; the venv
+# logic above is a chpwd hook so it keeps working through zoxide's cd().
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh --cmd cd)"
 
 command -v workmux >/dev/null 2>&1 && eval "$(workmux completions zsh)"
