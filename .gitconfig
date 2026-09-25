@@ -16,6 +16,23 @@
 [merge]
     conflictstyle = zdiff3
 
+[diff]
+    algorithm = histogram
+
+[pull]
+    rebase = true
+
+[push]
+    # `git push` sets upstream on the first push of a new branch
+    autoSetupRemote = true
+
+[rebase]
+    autosquash = true
+
+[rerere]
+    # remember conflict resolutions and replay them on rebase/merge
+    enabled = true
+
 [alias]
     co = checkout
     cob = checkout -b
@@ -33,7 +50,6 @@
     master = !git checkout master && git pull origin 
     main = !git checkout main && git pull origin 
     p = push
-    pu = !git push origin `git branch --show-current`
     ls = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate
     ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
     lg = log --graph --oneline --decorate --all
