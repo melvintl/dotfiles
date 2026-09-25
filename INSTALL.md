@@ -174,6 +174,9 @@ rustup component add rust-analyzer
 ## Manual / one-off
 
 - **oh-my-zsh**: `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
+- **zsh plugins** (`.zshrc` lists them; not bundled with oh-my-zsh):
+  `git clone --depth 1 https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions`
+  `git clone --depth 1 https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting`
 - **base16-shell**: `git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell`
 - **bun** (optional JS runtime): `curl -fsSL https://bun.sh/install | bash` — `shell/common.sh` puts `~/.bun/bin` on `PATH` and `.zshrc` loads its completions when present.
 
