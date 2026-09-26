@@ -6,7 +6,7 @@ My personal config across shell, editor, multiplexer, and a few small tools.
 
 ```text
 .bashrc / .zshrc     bash (Linux/Omarchy) and zsh (macOS); shared aliases/PATH in shell/common.sh
-.tmux.conf[.local]   tmux, based on oh-my-tmux
+.tmux.conf           tmux, plain config (no framework)
 .gitconfig           delta as pager, aliases — identity stays in ~/.gitconfig.local (see below)
 .vimrc               legacy; Neovim is the daily driver
 nvim/                Neovim setup
