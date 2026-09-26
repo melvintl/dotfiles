@@ -119,11 +119,8 @@ link_file "$DOTFILES/.config/hunk/config.toml" ~/.config/hunk/config.toml
 mkdir -p ~/.config/workmux/
 link_file "$DOTFILES/.config/workmux/config.yaml" ~/.config/workmux/config.yaml
 
-# Hunk diff reviewer. Omarchy already ships it through mise
-if ! command -v hunk >/dev/null; then
-  if command -v mise >/dev/null; then
-    mise use -g hunk
-  else
-    curl -fsSL https://hunk.dev/install.sh | sh
-  fi
-fi
+# Tool layer: one mise config for every OS (neovim, ripgrep, lazygit, hunk,
+# workmux, language servers, ...). Linked so `mise use -g` writes back into the
+# repo. `make install-<os>` runs `mise install`.
+mkdir -p ~/.config/mise/
+link_file "$DOTFILES/mise/config.toml" ~/.config/mise/config.toml

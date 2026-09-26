@@ -1,27 +1,33 @@
 #!/usr/bin/env bash
-# Bootstrap a fresh RHEL-family box (Rocky/Alma/CentOS Stream 9+, dnf).
-# Starting point only — INSTALL.md is the source of truth; read both first.
+# Bootstrap a fresh RHEL-family box (Rocky/Alma/CentOS Stream 9+, dnf): the
+# base layer via dnf, then the tool layer via mise (mise/config.toml, the one
+# list shared by every OS). Starting point only — read INSTALL.md first.
 
+set -euo pipefail
+
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+echo "==> base layer (dnf)"
 sudo dnf install -y epel-release
 sudo dnf update -y
-
-# NB: EPEL `neovim` may lag the 0.12+ this nvim config needs — see nvim/README.md.
 sudo dnf install -y \
-  zsh tmux neovim vim-enhanced \
-  ripgrep fd-find bat jq ncdu \
-  direnv zoxide \
-  yamllint \
-  the_silver_searcher \
-  git curl wget openssh-server
+  zsh tmux git vim-enhanced \
+  the_silver_searcher ncdu \
+  curl wget openssh-server
+# Check EPEL for the rest of the base layer (`dnf search ctags pspg`); neither
+# is in mise's registry.
 
-# fzf from upstream: creates the ~/.fzf.zsh that .zshrc sources
-[ -d ~/.fzf ] || git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install --key-bindings --completion --no-update-rc
+# mise itself: https://mise.jdx.dev/installing-mise.html. The installer puts it
+# in ~/.local/bin, which shell/common.sh already has on PATH.
+echo "==> mise"
+if ! command -v mise >/dev/null && [[ ! -x "$HOME/.local/bin/mise" ]]; then
+  curl -fsSL https://mise.run | sh
+fi
+export PATH="$HOME/.local/bin:$PATH"
 
-# hunk — standalone binary in ~/.hunk (shell/common.sh puts it on PATH)
-command -v hunk >/dev/null || curl -fsSL https://hunk.dev/install.sh | sh
-
-# Not in base/EPEL — see INSTALL.md for the usual fallbacks:
-#   lazygit (copr: atim/lazygit), git-delta + difftastic (cargo or GitHub
-#   releases), gh (https://cli.github.com/packages), pgcli/pspg/visidata
-#   (pipx / source), jless, yazi, tldr (npm/pipx), tree-sitter-cli, workmux
+# Read the repo file directly so this works before `make setup` has linked it
+# to ~/.config/mise/config.toml.
+echo "==> tool layer (mise/config.toml)"
+export MISE_GLOBAL_CONFIG_FILE="$DOTFILES/mise/config.toml"
+mise install --yes
+mise upgrade --yes

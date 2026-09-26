@@ -13,7 +13,9 @@ path_add() {
 path_add "$HOME/.cargo/bin"
 path_add "$HOME/.local/bin"
 path_add "$HOME/.bun/bin"
-path_add "$HOME/.hunk/bin"
+# mise shims: tools from mise/config.toml, usable before `mise activate` has run
+# its first prompt hook and in non-interactive shells
+path_add "$HOME/.local/share/mise/shims"
 
 alias v=vim
 alias n=nvim

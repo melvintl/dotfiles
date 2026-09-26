@@ -1,0 +1,62 @@
+# Tool layer for every OS: standalone binaries and language-ecosystem tools.
+# `mise install` after the base layer (zsh, tmux, git, ctags, kanata, ...),
+# which stays with brew / apt / pacman / dnf — see INSTALL.md.
+#
+# bin/quick_setup.sh links this to ~/.config/mise/config.toml, so
+# `mise use -g <tool>` writes back into the repo. Everything installs under
+# ~/.local/share/mise; nothing here touches the system package manager.
+#
+# Not here on purpose: Python linters/fixers ALE runs (ruff, pylint, flake8,
+# mypy, black, reorder-python-imports) are installed per project, never globally.
+
+[settings]
+# pipx: tools install through uv (faster, no pipx binary needed)
+pypi.uvx = true
+
+[tools]
+# --- editor ---
+neovim = "latest"
+# nvim-treesitter (main) shells out to the tree-sitter CLI to build parsers;
+# without it every startup re-downloads all parsers and fails to compile.
+tree-sitter = "latest"
+lua-language-server = "latest"
+stylua = "latest"
+
+# --- search / files ---
+ripgrep = "latest"
+fd = "latest"
+fzf = "latest"
+bat = "latest"
+jq = "latest"
+jless = "latest"           # no linux/arm64 build upstream: MISE_DISABLE_TOOLS=jless there
+yazi = "latest"
+tealdeer = "latest"       # tldr client; binary is `tldr`
+
+# --- shell ---
+direnv = "latest"
+zoxide = "latest"
+shellcheck = "latest"
+
+# --- git / agents ---
+lazygit = "latest"
+delta = "latest"
+difftastic = "latest"
+gh = "latest"
+hunk = "latest"
+"github:raine/workmux" = "latest"   # tmux prefix+a dashboard expects it on PATH
+
+# --- language servers (Neovim, lua/custom/lsp.lua) ---
+rust-analyzer = "latest"
+node = "lts"
+"npm:typescript" = "latest"
+"npm:typescript-language-server" = "latest"
+"npm:pyright" = "latest"
+"npm:prettier" = "latest"
+"npm:eslint" = "latest"
+uv = "latest"
+"pipx:jedi-language-server" = "latest"
+
+# --- python CLIs ---
+"pipx:pgcli" = "latest"
+"pipx:visidata" = "latest"
+"pipx:yamllint" = "latest"

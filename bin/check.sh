@@ -36,6 +36,12 @@ git_config_parses() {
   git config --file .gitconfig --list >/dev/null
 }
 
+# Parse only, no network. Loading the repo file as the global config sidesteps
+# the `mise trust` prompt a project-level config would need.
+mise_config_parses() {
+  MISE_GLOBAL_CONFIG_FILE="$ROOT/mise/config.toml" mise config ls >/dev/null
+}
+
 # Compile-only Lua syntax check through Neovim's bundled LuaJIT, used when no
 # standalone luac is installed (macOS without `brew install lua`).
 lua_syntax_nvim() {
@@ -78,6 +84,7 @@ for path in \
   .gitconfig \
   .gitconfig.local.example \
   shell/common.sh \
+  mise/config.toml \
   nvim/init.lua
   do
   run_check "$path exists" require_file "$path"
@@ -112,6 +119,13 @@ fi
 
 info "git config"
 run_check "git config parses" git_config_parses
+
+info "mise config"
+if command -v mise >/dev/null 2>&1; then
+  run_check "mise parses mise/config.toml" mise_config_parses
+else
+  warn "mise not found; skipping mise/config.toml parse check"
+fi
 
 info "Lua syntax"
 lua_compiler=""
@@ -159,7 +173,7 @@ else
 fi
 
 info "optional tool availability"
-for cmd in git tmux nvim rg fd fzf jq lazygit delta hunk workmux; do
+for cmd in git tmux mise nvim rg fd fzf jq lazygit delta hunk workmux; do
   if command -v "$cmd" >/dev/null 2>&1; then
     ok "$cmd found"
   else

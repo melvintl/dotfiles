@@ -1,36 +1,36 @@
 #!/usr/bin/env bash
-# Bootstrap a fresh Debian/Ubuntu box. Mirrors INSTALL.md (the source of
-# truth for the tool list and fallbacks) — read both before running.
+# Bootstrap a fresh Debian/Ubuntu box: the base layer via apt, then the tool
+# layer via mise (mise/config.toml, the one list shared by every OS). Read
+# INSTALL.md first. Safe to re-run.
 
+set -euo pipefail
+
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Base layer: system-level, needs root, or not in mise's registry. Everything
+# else (neovim, ripgrep, fzf, lazygit, language servers, ...) is in
+# mise/config.toml, which also sidesteps apt's stale neovim/fzf and the
+# fdfind/batcat renames.
+echo "==> base layer (apt)"
 sudo apt update
-
-# NB: apt `neovim` is usually older than the 0.12+ this nvim config needs;
-# grab the official release instead if so — see nvim/README.md.
 sudo apt install -y \
-  zsh tmux neovim vim-gtk3 exuberant-ctags \
-  ripgrep silversearcher-ag fd-find bat jq ncdu tldr \
-  direnv pipx zoxide \
-  pgcli pspg \
-  yamllint \
-  lazygit git-delta gh \
-  visidata \
-  git curl wget openssh-server build-essential
+  zsh tmux git vim-gtk3 universal-ctags \
+  silversearcher-ag ncdu pspg \
+  curl wget openssh-server build-essential
 
-# fd and bat install under different names on Debian/older Ubuntu
-mkdir -p ~/.local/bin
-command -v fd  >/dev/null || ln -sf "$(command -v fdfind)" ~/.local/bin/fd
-command -v bat >/dev/null || { command -v batcat >/dev/null && ln -sf "$(command -v batcat)" ~/.local/bin/bat; }
+# mise itself: https://mise.jdx.dev/installing-mise.html. The installer puts it
+# in ~/.local/bin, which shell/common.sh already has on PATH.
+echo "==> mise"
+if ! command -v mise >/dev/null && [[ ! -x "$HOME/.local/bin/mise" ]]; then
+  curl -fsSL https://mise.run | sh
+fi
+export PATH="$HOME/.local/bin:$PATH"
 
-# fzf from upstream: apt's fzf predates `fzf --zsh`, so .zshrc falls back to the
-# ~/.fzf.zsh this creates
-[ -d ~/.fzf ] || git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install --key-bindings --completion --no-update-rc
+# Read the repo file directly so this works before `make setup` has linked it
+# to ~/.config/mise/config.toml.
+echo "==> tool layer (mise/config.toml)"
+export MISE_GLOBAL_CONFIG_FILE="$DOTFILES/mise/config.toml"
+mise install --yes
+mise upgrade --yes
 
-# yazi is in apt only on Ubuntu 24.04+; cargo/release fallbacks in INSTALL.md
-sudo apt install -y yazi || echo ">> yazi not packaged here; see INSTALL.md"
-
-# hunk — standalone binary in ~/.hunk (shell/common.sh puts it on PATH)
-command -v hunk >/dev/null || curl -fsSL https://hunk.dev/install.sh | sh
-
-# Not packaged on apt — see INSTALL.md for install options:
-#   jless, difftastic, kanata, tree-sitter-cli (npm/cargo), workmux
+# Not on apt and not in mise: kanata — GitHub release binary, see INSTALL.md.
