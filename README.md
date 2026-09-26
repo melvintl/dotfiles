@@ -5,7 +5,7 @@ My personal config across shell, editor, multiplexer, and a few small tools.
 ## Layout
 
 ```text
-.bashrc / .zshrc     bash (Linux/Omarchy) and zsh (macOS); shared aliases/PATH in shell/common.sh
+.bashrc / .zshrc     zsh everywhere (macOS, Ubuntu); bash only on Omarchy. Shared aliases/PATH in shell/common.sh
 .tmux.conf           tmux, plain config (no framework)
 .gitconfig           delta as pager, aliases — identity stays in ~/.gitconfig.local (see below)
 nvim/                Neovim setup

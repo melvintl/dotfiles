@@ -69,7 +69,7 @@ fi
 link_file "$DOTFILES/bin/tmux-session" ~/.tmux-session
 link_file "$DOTFILES/.gitconfig" ~/.gitconfig
 link_file "$DOTFILES/.gitignore" ~/.gitignore
-# zsh is the Mac shell; only link it where zsh exists
+# zsh is the daily shell (macOS, Ubuntu); bash is Omarchy only. Link zsh where it exists
 if command -v zsh >/dev/null; then
   link_file "$DOTFILES/.zshrc" ~/.zshrc
 
