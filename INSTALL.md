@@ -34,7 +34,7 @@ brew install \
 "$(brew --prefix)/opt/fzf/install" --key-bindings --completion --no-update-rc
 
 # workmux — git-worktree + tmux orchestration for parallel agents
-# (tapped formula; the `.tmux.conf.local` prefix+a dashboard popup expects it
+# (tapped formula; the `.tmux.conf` prefix+a dashboard popup expects it
 # on PATH)
 brew install raine/workmux/workmux
 

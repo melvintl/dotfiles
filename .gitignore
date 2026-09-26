@@ -15,7 +15,7 @@ htmlcov/
 __pycache__/
 .aider*
 
-# Per-machine identity and secrets (not *.local: .tmux.conf.local is tracked)
+# Per-machine identity and secrets
 .gitconfig.local
 .gitconfig.work
 .bashrc.local

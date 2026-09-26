@@ -3,7 +3,7 @@
 An [Omarchy](https://omarchy.org/) theme that matches the rest of this repo:
 the [`onedark.nvim`](https://github.com/navarasu/onedark.nvim) palette used by
 `nvim/lua/plugins/look_n_feel.lua`, and the One Dark colours already hand-set in
-`.tmux.conf.local` (`tmux_conf_theme_colour_1/4/5/9/15`). The accent is One Dark
+`.tmux.conf` (the `bg`/`fg`/`yellow` variables in its theme section). The accent is One Dark
 yellow `#e5c07b` rather than the more usual blue, so Hyprland's active window
 border and the bar match the tmux status line.
 
@@ -27,9 +27,9 @@ Core One Dark values, shared with nvim and tmux:
 
 | Role | Hex | Also used as |
 | --- | --- | --- |
-| `background` | `#282c34` | tmux `colour_1` / `colour_15` |
-| `foreground` | `#abb2bf` | tmux `colour_4` |
-| `accent` / `yellow` | `#e5c07b` | Hyprland active border, bar accent — tmux `colour_5` / `colour_9` |
+| `background` | `#282c34` | tmux `bg` |
+| `foreground` | `#abb2bf` | tmux `fg` |
+| `accent` / `yellow` | `#e5c07b` | Hyprland active border, bar accent — tmux `yellow` |
 | `blue` | `#61afef` | terminal blue, nvim/lualine normal mode |
 | `selection` | `#3e4451` | |
 | `muted` | `#5c6370` | terminal bright black |

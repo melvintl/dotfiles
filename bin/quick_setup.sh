@@ -59,7 +59,6 @@ if [[ -e ~/.config/tmux/tmux.conf ]]; then
   echo ">> ~/.config/tmux/tmux.conf exists; leaving tmux config alone"
 else
   link_file "$DOTFILES/.tmux.conf" ~/.tmux.conf
-  link_file "$DOTFILES/.tmux.conf.local" ~/.tmux.conf.local
 fi
 link_file "$DOTFILES/.vimrc" ~/.vimrc
 link_file "$DOTFILES/bin/tmux-session" ~/.tmux-session

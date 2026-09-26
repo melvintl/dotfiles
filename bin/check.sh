@@ -47,7 +47,6 @@ for path in \
   .bashrc \
   .zshrc \
   .tmux.conf \
-  .tmux.conf.local \
   .gitconfig \
   .gitconfig.local.example \
   shell/common.sh \
