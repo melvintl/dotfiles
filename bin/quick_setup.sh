@@ -17,7 +17,7 @@ backup_path() {
     return 0
   fi
 
-  local relative="${target#$HOME/}"
+  local relative="${target#"$HOME"/}"
   local backup="$BACKUP_DIR/$relative"
   mkdir -p "$(dirname "$backup")"
 
@@ -69,7 +69,7 @@ fi
 link_file "$DOTFILES/bin/tmux-session" ~/.tmux-session
 link_file "$DOTFILES/.gitconfig" ~/.gitconfig
 link_file "$DOTFILES/.gitignore" ~/.gitignore
-# zsh is the Mac shell; only link it where zsh exists
+# zsh is the daily shell (macOS, Ubuntu); bash is Omarchy only. Link zsh where it exists
 if command -v zsh >/dev/null; then
   link_file "$DOTFILES/.zshrc" ~/.zshrc
 
@@ -119,11 +119,8 @@ link_file "$DOTFILES/.config/hunk/config.toml" ~/.config/hunk/config.toml
 mkdir -p ~/.config/workmux/
 link_file "$DOTFILES/.config/workmux/config.yaml" ~/.config/workmux/config.yaml
 
-# Hunk diff reviewer. Omarchy already ships it through mise
-if ! command -v hunk >/dev/null; then
-  if command -v mise >/dev/null; then
-    mise use -g hunk
-  else
-    curl -fsSL https://hunk.dev/install.sh | sh
-  fi
-fi
+# Tool layer: one mise config for every OS (neovim, ripgrep, lazygit, hunk,
+# workmux, language servers, ...). Linked so `mise use -g` writes back into the
+# repo. `make install-<os>` runs `mise install`.
+mkdir -p ~/.config/mise/
+link_file "$DOTFILES/mise/config.toml" ~/.config/mise/config.toml

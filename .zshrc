@@ -14,6 +14,11 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
     [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
         eval "$("$BASE16_SHELL/profile_helper.sh")"
 
+# mise: the tool layer (mise/config.toml). Before fzf/zoxide/direnv so their
+# `command -v` checks see the mise-installed binaries, and before direnv so a
+# project .envrc can still override tool versions.
+command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"
+
 # fzf keybindings (C-r history, C-t files, **<Tab>) and completion. `fzf --zsh`
 # (0.48+) works however fzf was installed; ~/.fzf.zsh is the older
 # git-install fallback (bin/new_debian.sh, older fzf on Debian stable).

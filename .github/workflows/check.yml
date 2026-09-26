@@ -18,7 +18,13 @@ jobs:
       - name: Install check dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y zsh lua5.4
+          sudo apt-get install -y zsh lua5.4 shellcheck
+
+      # For the mise/config.toml parse check in bin/check.sh
+      - name: Install mise
+        run: |
+          curl -fsSL https://mise.run | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Install stylua
         run: |

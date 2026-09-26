@@ -11,64 +11,29 @@
 
 ## Other binaries that are required
 
-Install these with your system's package manager:
+Neovim itself, the `tree-sitter` CLI, `ripgrep` and every language server
+below come from the repo's `mise/config.toml` (`mise install`, see
+`../INSTALL.md`). From the system package manager you still need `git`, `make`
+and a C compiler: lazy.nvim clones plugins and some have a build step.
 
-- `git`, `make` and a C compiler: lazy.nvim clones plugins and some have a
-  build step.
 - `tree-sitter` CLI: the nvim-treesitter `main` branch shells out to it to
   build parsers. Without it, every startup re-downloads all parsers and fails
   compiling with `ENOENT: no such file or directory (cmd): 'tree-sitter'`.
-  - macOS: `brew install tree-sitter-cli` — note the `-cli` suffix; the plain
-    `tree-sitter` formula is only the C library and ships no binary.
-  - Arch: `sudo pacman -S tree-sitter-cli`
-  - Debian/Ubuntu: not packaged; use `npm install -g tree-sitter-cli` or
-    `cargo install tree-sitter-cli`.
+  If you install it by hand instead of via mise: on macOS the brew formula is
+  `tree-sitter-cli`; the plain `tree-sitter` formula is only the C library.
 - `ripgrep`: used by Telescope live grep.
-- `fzf` and `direnv`: optional, used outside Neovim.
 
 ## Language servers
 
-### To setup jedi server:
+All installed by `mise install` from `mise/config.toml`: `jedi-language-server`
+(Python), `typescript-language-server` + `typescript`, `eslint` and `prettier`
+(TypeScript/JavaScript; see `docs/typescript-setup.md`), `rust-analyzer`, and
+`lua-language-server`.
 
-```bash
-python3 -m pip install --user pipx
-# python3 -m pip install --user pipx --break-system-packages
-python3 -m pipx ensurepath
-pipx install jedi-language-server
-```
-
-### To setup TypeScript language server:
-
-```bash
-# Install TypeScript language server
-npm install -g typescript typescript-language-server
-
-# Install ESLint for linting
-npm install -g eslint
-
-# Install Prettier for formatting
-npm install -g prettier
-```
-
-See `docs/typescript-setup.md` for more detailed TypeScript setup instructions.
-
-### To setup the Lua language server (optional):
-
-Used by `lazydev.nvim` to give completion/hover/diagnostics for the Neovim Lua
-API (`vim.*`) while editing this config. `lua_ls` is already enabled in
-`lua/custom/lsp.lua`; it only needs the binary. Without it Neovim skips the
-server silently (one line in `lsp.log`) and `lazydev` stays inert.
-
-```bash
-# Arch
-sudo pacman -S lua-language-server
-
-# macOS
-brew install lua-language-server
-
-# Debian/Ubuntu (or download a release from the LuaLS GitHub)
-# sudo apt install lua-language-server
-```
+`lua-language-server` drives `lazydev.nvim`, which gives completion, hover and
+diagnostics for the Neovim Lua API (`vim.*`) while editing this config.
+`lua_ls` is enabled in `lua/custom/lsp.lua`; without the binary Neovim skips
+the server silently (one line in `lsp.log`) and `lazydev` stays inert.
 
 ## Fonts
 

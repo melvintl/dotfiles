@@ -1,39 +1,31 @@
 #!/usr/bin/env bash
-# Bootstrap or refresh a macOS box. Mirrors INSTALL.md (the source of truth
-# for the tool list) — read both before running.
+# Bootstrap or refresh a macOS box: the base layer via Homebrew, then the tool
+# layer via mise (mise/config.toml, the one list shared by every OS). Read
+# INSTALL.md first.
 #
 # Assumes Homebrew is already installed. Safe to re-run: installs what is
-# missing and upgrades what is outdated, only for the tools listed here.
+# missing and upgrades what is outdated, only for the tools listed here and in
+# mise/config.toml.
 #
 # Skips the Python linters/fixers ALE uses (ruff, pylint, flake8, mypy, black,
-# reorder-python-imports); install those per project or via pipx — see
-# INSTALL.md.
+# reorder-python-imports); install those per project — see INSTALL.md.
 
 set -euo pipefail
+
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 if ! command -v brew >/dev/null; then
   echo "Homebrew not found: https://brew.sh" >&2
   exit 1
 fi
 
+# Base layer: system-level, needs root, or not in mise's registry. Everything
+# else (neovim, ripgrep, lazygit, language servers, ...) is in mise/config.toml.
 FORMULAE=(
-  zsh tmux neovim vim universal-ctags
-  # nvim-treesitter (main) shells out to this to build parsers. The plain
-  # `tree-sitter` formula is the C library only and ships no binary.
-  tree-sitter-cli
-  fzf ripgrep the_silver_searcher fd bat jq jless ncdu yazi tldr
-  direnv pipx zoxide
-  pgcli pspg
-  yamllint
+  zsh tmux git vim universal-ctags
+  the_silver_searcher ncdu pspg
   kanata
-  lazygit git-delta gh hunk difftastic
-  visidata
-  # Language servers packaged by brew
-  lua-language-server rust-analyzer
-  # node: npm globals below need it
-  node
-  # workmux — git-worktree + tmux orchestration (tmux prefix+a dashboard)
-  raine/workmux/workmux
+  mise
 )
 
 CASKS=(
@@ -43,24 +35,13 @@ CASKS=(
   karabiner-elements
 )
 
-NPM_GLOBALS=(
-  pyright
-  typescript typescript-language-server
-  prettier eslint
-)
-
-PIPX_TOOLS=(
-  jedi-language-server
-)
-
 echo "==> brew update"
 brew update
 
 echo "==> formulae"
-brew tap raine/workmux >/dev/null 2>&1 || true
 missing=()
 for f in "${FORMULAE[@]}"; do
-  brew list --formula "${f##*/}" >/dev/null 2>&1 || missing+=("$f")
+  brew list --formula "$f" >/dev/null 2>&1 || missing+=("$f")
 done
 if ((${#missing[@]})); then
   brew install "${missing[@]}"
@@ -82,7 +63,7 @@ echo "==> upgrade outdated (listed tools only)"
 outdated=()
 while IFS= read -r name; do
   for f in "${FORMULAE[@]}" "${CASKS[@]}"; do
-    [[ "$name" == "${f##*/}" ]] && outdated+=("$name") && break
+    [[ "$name" == "$f" ]] && outdated+=("$name") && break
   done
 done < <(brew outdated --quiet)
 if ((${#outdated[@]})); then
@@ -91,24 +72,23 @@ else
   echo ">> nothing to upgrade"
 fi
 
-echo "==> npm globals"
-npm install -g "${NPM_GLOBALS[@]}"
+# Read the repo file directly so this works before `make setup` has linked it
+# to ~/.config/mise/config.toml.
+echo "==> tool layer (mise/config.toml)"
+export MISE_GLOBAL_CONFIG_FILE="$DOTFILES/mise/config.toml"
+mise install --yes
+mise upgrade --yes
 
-echo "==> pipx tools"
-pipx ensurepath >/dev/null
-for t in "${PIPX_TOOLS[@]}"; do
-  # Skip if already on PATH from another installer (uv tool, system package)
-  command -v "$t" >/dev/null || pipx install "$t"
-done
-
-cat <<'EOF'
+cat <<'MSG'
 
 Done. Manual follow-ups (see INSTALL.md):
+  - Open a new shell: .zshrc runs `mise activate zsh` to put the tool layer
+    on PATH. If brew also has a copy of something now in mise/config.toml
+    (neovim, ripgrep, ...), `brew uninstall` it so only one copy runs.
   - kanata: activate the Karabiner driver once, then approve it in
     System Settings → General → Login Items & Extensions → Driver Extensions:
       /Applications/.Karabiner-VirtualHIDDevice-Manager.app/Contents/MacOS/Karabiner-VirtualHIDDevice-Manager activate
   - Python linters for ALE (ruff, pylint, flake8, mypy) are not installed here.
   - Neovim: open it and run :Lazy clean, :TSUpdate, :checkhealth.
-  - `brew autoremove` drops dependencies nothing uses any more (e.g. the
-    deprecated tree-sitter@0.25 after a neovim upgrade).
-EOF
+  - `brew autoremove` drops dependencies nothing uses any more.
+MSG

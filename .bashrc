@@ -17,5 +17,9 @@ DOTFILES="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
 alias ll=ls # specifically for omarchy
 
+# mise tool layer (mise/config.toml). Omarchy's rc activates it already
+# (MISE_SHELL set); this covers the bashrc on any other box.
+[[ -z "${MISE_SHELL:-}" ]] && command -v mise >/dev/null && eval "$(mise activate bash)"
+
 # Machine-local (untracked): API keys, client PATHs. Keep last so it wins.
 [[ -r ~/.bashrc.local ]] && source ~/.bashrc.local

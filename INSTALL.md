@@ -1,41 +1,71 @@
 # Install Checklist
 
-Tools the configs in this repo expect on `PATH`. Copy the block for your platform — each section is one command (or one per package manager).
+Tools the configs in this repo expect on `PATH`, in two layers:
 
-Scope: dev-environment tooling only. The retired i3 desktop config and its packages live under [`legacy/`](legacy/README.md).
+1. **Base layer**, per OS, from the system package manager: the shell, tmux,
+   git, a C toolchain, anything that needs root (kanata), and the few tools
+   mise's registry lacks (ctags, ag, ncdu, pspg). Short lists below.
+2. **Tool layer**, from [`mise/config.toml`](mise/config.toml): editor, search
+   tools, git tooling, language servers, Python CLIs. One list for every OS,
+   installed per user under `~/.local/share/mise`, no sudo.
+
+`make install-macos`, `make install-debian` and `make install-centos` run both
+layers. On Arch, run the pacman block then `mise install`.
+
+Scope: dev-environment tooling only. The Python linters/fixers ALE runs (ruff,
+pylint, flake8, mypy, black, reorder-python-imports) are installed per project,
+never globally. The retired i3 desktop config and its packages live under
+[`legacy/`](legacy/README.md).
+
+---
+
+## Tool layer (all platforms)
+
+```bash
+mise install    # reads ~/.config/mise/config.toml, linked to mise/config.toml by `make setup`
+mise upgrade    # later: bump everything pinned to "latest"
+mise ls         # what is installed, from which config
+```
+
+`.zshrc` runs `mise activate zsh` and `shell/common.sh` puts mise's shims on
+`PATH`, so new shells see the tools. Omarchy's own bash rc activates mise
+already; `.bashrc` only activates it elsewhere.
+
+Notes:
+- **One owner per tool.** brew, apt and mise keep separate copies in separate
+  places and do not update each other's. If the system package manager already
+  installed something that is now in `mise/config.toml` (neovim, ripgrep, ...),
+  remove that copy so it is obvious which binary runs. On Omarchy some
+  duplicates are unavoidable because the distro ships them; the mise copy is
+  earlier on `PATH` and wins.
+- **Adding a tool:** `mise use -g <tool>` writes to the linked config, so the
+  repo picks it up; commit it. `mise registry | grep <name>` shows what is
+  available; `npm:`, `pipx:`, `cargo:` and `github:owner/repo` prefixes cover
+  the rest.
+- **rust-analyzer** comes from mise. If you install the Rust toolchain via
+  rustup, prefer `rustup component add rust-analyzer` and drop it from
+  `mise/config.toml` to avoid two copies on `PATH`.
+- **Per-project pins:** a repo with its own `mise.toml` or `.tool-versions`
+  overrides the global node/python version inside that directory.
+- **Old glibc:** the tool layer is prebuilt binaries. Ubuntu, Debian stable and
+  Rocky/Alma 9+ are fine; CentOS 7 is not.
+- **ARM Linux:** `jless` ships no linux/arm64 binary. On an ARM box (or an
+  arm64 container on Apple Silicon) run with `MISE_DISABLE_TOOLS=jless`, or
+  `cargo install jless`.
 
 ---
 
 ## macOS (Homebrew)
 
-`bin/new_macos.sh` runs everything below except the Python linters and the Karabiner driver step. Safe to re-run; it upgrades the listed tools when they are outdated.
+`bin/new_macos.sh` runs everything below plus the tool layer, then upgrades.
+Safe to re-run.
 
 ```bash
-# Formulae
 brew install \
-  zsh tmux neovim vim universal-ctags \
-  tree-sitter-cli \
-  fzf ripgrep the_silver_searcher fd bat jq jless ncdu yazi tldr \
-  direnv pipx zoxide \
-  pgcli pspg \
-  yamllint \
+  zsh tmux git vim universal-ctags \
+  the_silver_searcher ncdu pspg \
   kanata \
-  lazygit git-delta gh hunk difftastic \
-  visidata
-
-# NB: `tree-sitter-cli` is the binary nvim-treesitter (main branch) shells out
-# to when building parsers. The similarly named `tree-sitter` formula is the C
-# library only — installing it does NOT put a `tree-sitter` command on PATH,
-# and without the CLI every Neovim startup re-downloads all parsers and fails
-# to compile them ("ENOENT: 'tree-sitter'").
-
-# fzf keybindings/completion: .zshrc uses `fzf --zsh` (fzf 0.48+), so brew's
-# fzf needs no extra install step.
-
-# workmux — git-worktree + tmux orchestration for parallel agents
-# (tapped formula; the `.tmux.conf` prefix+a dashboard popup expects it
-# on PATH)
-brew install raine/workmux/workmux
+  mise
 
 # Casks (fonts + kanata driver)
 brew install --cask \
@@ -47,125 +77,77 @@ brew install --cask \
 /Applications/.Karabiner-VirtualHIDDevice-Manager.app/Contents/MacOS/Karabiner-VirtualHIDDevice-Manager activate
 # Then approve in System Settings → General → Login Items & Extensions → Driver Extensions.
 # See .config/kanata/README.md for the full procedure.
+
+mise install
 ```
 
 ---
 
 ## Debian / Ubuntu (apt)
 
+`bin/new_debian.sh` runs this plus the mise installer and `mise install`.
+
 ```bash
 sudo apt update && sudo apt install -y \
-  zsh tmux neovim vim-gtk3 exuberant-ctags \
-  fzf ripgrep silversearcher-ag fd-find bat jq ncdu tldr \
-  direnv pipx zoxide \
-  pgcli pspg \
-  yamllint \
-  lazygit git-delta gh \
-  visidata \
-  git curl wget openssh-server build-essential
+  zsh tmux git vim-gtk3 universal-ctags \
+  silversearcher-ag ncdu pspg \
+  curl wget openssh-server build-essential
+
+curl -fsSL https://mise.run | sh    # installs to ~/.local/bin (on PATH via shell/common.sh)
+mise install
 ```
 
 Notes:
-- apt `neovim` is usually older than the 0.12+ this nvim config needs (see `nvim/README.md`); use the [official release](https://github.com/neovim/neovim/releases) if so.
-- apt `fzf` doesn't create the `~/.fzf.zsh` that `.zshrc` sources — clone upstream and run its installer instead: `git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install --key-bindings --completion --no-update-rc`.
-- `fd-find` installs the binary as `fdfind`; alias it: `ln -s $(which fdfind) ~/.local/bin/fd`.
-- `bat` installs as `batcat` on older Ubuntu; same trick: `ln -s $(which batcat) ~/.local/bin/bat`.
-- `lazygit`, `git-delta`, `gh` require recent Ubuntu (24.04+) or their respective PPAs; fall back to the GitHub releases on older distros.
-- `zoxide` shell integration is already wired up in `.zshrc` and only kicks in once the binary is on `PATH`.
-- `jless` isn't packaged on apt — install via `cargo install jless` or grab a binary from <https://github.com/PaulJuliusMartinez/jless/releases>.
-- `yazi` lands in apt only on Ubuntu 24.04+; on older releases use `cargo install --locked yazi-fm yazi-cli` or the GitHub releases.
-- `hunk` isn't packaged on apt: `curl -fsSL https://hunk.dev/install.sh | sh` (standalone binary in `~/.hunk`) or `mise use -g hunk`.
-- `difftastic` (`difft`, behind the `git dft` alias) isn't packaged on apt — install via `cargo install --locked difftastic`.
-- Kanata isn't packaged on apt; grab the latest release binary from <https://github.com/jtroo/kanata/releases> if you want it on Linux.
-- `tree-sitter` CLI (needed by nvim-treesitter to build parsers) isn't packaged on apt — install via `npm install -g tree-sitter-cli` or `cargo install tree-sitter-cli`.
-- `workmux` isn't packaged on apt — install via `curl -fsSL https://raw.githubusercontent.com/raine/workmux/main/scripts/install.sh | bash`, `cargo install workmux`, or Homebrew on Linux (`brew install raine/workmux/workmux`).
+- The tool layer sidesteps the apt problems the old list had: no stale
+  neovim or fzf, no `fdfind`/`batcat` renames, no missing yazi, jless or delta
+  on older releases.
+- Kanata isn't packaged on apt; grab the latest release binary from
+  <https://github.com/jtroo/kanata/releases> if you want it on Linux.
 
 ---
 
 ## Arch Linux (pacman + AUR)
 
-Omarchy and other Arch boxes. Most Neovim language servers and linters are in the
-official repos here, so prefer pacman over `npm -g` / `pipx` on this platform.
+Omarchy and other Arch boxes. Omarchy ships mise, so only the base layer
+comes from pacman.
 
 ```bash
-# Base dev tooling (official repos)
 sudo pacman -S --needed \
-  zsh tmux neovim vim ctags \
-  tree-sitter-cli \
-  fzf ripgrep the_silver_searcher fd bat jq jless ncdu yazi tldr \
-  direnv python-pipx zoxide \
-  pgcli \
-  yamllint \
-  lazygit git-delta github-cli difftastic \
-  visidata \
-  git curl wget openssh base-devel
-
-# Language servers + linters/formatters for Neovim (official repos)
-sudo pacman -S --needed \
-  jedi-language-server typescript-language-server pyright rust-analyzer lua-language-server \
-  ruff python-pylint python-flake8 mypy python-black \
-  prettier eslint \
-  python-debugpy
+  zsh tmux git vim ctags \
+  the_silver_searcher ncdu \
+  curl wget openssh base-devel \
+  mise
 
 # AUR (via yay, shipped with Omarchy)
 yay -S pspg
 # kanata is AUR too, if you want it on Linux: yay -S kanata
+
+mise install
 ```
 
 Notes:
-- `ctags` on Arch *is* universal-ctags — no separate package, no `exuberant-ctags`.
-- `hunk` ships with Omarchy through mise. On other Arch boxes: `mise use -g hunk` or `curl -fsSL https://hunk.dev/install.sh | sh`.
-- `reorder-python-imports` (an ALE Python fixer) isn't packaged: `pipx install reorder-python-imports`.
-- `rust-analyzer` from pacman is standalone and needs no rustup. If you install the
-  Rust toolchain via `rustup` instead, use `rustup component add rust-analyzer` and
-  skip the pacman package to avoid two copies on `PATH`.
-- `workmux` isn't in the official repos — install via `mise use -g cargo:raine/workmux` (fits Omarchy) or `cargo install workmux`.
-- Skip the npm-globals section below on Arch unless a tool is missing from the repos —
-  and note that if `node` comes from a version manager (mise, nvm, asdf), `npm -g`
-  binaries live inside that runtime's directory and disappear when you change versions.
+- `ctags` on Arch *is* universal-ctags; no separate package.
+- Language servers, linters and formatters used to come from pacman here. They
+  now come from `mise/config.toml` like everywhere else; skip the pacman
+  packages for those so only one copy is on `PATH`.
 
 ---
 
-## npm globals (language servers + JS tooling for Neovim)
+## RHEL family (dnf)
 
-Assumes `node`/`npm` on `PATH` — none of the platform lists above install it.
-Use mise (`mise use -g node@lts`, ships with Omarchy) or nvm.
-
-```bash
-npm install -g \
-  pyright \
-  typescript typescript-language-server \
-  prettier eslint
-```
-
----
-
-## pipx / pip (Python tooling for Neovim + CLI)
+Rocky/Alma/CentOS Stream 9+. `bin/new_centos.sh` runs this plus the mise
+installer and `mise install`; it is a starting point, not a tested path.
 
 ```bash
-# pipx for tools you invoke as commands
-pipx install ruff
-pipx install pylint
-pipx install flake8
-pipx install mypy
-pipx install black
-pipx install reorder-python-imports
-pipx install jedi-language-server
+sudo dnf install -y epel-release
+sudo dnf install -y \
+  zsh tmux git vim-enhanced \
+  the_silver_searcher ncdu \
+  curl wget openssh-server
+# ctags and pspg: check EPEL (`dnf search ctags pspg`)
 
-# pip (inside a venv / project) for libraries Neovim's DAP and pytest hooks load
-pip install debugpy pytest pytest-picked pytest-testmon
-```
-
----
-
-## Rust (rust-analyzer LSP)
-
-```bash
-# If rustup is already installed:
-rustup component add rust-analyzer
-
-# Otherwise, install rustup first:
-# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+curl -fsSL https://mise.run | sh
+mise install
 ```
 
 ---
@@ -177,6 +159,7 @@ rustup component add rust-analyzer
   `~/.oh-my-zsh`, `~/.oh-my-zsh/custom/plugins/`, `~/.config/base16-shell`).
   Re-run the script to add them on an existing machine.
 - **bun** (optional JS runtime): `curl -fsSL https://bun.sh/install | bash` — `shell/common.sh` puts `~/.bun/bin` on `PATH` and `.zshrc` loads its completions when present.
+- **Per-project Python tooling** (inside the project's venv): `pip install debugpy pytest pytest-picked pytest-testmon` for Neovim's DAP and pytest hooks, plus whichever of ruff/pylint/flake8/mypy the project uses.
 
 ---
 
@@ -193,7 +176,7 @@ brew install ollama                              # macOS
 # curl -fsSL https://ollama.com/install.sh | sh  # Linux
 
 # aider — CLI pair-programmer
-pipx install aider-chat
+uv tool install aider-chat
 
 # Pi — minimal terminal coding harness (pi.dev)
 curl -fsSL https://pi.dev/install.sh | sh
@@ -203,18 +186,22 @@ curl -fsSL https://pi.dev/install.sh | sh
 
 ## What each tool is for
 
+Layer column: **base** = system package manager, **mise** = `mise/config.toml`,
+**project** = per-project install.
+
 | Category | Tools |
 | --- | --- |
-| Shell | `zsh`, `oh-my-zsh` (theme `robbyrussell`, plugins `git`, `git-extras`), `base16-shell`, `direnv`, `tmux`, `fzf`, `zoxide`, `pipx` |
-| Editors | `vim`, `neovim`, `universal-ctags`, `tree-sitter-cli` (parser builds for nvim-treesitter) |
-| Search / files | `ripgrep`, `the_silver_searcher` (`ag`), `fd`, `bat`, `jq`, `jless`, `ncdu`, `yazi`, `tldr`, `visidata` |
-| Neovim LSPs | `jedi-language-server`, `pyright`, `typescript-language-server`, `rust-analyzer` |
-| Neovim linters / formatters (via ALE) | `ruff`, `pylint`, `flake8`, `mypy`, `black`, `reorder-python-imports`, `prettier`, `eslint` |
-| Neovim debug / test | `debugpy`, `pytest`, `pytest-picked`, `pytest-testmon` |
-| Git tooling | `lazygit`, `git-delta`, `gh`, `difftastic` (`difft`, syntax-aware diffs via `git dft`), `hunk` (diff review of agent changes), `workmux` (git-worktree + tmux orchestration for parallel agents; tmux prefix+a dashboard) |
+| Shell | base: `zsh`, `tmux`, `oh-my-zsh` (theme `robbyrussell`, plugins `git`, `git-extras`), `base16-shell` · mise: `direnv`, `fzf`, `zoxide`, `mise` itself (base) |
+| Editors | base: `vim`, `universal-ctags` · mise: `neovim`, `tree-sitter` (parser builds for nvim-treesitter) |
+| Search / files | base: `the_silver_searcher` (`ag`), `ncdu` · mise: `ripgrep`, `fd`, `bat`, `jq`, `jless`, `yazi`, `tealdeer` (`tldr`), `visidata` |
+| Neovim LSPs | mise: `jedi-language-server`, `pyright`, `typescript-language-server`, `rust-analyzer`, `lua-language-server` |
+| Neovim linters / formatters (via ALE) | mise: `prettier`, `eslint` · project: `ruff`, `pylint`, `flake8`, `mypy`, `black`, `reorder-python-imports` |
+| Neovim debug / test | project: `debugpy`, `pytest`, `pytest-picked`, `pytest-testmon` |
+| Git tooling | mise: `lazygit`, `delta`, `gh`, `difftastic` (`difft`, syntax-aware diffs via `git dft`), `hunk` (diff review of agent changes), `workmux` (git-worktree + tmux orchestration for parallel agents; tmux prefix+a dashboard) |
 | AI | `claude`, `ollama`, `aider`, `pi` |
-| JS runtime | `node` (via mise/nvm; npm globals need it), `bun` (optional) |
-| Database | `pgcli`, `pspg` |
-| Lint | `yamllint` |
-| Keyboard | `kanata` (+ Karabiner driver on macOS) |
+| JS runtime | mise: `node` (LTS; the npm-backed tools above need it) · optional: `bun` |
+| Python | mise: `uv` (runs the `pipx:` tools) |
+| Database | mise: `pgcli` · base: `pspg` |
+| Lint / format | mise: `yamllint`, `shellcheck`, `stylua` |
+| Keyboard | base: `kanata` (+ Karabiner driver on macOS) |
 | Fonts | JetBrainsMono Nerd Font (Mono), FontAwesome |

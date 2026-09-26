@@ -13,7 +13,9 @@ path_add() {
 path_add "$HOME/.cargo/bin"
 path_add "$HOME/.local/bin"
 path_add "$HOME/.bun/bin"
-path_add "$HOME/.hunk/bin"
+# mise shims: tools from mise/config.toml, usable before `mise activate` has run
+# its first prompt hook and in non-interactive shells
+path_add "$HOME/.local/share/mise/shims"
 
 alias v=vim
 alias n=nvim
@@ -25,5 +27,9 @@ alias cc=claude
 # Copy a file's contents (or stdin) to the local clipboard via OSC 52
 # (works over SSH without X11 forwarding/xclip; in tmux needs `set-clipboard on`)
 clipcopy() {
-  printf '\033]52;c;%s\a' "$( { [ $# -ge 1 ] && cat -- "$1" || cat; } | base64 | tr -d '\n')"
+  if [ $# -ge 1 ]; then
+    printf '\033]52;c;%s\a' "$(base64 < "$1" | tr -d '\n')"
+  else
+    printf '\033]52;c;%s\a' "$(base64 | tr -d '\n')"
+  fi
 }

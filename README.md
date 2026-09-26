@@ -5,12 +5,13 @@ My personal config across shell, editor, multiplexer, and a few small tools.
 ## Layout
 
 ```text
-.bashrc / .zshrc     bash (Linux/Omarchy) and zsh (macOS); shared aliases/PATH in shell/common.sh
+.bashrc / .zshrc     zsh everywhere (macOS, Ubuntu); bash only on Omarchy. Shared aliases/PATH in shell/common.sh
 .tmux.conf           tmux, plain config (no framework)
 .gitconfig           delta as pager, aliases — identity stays in ~/.gitconfig.local (see below)
 nvim/                Neovim setup
 pi/agent/            pi coding-agent config (skills, prompts, models, themes)
 .config/             kanata keyboard remap · omarchy One Dark theme · workmux, lazygit, hunk, yazi, pgcli, yamllint
+mise/                tool layer: one mise config for every OS (neovim, ripgrep, lazygit, language servers, ...)
 bin/                 small scripts
 legacy/              retired configs kept for reference: classic .vimrc, i3 + i3status
 ```
@@ -19,7 +20,7 @@ More detail in the sub-READMEs: [`nvim/`](nvim/README.md), [`kanata`](.config/ka
 
 ## Install
 
-See [INSTALL.md](INSTALL.md) for the full per-platform tooling list (macOS Homebrew, Debian apt, Arch pacman/AUR, npm globals, pipx, Rust, AI tools).
+See [INSTALL.md](INSTALL.md). Tooling comes in two layers: a short per-platform base layer (brew, apt, pacman, dnf) and one cross-platform tool layer in `mise/config.toml`, installed with `mise install`.
 
 Symlink the bits you want into place, e.g.:
 
