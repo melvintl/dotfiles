@@ -14,13 +14,21 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
     [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
         eval "$("$BASE16_SHELL/profile_helper.sh")"
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# fzf keybindings (C-r history, C-t files, **<Tab>) and completion. `fzf --zsh`
+# (0.48+) works however fzf was installed; ~/.fzf.zsh is the older
+# git-install fallback (bin/new_debian.sh, older fzf on Debian stable).
+if command -v fzf >/dev/null 2>&1; then
+  if fzf --zsh >/dev/null 2>&1; then
+    source <(fzf --zsh)
+  elif [ -f ~/.fzf.zsh ]; then
+    source ~/.fzf.zsh
+  fi
+fi
 
 eval "$(direnv hook zsh)"
 
-# This is to use shift arrow specifically for Putty
-# to see which keys on Putty work Ctrl+v, SHIFT+Arrow Keys
-# on macos->citrix->putty->zsh using Option+Command+< or >
+# Emacs line editing; Alt+. / Alt+, move by word (Option sends Esc-prefixed
+# keys in iTerm2/Ghostty). Check what a key sends with Ctrl+v.
 bindkey -e
 bindkey '^[.' forward-word
 bindkey '^[,' backward-word

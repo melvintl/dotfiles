@@ -60,12 +60,37 @@ if [[ -e ~/.config/tmux/tmux.conf ]]; then
 else
   link_file "$DOTFILES/.tmux.conf" ~/.tmux.conf
 fi
-link_file "$DOTFILES/.vimrc" ~/.vimrc
+# .vimrc moved to legacy/; drop the symlink earlier runs created so Vim does
+# not start with a dangling rc
+if [[ -L ~/.vimrc && "$(readlink ~/.vimrc)" == "$DOTFILES/.vimrc" ]]; then
+  rm ~/.vimrc
+  echo ">> Removed stale ~/.vimrc link (config now lives in legacy/vimrc)"
+fi
 link_file "$DOTFILES/bin/tmux-session" ~/.tmux-session
 link_file "$DOTFILES/.gitconfig" ~/.gitconfig
 link_file "$DOTFILES/.gitignore" ~/.gitignore
 # zsh is the Mac shell; only link it where zsh exists
-command -v zsh >/dev/null && link_file "$DOTFILES/.zshrc" ~/.zshrc
+if command -v zsh >/dev/null; then
+  link_file "$DOTFILES/.zshrc" ~/.zshrc
+
+  # What .zshrc sources. Shallow clones, skipped when already present; the
+  # oh-my-zsh installer is avoided because it rewrites ~/.zshrc and runs chsh.
+  clone_once() {
+    local repo="$1" dest="$2"
+    if [[ -d "$dest" ]]; then
+      echo ">> $dest already present"
+    else
+      git clone --quiet --depth 1 "$repo" "$dest"
+      echo ">> Cloned $repo -> $dest"
+    fi
+  }
+  clone_once https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh
+  clone_once https://github.com/zsh-users/zsh-autosuggestions \
+    ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+  clone_once https://github.com/zsh-users/zsh-syntax-highlighting \
+    ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+  clone_once https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell
+fi
 
 # Per-machine layer: identity + secrets live in ~/*.local, never in the repo.
 if [[ ! -f ~/.gitconfig.local ]]; then

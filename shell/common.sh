@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 # Sourced by both .bashrc and .zshrc — keep it POSIX-ish
 
 export EDITOR=nvim

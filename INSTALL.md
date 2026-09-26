@@ -2,7 +2,7 @@
 
 Tools the configs in this repo expect on `PATH`. Copy the block for your platform — each section is one command (or one per package manager).
 
-Scope: dev-environment tooling only. The i3 window manager and its helpers (i3, i3status, i3lock, rofi, dmenu, arandr, feh, etc.) are Linux-desktop concerns and live in `README.md`, not here.
+Scope: dev-environment tooling only. The retired i3 desktop config and its packages live under [`legacy/`](legacy/README.md).
 
 ---
 
@@ -29,9 +29,8 @@ brew install \
 # and without the CLI every Neovim startup re-downloads all parsers and fails
 # to compile them ("ENOENT: 'tree-sitter'").
 
-# fzf keybindings: .zshrc sources ~/.fzf.zsh, which brew doesn't create.
-# Generate it once:
-"$(brew --prefix)/opt/fzf/install" --key-bindings --completion --no-update-rc
+# fzf keybindings/completion: .zshrc uses `fzf --zsh` (fzf 0.48+), so brew's
+# fzf needs no extra install step.
 
 # workmux — git-worktree + tmux orchestration for parallel agents
 # (tapped formula; the `.tmux.conf` prefix+a dashboard popup expects it
@@ -173,11 +172,10 @@ rustup component add rust-analyzer
 
 ## Manual / one-off
 
-- **oh-my-zsh**: `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
-- **zsh plugins** (`.zshrc` lists them; not bundled with oh-my-zsh):
-  `git clone --depth 1 https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions`
-  `git clone --depth 1 https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting`
-- **base16-shell**: `git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell`
+- **oh-my-zsh, zsh-autosuggestions, zsh-syntax-highlighting, base16-shell**:
+  cloned by `bin/quick_setup.sh` when zsh is present (shallow clones into
+  `~/.oh-my-zsh`, `~/.oh-my-zsh/custom/plugins/`, `~/.config/base16-shell`).
+  Re-run the script to add them on an existing machine.
 - **bun** (optional JS runtime): `curl -fsSL https://bun.sh/install | bash` — `shell/common.sh` puts `~/.bun/bin` on `PATH` and `.zshrc` loads its completions when present.
 
 ---
