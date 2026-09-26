@@ -1,0 +1,28 @@
+# workmux global defaults. A project's .workmux.yaml overrides any of these.
+# Full reference: `workmux config reference`
+
+# One tmux window per worktree inside the current session;
+mode: window
+
+# `<agent>` in pane commands. Claude Code is the daily driver; override per
+# project with `agent: pi` when tuning the pi harness.
+agent: claude
+
+# Three panes: Neovim top-left, a terminal below it, the agent full-height on
+# the right. Note workmux uses tmux's naming: `horizontal` puts the new pane to
+# the right, `vertical` puts it below. `target: 0` splits the Neovim pane rather
+# than the most recently created one. With pane-base-index 1 the panes are
+# 1=nvim, 2=terminal, 3=agent, so vim-slime's `:.2` target hits the terminal.
+panes:
+  - command: nvim
+    focus: true
+  - command: <agent>
+    split: horizontal
+  - split: vertical
+    target: 0
+    percentage: 30
+
+# Branches normally land through GitHub PRs. When `workmux merge` is used
+# locally, rebase rather than a merge commit, matching pull.rebase in .gitconfig
+merge_strategy: rebase
+nerdfont: true

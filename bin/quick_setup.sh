@@ -91,6 +91,10 @@ mkdir -p ~/.config/lazygit/ ~/.config/hunk/
 link_file "$DOTFILES/.config/lazygit/config.yml" ~/.config/lazygit/config.yml
 link_file "$DOTFILES/.config/hunk/config.toml" ~/.config/hunk/config.toml
 
+# workmux global defaults; per-project .workmux.yaml files override them
+mkdir -p ~/.config/workmux/
+link_file "$DOTFILES/.config/workmux/config.yaml" ~/.config/workmux/config.yaml
+
 # Hunk diff reviewer. Omarchy already ships it through mise
 if ! command -v hunk >/dev/null; then
   if command -v mise >/dev/null; then
