@@ -90,6 +90,19 @@ done < <(find bin -maxdepth 1 -type f \( -name '*.sh' -o -perm -111 \) | sort)
 run_check "bash -n .bashrc" bash -n .bashrc
 run_check "bash -n shell/common.sh" bash -n shell/common.sh
 
+info "shellcheck"
+if command -v shellcheck >/dev/null 2>&1; then
+  # Same file set as the bash syntax check above, plus the sourced common.sh
+  shell_files=()
+  while IFS= read -r path; do
+    shell_files+=("$path")
+  done < <(find bin -maxdepth 1 -type f \( -name '*.sh' -o -perm -111 \) | sort)
+  shell_files+=(shell/common.sh)
+  run_check "shellcheck ${shell_files[*]}" shellcheck "${shell_files[@]}"
+else
+  warn "shellcheck not found; skipping (brew install shellcheck / apt install shellcheck)"
+fi
+
 info "zsh syntax"
 if command -v zsh >/dev/null 2>&1; then
   run_check "zsh -n .zshrc" zsh -n .zshrc

@@ -29,22 +29,25 @@ add_window() {
 }
 
 new_session() {
-  cd "$3" &&
-  tmux new-session -d -s "$1" -n "$2" $4
+  local name="$1" window="$2" dir="$3"
+  shift 3
+  cd "$dir" &&
+  tmux new-session -d -s "$name" -n "$window" "$@"
 }
 
 restore() {
   tmux start-server
   local count=0
-  local dimensions
-  dimensions="$(terminal_size)"
+  # array so "-x80 -y24" passes as two words without unquoted expansion
+  local -a dimensions
+  read -r -a dimensions <<<"$(terminal_size)"
 
-  while IFS=$'\t' read session_name window_name dir; do
+  while IFS=$'\t' read -r session_name window_name dir; do
     if [[ -d "$dir" && $window_name != "log" && $window_name != "man" ]]; then
       if session_exists "$session_name"; then
         add_window "$session_name" "$window_name" "$dir"
       else
-        new_session "$session_name" "$window_name" "$dir" "$dimensions"
+        new_session "$session_name" "$window_name" "$dir" "${dimensions[@]}"
         count=$(( count + 1 ))
       fi
     fi

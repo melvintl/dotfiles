@@ -17,7 +17,7 @@ backup_path() {
     return 0
   fi
 
-  local relative="${target#$HOME/}"
+  local relative="${target#"$HOME"/}"
   local backup="$BACKUP_DIR/$relative"
   mkdir -p "$(dirname "$backup")"
 
