@@ -35,6 +35,4 @@ jobs:
           version: stable
 
       - name: Run dotfiles health checks
-        run: bash bin/check.sh
-        env:
-          RUN_NVIM_SMOKE: "1"
+        run: make smoke
