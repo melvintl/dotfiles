@@ -91,10 +91,6 @@ else
   echo ">> nothing to upgrade"
 fi
 
-echo "==> fzf shell integration"
-# .zshrc sources ~/.fzf.zsh, which brew doesn't create.
-[[ -f ~/.fzf.zsh ]] || "$(brew --prefix)/opt/fzf/install" --key-bindings --completion --no-update-rc
-
 echo "==> npm globals"
 npm install -g "${NPM_GLOBALS[@]}"
 

@@ -21,7 +21,8 @@ mkdir -p ~/.local/bin
 command -v fd  >/dev/null || ln -sf "$(command -v fdfind)" ~/.local/bin/fd
 command -v bat >/dev/null || { command -v batcat >/dev/null && ln -sf "$(command -v batcat)" ~/.local/bin/bat; }
 
-# fzf from upstream: the apt package doesn't create the ~/.fzf.zsh that .zshrc sources
+# fzf from upstream: apt's fzf predates `fzf --zsh`, so .zshrc falls back to the
+# ~/.fzf.zsh this creates
 [ -d ~/.fzf ] || git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 ~/.fzf/install --key-bindings --completion --no-update-rc
 

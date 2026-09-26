@@ -36,8 +36,36 @@ git_config_parses() {
   git config --file .gitconfig --list >/dev/null
 }
 
+# Compile-only Lua syntax check through Neovim's bundled LuaJIT, used when no
+# standalone luac is installed (macOS without `brew install lua`).
+lua_syntax_nvim() {
+  nvim --clean --headless -l "$LUA_CHECK_SCRIPT" "$1"
+}
+
+# Start Neovim against this repo's config in a throwaway XDG tree so nothing
+# in ~/.local/share/nvim is touched. `Lazy! restore` installs the plugins at the
+# lazy-lock.json commits (network); the second start is the real test and
+# fails on anything Neovim reports as an error while loading init.lua.
 nvim_smoke() {
-  nvim --headless -u nvim/init.lua '+qa'
+  local tmp
+  tmp="$(mktemp -d)"
+  mkdir -p "$tmp/config" "$tmp/data" "$tmp/state" "$tmp/cache"
+  ln -s "$ROOT/nvim" "$tmp/config/nvim"
+
+  local rc=0
+  (
+    export XDG_CONFIG_HOME="$tmp/config" XDG_DATA_HOME="$tmp/data" \
+           XDG_STATE_HOME="$tmp/state" XDG_CACHE_HOME="$tmp/cache"
+    nvim --headless '+Lazy! restore' '+qa' >"$tmp/restore.log" 2>&1 \
+      || { echo "plugin restore failed:"; tail -20 "$tmp/restore.log"; exit 1; }
+    nvim --headless '+qa' >"$tmp/start.log" 2>&1 \
+      || { echo "startup exited non-zero:"; cat "$tmp/start.log"; exit 1; }
+    if grep -Eq '(^|\s)E[0-9]+:|Error detected|Error executing|stack traceback' "$tmp/start.log"; then
+      echo "errors during startup:"; cat "$tmp/start.log"; exit 1
+    fi
+  ) || rc=$?
+  rm -rf "$tmp"
+  return "$rc"
 }
 
 info "required files"
@@ -85,8 +113,25 @@ if [[ -n "$lua_compiler" ]]; then
   while IFS= read -r path; do
     run_check "$lua_compiler -p $path" "$lua_compiler" -p "$path"
   done < <(find nvim -type f -name '*.lua' | sort)
+elif command -v nvim >/dev/null 2>&1; then
+  LUA_CHECK_SCRIPT="$(mktemp)"
+  cat >"$LUA_CHECK_SCRIPT" <<'LUA'
+local f, err = loadfile(arg[1])
+if not f then io.stderr:write(err, "\n") os.exit(1) end
+LUA
+  while IFS= read -r path; do
+    run_check "nvim loadfile $path" lua_syntax_nvim "$path"
+  done < <(find nvim -type f -name '*.lua' | sort)
+  rm -f "$LUA_CHECK_SCRIPT"
 else
-  warn "luac not found; skipping Neovim Lua syntax checks"
+  warn "neither luac nor nvim found; skipping Neovim Lua syntax checks"
+fi
+
+info "Lua formatting"
+if command -v stylua >/dev/null 2>&1; then
+  run_check "stylua --check nvim" stylua --check nvim
+else
+  warn "stylua not found; skipping Lua format check (brew install stylua / cargo install stylua)"
 fi
 
 info "Neovim smoke test"

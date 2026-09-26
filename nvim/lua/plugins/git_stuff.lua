@@ -1,7 +1,5 @@
 return {
 
-
-
   -- **************************************
   -- Git stuff
   -- **************************************
@@ -18,13 +16,17 @@ return {
         delete = { text = '_' },
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
-        untracked    = { text = '' }, -- Dont want new files to look noisy
+        untracked = { text = '' }, -- Dont want new files to look noisy
       },
       on_attach = function(bufnr)
         local gs = require('gitsigns')
         -- next_hunk/prev_hunk are deprecated; nav_hunk takes the direction as an argument
-        vim.keymap.set('n', '<leader>gp', function() gs.nav_hunk('prev') end, { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
-        vim.keymap.set('n', '<leader>gn', function() gs.nav_hunk('next') end, { buffer = bufnr, desc = '[G]o to [N]ext Hunk' })
+        vim.keymap.set('n', '<leader>gp', function()
+          gs.nav_hunk('prev')
+        end, { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
+        vim.keymap.set('n', '<leader>gn', function()
+          gs.nav_hunk('next')
+        end, { buffer = bufnr, desc = '[G]o to [N]ext Hunk' })
         vim.keymap.set('n', '<leader>gh', gs.preview_hunk, { buffer = bufnr, desc = '[G]it preview [H]unk' })
       end,
     },
@@ -54,16 +56,14 @@ return {
       vim.api.nvim_set_hl(0, 'DiffviewDiffModifiedAsChar', { bg = '#3d4d5a', fg = '#61afef', bold = true })
 
       -- Refresh the open diffview when files change on disk, so a coding agent's edits show live
-      vim.api.nvim_create_autocmd("FileChangedShellPost", {
+      vim.api.nvim_create_autocmd('FileChangedShellPost', {
         callback = function()
-          local ok, lib = pcall(require, "diffview.lib")
+          local ok, lib = pcall(require, 'diffview.lib')
           if ok and lib.get_current_view() then
-            require("diffview.actions").refresh_files()
+            require('diffview.actions').refresh_files()
           end
         end,
       })
     end,
   },
-
-
 }

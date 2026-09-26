@@ -105,7 +105,7 @@ selected=$(printf '%s\n' "$rows" | fzf \
 
 [[ -z "$selected" ]] && exit 0
 
-IFS=$'\t' read -r _ sid pid cwd target <<<"$selected"
+IFS=$'\t' read -r _ sid _pid cwd target <<<"$selected"
 
 # Three dispatch cases, in priority order:
 if [[ -n "$target" ]]; then

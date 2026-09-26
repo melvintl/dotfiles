@@ -8,14 +8,14 @@ My personal config across shell, editor, multiplexer, and a few small tools.
 .bashrc / .zshrc     bash (Linux/Omarchy) and zsh (macOS); shared aliases/PATH in shell/common.sh
 .tmux.conf           tmux, plain config (no framework)
 .gitconfig           delta as pager, aliases — identity stays in ~/.gitconfig.local (see below)
-.vimrc               legacy; Neovim is the daily driver
 nvim/                Neovim setup
 pi/agent/            pi coding-agent config (skills, prompts, models, themes)
-.config/             kanata keyboard remap · i3 + i3status (Linux) · omarchy One Dark theme · misc tools
+.config/             kanata keyboard remap · omarchy One Dark theme · workmux, lazygit, hunk, yazi, pgcli, yamllint
 bin/                 small scripts
+legacy/              retired configs kept for reference: classic .vimrc, i3 + i3status
 ```
 
-More detail in the sub-READMEs: [`nvim/`](nvim/README.md), [`kanata`](.config/kanata/README.md), [`omarchy One Dark theme`](.config/omarchy/themes/one-dark/README.md).
+More detail in the sub-READMEs: [`nvim/`](nvim/README.md), [`kanata`](.config/kanata/README.md), [`omarchy One Dark theme`](.config/omarchy/themes/one-dark/README.md), [`legacy/`](legacy/README.md).
 
 ## Install
 
@@ -32,7 +32,7 @@ ln -s ~/myprojects/dotfiles/.config/kanata ~/.config/kanata
 ln -s ~/myprojects/dotfiles/.config/omarchy/themes/one-dark ~/.config/omarchy/themes/one-dark
 ```
 
-`bin/quick_setup.sh` links the configs into place. `bin/new_macos.sh`, `bin/new_debian.sh`, and `bin/new_centos.sh` install the tooling per platform — read them before running. The macOS one is idempotent, so re-run it to upgrade the listed tools.
+`bin/quick_setup.sh` links the configs into place and clones what `.zshrc` sources (oh-my-zsh, its two plugins, base16-shell). `bin/new_macos.sh`, `bin/new_debian.sh`, and `bin/new_centos.sh` install the tooling per platform — read them before running. The macOS one is idempotent, so re-run it to upgrade the listed tools.
 
 ## Health check
 
@@ -42,7 +42,9 @@ Run the non-destructive repo checks before pushing changes:
 bash bin/check.sh
 ```
 
-The same check runs in GitHub Actions. It fails on syntax/config errors and only warns when optional local tools are missing.
+The same check runs in GitHub Actions, where it also starts Neovim headless against `nvim/` and runs `stylua --check`. Locally those need `nvim`, `stylua` and `RUN_NVIM_SMOKE=1`; the check only warns when an optional tool is missing.
+
+Format the Neovim config with `stylua nvim` (settings in `.stylua.toml`).
 
 When changing Neovim config, opt into a heavier headless startup smoke test:
 
@@ -59,16 +61,6 @@ Identity and secrets never go in this repo. Each config sources an untracked `~/
 
 `quick_setup.sh` seeds them if missing; `.gitignore` keeps them out of every repo.
 
-
-## Linux desktop (i3)
-
-The i3 window manager config in `.config/i3/` expects these system packages on Debian/Ubuntu:
-
-```bash
-sudo apt-get install i3 i3status suckless-tools i3lock rofi \
-                     arandr xbacklight alsa-utils pulseaudio \
-                     gnome-sound-applet indicator-sound volumeicon-alsa
-```
 
 ## Windows notes
 

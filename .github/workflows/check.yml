@@ -5,6 +5,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+env:
+  STYLUA_VERSION: v2.4.0
+
 jobs:
   dotfiles:
     runs-on: ubuntu-latest
@@ -17,5 +20,21 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y zsh lua5.4
 
+      - name: Install stylua
+        run: |
+          curl -fsSL -o /tmp/stylua.zip \
+            "https://github.com/JohnnyMorganz/StyLua/releases/download/${STYLUA_VERSION}/stylua-linux-x86_64.zip"
+          sudo unzip -o -d /usr/local/bin /tmp/stylua.zip
+          stylua --version
+
+      # nvim/ needs Neovim 0.12+; Ubuntu's apt package is far older.
+      - name: Install Neovim
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: stable
+
       - name: Run dotfiles health checks
         run: bash bin/check.sh
+        env:
+          RUN_NVIM_SMOKE: "1"

@@ -36,7 +36,8 @@ new_session() {
 restore() {
   tmux start-server
   local count=0
-  local dimensions="$(terminal_size)"
+  local dimensions
+  dimensions="$(terminal_size)"
 
   while IFS=$'\t' read session_name window_name dir; do
     if [[ -d "$dir" && $window_name != "log" && $window_name != "man" ]]; then

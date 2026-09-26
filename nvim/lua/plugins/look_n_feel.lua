@@ -1,17 +1,17 @@
 return {
   {
     -- Shows pending keymaps after <leader>; every map needs a `desc` to be useful here.
-    "folke/which-key.nvim",
-    event = "VeryLazy",
+    'folke/which-key.nvim',
+    event = 'VeryLazy',
     -- Icon provider; already installed for render-markdown, but lazy-loaded there.
-    dependencies = { "nvim-tree/nvim-web-devicons" },
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
     opts = {
       spec = {
-        { "<leader>c", group = "code" },
-        { "<leader>g", group = "git" },
-        { "<leader>h", group = "help" },
-        { "<leader>t", group = "test" },
-        { "<leader>y", group = "yank" },
+        { '<leader>c', group = 'code' },
+        { '<leader>g', group = 'git' },
+        { '<leader>h', group = 'help' },
+        { '<leader>t', group = 'test' },
+        { '<leader>y', group = 'yank' },
       },
     },
   },
@@ -21,7 +21,7 @@ return {
     'navarasu/onedark.nvim',
     priority = 1000,
     config = function()
-      vim.cmd.colorscheme 'onedark'
+      vim.cmd.colorscheme('onedark')
     end,
   },
 
@@ -41,13 +41,12 @@ return {
   },
 
   {
-      "lukas-reineke/indent-blankline.nvim",
-      main = "ibl",
-      ---@module "ibl"
-      ---@type ibl.config
-      opts = {},
+    'lukas-reineke/indent-blankline.nvim',
+    main = 'ibl',
+    ---@module "ibl"
+    ---@type ibl.config
+    opts = {},
   },
 
-   'mhinz/vim-startify',
-
+  'mhinz/vim-startify',
 }

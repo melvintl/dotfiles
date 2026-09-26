@@ -47,8 +47,8 @@
     cm = commit -m
     aacm = !git add -A . && git commit -m
     dev = !git checkout dev && git pull origin dev
-    master = !git checkout master && git pull origin 
-    main = !git checkout main && git pull origin 
+    master = !git checkout master && git pull origin master
+    main = !git checkout main && git pull origin main
     p = push
     ls = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate
     ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
