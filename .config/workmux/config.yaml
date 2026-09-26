@@ -51,3 +51,8 @@ post_create:
 # locally, rebase rather than a merge commit, matching pull.rebase in .gitconfig
 merge_strategy: rebase
 nerdfont: true
+
+# Replace the default 🤖 "agent working" icon with a lightning bolt, used in
+# both tmux window names and the agent dashboard.
+status_icons:
+  working: "⚡"
