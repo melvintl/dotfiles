@@ -1,6 +1,10 @@
 *.swp
-.venv/
-venv/
+# No trailing slash: `venv/` matches only real directories, and a venv or
+# node_modules symlinked into a git worktree (workmux files.symlink) would
+# otherwise show as untracked and block `workmux remove`/`merge`.
+.venv
+venv
+node_modules
 .envrc
 .testmondata
 coverage.xml

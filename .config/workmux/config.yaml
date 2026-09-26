@@ -1,0 +1,53 @@
+# workmux global defaults. A project's .workmux.yaml overrides any of these.
+# Full reference: `workmux config reference`
+
+# One tmux window per worktree inside the current session
+# worktrees in a sibling <project>__worktrees directory).
+mode: window
+
+# `<agent>` in pane commands. Claude Code is the daily driver; override per
+# project with `agent: pi` when tuning the pi harness.
+agent: claude
+
+# Three panes: Neovim top-left, a terminal below it, the agent full-height on
+# the right. Note workmux uses tmux's naming: `horizontal` puts the new pane to
+# the right, `vertical` puts it below. `target: 0` splits the Neovim pane rather
+# than the most recently created one. With pane-base-index 1 the panes are
+# 1=nvim, 2=terminal, 3=agent, so vim-slime's `:.2` target hits the terminal.
+panes:
+  - command: nvim
+    focus: true
+  - command: <agent>
+    split: horizontal
+  - split: vertical
+    target: 0
+    percentage: 30
+
+# Per-project untracked state a fresh worktree would otherwise lose. Sources
+# that do not exist in the main checkout are skipped silently, so this list is
+# safe for projects without a venv or node_modules.
+#
+# Symlinking a venv is right for requirements.txt projects (nothing in the venv
+# refers back to the source tree). It is WRONG for editable installs
+# (`pip install -e .` / `uv sync` on a pyproject): site-packages then points at
+# the main checkout and tests in the worktree import the wrong code. Those
+# projects override with `symlink: []` and build a real venv in post_create.
+files:
+  symlink:
+    - .venv
+    - venv
+    - node_modules
+  copy:
+    - .env
+    - .envrc
+    - .claude/settings.local.json
+    - .pi/extensions/pi-permission-system/config.json
+
+# direnv trusts .envrc per path, so the copied one needs allowing once.
+post_create:
+  - '[ -f .envrc ] && direnv allow . || true'
+
+# Branches normally land through GitHub PRs. When `workmux merge` is used
+# locally, rebase rather than a merge commit, matching pull.rebase in .gitconfig
+merge_strategy: rebase
+nerdfont: true
