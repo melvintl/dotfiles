@@ -2,13 +2,13 @@
 -- support Neovim 0.12+). The plugin now only ships parsers and queries;
 -- highlighting, indentation and folding come from Neovim itself.
 local ts = require('nvim-treesitter')
-ts.setup {
+ts.setup({
   -- Parsers and queries land here, prepended to 'runtimepath'.
   install_dir = vim.fn.stdpath('data') .. '/site',
-}
+})
 -- Replaces the old `ensure_installed`. Asynchronous, and a no-op once the
 -- parsers are present. Use `:TSUpdate` to refresh them.
-ts.install {
+ts.install({
   'c',
   'cpp',
   'go',
@@ -19,7 +19,7 @@ ts.install {
   'typescript',
   'vimdoc',
   'vim',
-}
+})
 -- Replaces `highlight = { enable = true }` and `indent = { enable = true }`.
 -- Applies to any filetype with an available parser, which is what the old
 -- module-based config did.

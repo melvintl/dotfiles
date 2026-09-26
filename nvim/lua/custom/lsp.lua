@@ -21,8 +21,12 @@ vim.lsp.enable('lua_ls')
 -- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, { desc = 'Diagnostic float' })
-vim.keymap.set('n', '[d', function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = 'Previous diagnostic' })
-vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = 'Next diagnostic' })
+vim.keymap.set('n', '[d', function()
+  vim.diagnostic.jump({ count = -1, float = true })
+end, { desc = 'Previous diagnostic' })
+vim.keymap.set('n', ']d', function()
+  vim.diagnostic.jump({ count = 1, float = true })
+end, { desc = 'Next diagnostic' })
 -- vim.keymap.set('n', '<space>l', vim.diagnostic.setloclist)
 
 -- Use LspAttach autocommand to only map the following keys
@@ -70,11 +74,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts('LSP rename'))
     vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, opts('Code action'))
     vim.keymap.set('n', '<leader>cf', function()
-      vim.lsp.buf.format { async = true }
+      vim.lsp.buf.format({ async = true })
     end, opts('Format buffer'))
   end,
 })
-
 
 -- The virtual text is annoying so hide it
 vim.diagnostic.config({

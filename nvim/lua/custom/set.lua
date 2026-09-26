@@ -1,4 +1,3 @@
-
 -- Don't need the annoying .swp and ~ backup files
 vim.opt.swapfile = false
 vim.opt.backup = false
@@ -11,9 +10,8 @@ vim.o.hidden = true
 -- vim.o.tabstop=4
 -- vim.o.shiftwidth=4
 -- vim.o.softtabstop=4
-vim.o.colorcolumn="80"
+vim.o.colorcolumn = '80'
 -- vim.o.expandtab = true
-
 
 -- Set highlight on search
 vim.o.hlsearch = true
@@ -56,22 +54,20 @@ vim.o.completeopt = 'menuone,noselect,popup,fuzzy'
 vim.o.termguicolors = true
 
 -- Highlight current rows
-vim.opt.cursorline = true 
-
+vim.opt.cursorline = true
 
 -- Set Alias
-vim.cmd [[
+vim.cmd([[
   command! Q :qa!
-]]
+]])
 
-
--- Code folding 
+-- Code folding
 -- Use indent for python/yaml navigation
 vim.opt.foldenable = false
-vim.opt.foldmethod = "indent"
+vim.opt.foldmethod = 'indent'
 -- TODO: review treesitter folding; not great for indent-based files
 -- vim.opt.foldmethod = "expr"
 -- vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 
--- Align right with modified flag and file path 
---vim.o.winbar="%=%m %f" 
+-- Align right with modified flag and file path
+--vim.o.winbar="%=%m %f"

@@ -1,6 +1,6 @@
-require('telescope').setup{
-  defaults = {}
-}
+require('telescope').setup({
+  defaults = {},
+})
 
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>f', '<cmd>Telescope find_files disable_devicons=true<CR>', { desc = 'Find files' })
