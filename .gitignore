@@ -21,10 +21,14 @@ __pycache__/
 .bashrc.local
 .zshrc.local
 
-# Claude Code per-machine permissions; .claude/ because this file doubles as
-# the global core.excludesfile (~/.gitignore symlinks here)
-.claude/
-**/.claude/settings.local.json
+# Claude Code: ignore everything in .claude/ except skills/, commands/ and
+# agents/. The /* form is required: a bare `.claude/` would ignore the
+# directory itself and git cannot re-include anything inside an ignored dir.
+# This file doubles as the global core.excludesfile (~/.gitignore symlinks here).
+**/.claude/*
+!**/.claude/skills/
+!**/.claude/commands/
+!**/.claude/agents/
 
 # Pi project-local permission rules
 **/.pi/extensions/pi-permission-system/config.json
