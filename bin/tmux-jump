@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Fuzzy session switcher for tmux (bound to prefix+C-f in .tmux.conf).
+#
+# The picker lists live tmux sessions first, then zoxide's directories. Pick a
+# session to switch to it; pick a directory to switch to a session named after
+# it, creating that session rooted in the directory if it does not exist yet.
+
+set -euo pipefail
+
+for dep in tmux fzf zoxide; do
+  command -v "$dep" >/dev/null || { echo "tmux-jump: '$dep' required" >&2; exit 1; }
+done
+
+sessions=$(tmux list-sessions -F '#S' 2>/dev/null || true)
+
+sel=$( { printf '%s\n' "$sessions"; zoxide query -l; } | grep -v '^$' \
+  | fzf --no-multi --no-mouse --prompt='session/dir> ' \
+        --header='live sessions, then zoxide dirs') || exit 0
+[[ -z "$sel" ]] && exit 0
+
+if grep -qxF -- "$sel" <<<"$sessions"; then
+  tmux switch-client -t "=$sel"
+  exit 0
+fi
+
+# tmux rejects '.' and ':' in session names
+name=$(basename "$sel" | tr '.:' '__')
+tmux has-session -t "=$name" 2>/dev/null || tmux new-session -d -s "$name" -c "$sel"
+tmux switch-client -t "=$name"
