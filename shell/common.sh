@@ -21,6 +21,22 @@ alias l=lazygit
 alias h="hunk diff --watch"
 alias wm=workmux
 alias cc=claude
+alias glowt="glow --tui --pager=false"
+
+# Make Glow wrap to the current terminal width by default.
+glow() {
+  case " $* " in
+    *" --width "*|*" --width="*|*" -w "*|*" -w"*) command glow "$@" ;;
+    *)
+      _glow_width=${COLUMNS:-}
+      if [ -z "$_glow_width" ] && command -v tput >/dev/null 2>&1; then
+        _glow_width=$(tput cols 2>/dev/null)
+      fi
+      command glow --width "${_glow_width:-80}" "$@"
+      unset _glow_width
+      ;;
+  esac
+}
 
 # Copy a file's contents (or stdin) to the local clipboard via OSC 52
 # (works over SSH without X11 forwarding/xclip; in tmux needs `set-clipboard on`)

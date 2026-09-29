@@ -119,6 +119,10 @@ link_file "$DOTFILES/.config/hunk/config.toml" ~/.config/hunk/config.toml
 mkdir -p ~/.config/workmux/
 link_file "$DOTFILES/.config/workmux/config.yaml" ~/.config/workmux/config.yaml
 
+# Glow markdown renderer defaults.
+mkdir -p ~/.config/glow/
+link_file "$DOTFILES/.config/glow/glow.yml" ~/.config/glow/glow.yml
+
 # Hunk diff reviewer. Omarchy already ships it through mise
 if ! command -v hunk >/dev/null; then
   if command -v mise >/dev/null; then
