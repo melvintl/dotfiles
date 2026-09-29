@@ -78,6 +78,7 @@ for path in \
   .gitconfig \
   .gitconfig.local.example \
   shell/common.sh \
+  .config/glow/glow.yml \
   nvim/init.lua
   do
   run_check "$path exists" require_file "$path"
@@ -146,7 +147,7 @@ else
 fi
 
 info "optional tool availability"
-for cmd in git tmux nvim rg fd fzf jq lazygit delta hunk workmux; do
+for cmd in git tmux nvim rg fd fzf jq lazygit delta glow hunk workmux; do
   if command -v "$cmd" >/dev/null 2>&1; then
     ok "$cmd found"
   else
