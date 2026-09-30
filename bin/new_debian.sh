@@ -2,6 +2,8 @@
 # Bootstrap a fresh Debian/Ubuntu box. Mirrors INSTALL.md (the source of
 # truth for the tool list and fallbacks) — read both before running.
 
+set -euo pipefail
+
 sudo apt update
 
 # NB: apt `neovim` is usually older than the 0.12+ this nvim config needs;

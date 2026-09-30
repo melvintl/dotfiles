@@ -7,13 +7,16 @@
 
 set -e
 
+STATE="${XDG_STATE_HOME:-$HOME/.local/state}/tmux-session"
+
 dump() {
   local d=$'\t'
   tmux list-windows -a -F "#S${d}#W${d}#{pane_current_path}"
 }
 
 save() {
-  dump > ~/.tmux-session
+  mkdir -p "$(dirname "$STATE")"
+  dump > "$STATE"
 }
 
 terminal_size() {
@@ -48,7 +51,7 @@ restore() {
         count=$(( count + 1 ))
       fi
     fi
-  done < ~/.tmux-session
+  done < "$STATE"
 
   echo "restored $count sessions"
 }

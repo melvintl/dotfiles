@@ -32,7 +32,7 @@ ln -s ~/myprojects/dotfiles/.config/kanata ~/.config/kanata
 ln -s ~/myprojects/dotfiles/.config/omarchy/themes/one-dark ~/.config/omarchy/themes/one-dark
 ```
 
-`make setup` links the configs into place and clones what `.zshrc` sources (oh-my-zsh, its two plugins, base16-shell). `make install-macos`, `make install-debian`, and `make install-centos` install the tooling per platform — read the underlying scripts before running. The macOS one is idempotent, so re-run it to upgrade the listed tools.
+`make setup` links the configs into place and clones what `.zshrc` sources (oh-my-zsh, its two plugins, base16-shell); it does not install CLI tools. `make install-macos`, `make install-debian`, and `make install-centos` install the tooling per platform — read the underlying scripts before running. The macOS one is idempotent, so re-run it to upgrade the listed tools.
 
 ## Health check
 
