@@ -32,7 +32,7 @@ ln -s ~/myprojects/dotfiles/.config/kanata ~/.config/kanata
 ln -s ~/myprojects/dotfiles/.config/omarchy/themes/one-dark ~/.config/omarchy/themes/one-dark
 ```
 
-`make setup` links the configs into place and clones what `.zshrc` sources (oh-my-zsh, its two plugins, base16-shell). `make install-macos`, `make install-debian`, and `make install-centos` install the tooling per platform — read the underlying scripts before running. The macOS one is idempotent, so re-run it to upgrade the listed tools.
+`make setup` links the configs into place and clones what `.zshrc` sources (oh-my-zsh, its two plugins, base16-shell); it does not install CLI tools. `make install-macos`, `make install-debian`, and `make install-centos` install the tooling per platform — read the underlying scripts before running. The macOS one is idempotent, so re-run it to upgrade the listed tools.
 
 ## Health check
 
@@ -42,7 +42,7 @@ Run the non-destructive repo checks before pushing changes:
 make check
 ```
 
-The same check runs in GitHub Actions, where it also starts Neovim headless against `nvim/` and runs `stylua --check`. Locally those need `nvim`, `stylua` and `RUN_NVIM_SMOKE=1`; the check only warns when an optional tool is missing.
+The same check runs in GitHub Actions, where it also runs ShellCheck, starts Neovim headless against `nvim/`, and runs `stylua --check`. Locally those need `shellcheck`, `nvim`, `stylua` and `RUN_NVIM_SMOKE=1`; the check only warns when an optional tool is missing.
 
 Format the Neovim config with `make fmt` (settings in `.stylua.toml`).
 

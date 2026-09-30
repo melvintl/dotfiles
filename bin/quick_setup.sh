@@ -17,7 +17,7 @@ backup_path() {
     return 0
   fi
 
-  local relative="${target#$HOME/}"
+  local relative="${target#"$HOME"/}"
   local backup="$BACKUP_DIR/$relative"
   mkdir -p "$(dirname "$backup")"
 
@@ -66,7 +66,13 @@ if [[ -L ~/.vimrc && "$(readlink ~/.vimrc)" == "$DOTFILES/.vimrc" ]]; then
   rm ~/.vimrc
   echo ">> Removed stale ~/.vimrc link (config now lives in legacy/vimrc)"
 fi
-link_file "$DOTFILES/bin/tmux-session" ~/.tmux-session
+# tmux-session goes on PATH; ~/.tmux-session must not point at the script
+if [[ -L ~/.tmux-session && "$(readlink ~/.tmux-session)" == "$DOTFILES/bin/tmux-session" ]]; then
+  rm ~/.tmux-session
+  echo ">> Removed stale ~/.tmux-session link (script now in ~/.local/bin)"
+fi
+mkdir -p ~/.local/bin
+link_file "$DOTFILES/bin/tmux-session" ~/.local/bin/tmux-session
 link_file "$DOTFILES/.gitconfig" ~/.gitconfig
 link_file "$DOTFILES/.gitignore" ~/.gitignore
 
@@ -132,12 +138,3 @@ link_file "$DOTFILES/.config/workmux/config.yaml" ~/.config/workmux/config.yaml
 # Glow markdown renderer defaults.
 mkdir -p ~/.config/glow/
 link_file "$DOTFILES/.config/glow/glow.yml" ~/.config/glow/glow.yml
-
-# Hunk diff reviewer. Omarchy already ships it through mise
-if ! command -v hunk >/dev/null; then
-  if command -v mise >/dev/null; then
-    mise use -g hunk
-  else
-    curl -fsSL https://hunk.dev/install.sh | sh
-  fi
-fi

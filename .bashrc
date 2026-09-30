@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Tracked in ~/myprojects/dotfiles — symlinked to ~/.bashrc by bin/quick_setup.sh
 # Base layout comes from Omarchy's default ~/.bashrc; keep overrides at the bottom.
 

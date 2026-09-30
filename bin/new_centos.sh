@@ -2,6 +2,8 @@
 # Bootstrap a fresh RHEL-family box (Rocky/Alma/CentOS Stream 9+, dnf).
 # Starting point only — INSTALL.md is the source of truth; read both first.
 
+set -euo pipefail
+
 sudo dnf install -y epel-release
 sudo dnf update -y
 

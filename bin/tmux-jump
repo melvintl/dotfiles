@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Fuzzy session switcher for tmux (bound to prefix+C-f in .tmux.conf).
+# Fuzzy session switcher for tmux (bound to prefix+n in .tmux.conf).
 #
 # The picker lists live tmux sessions first, then zoxide's directories. Pick a
 # session to switch to it; pick a directory to switch to a session named after

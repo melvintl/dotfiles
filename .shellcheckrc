@@ -1,0 +1,6 @@
+# Dotfiles shell lint defaults.
+# Individual files still declare their shell via shebang or `# shellcheck shell=...`.
+source-path=SCRIPTDIR
+external-sources=true
+# Dotfiles source OS-provided and per-machine rc files that do not exist in CI.
+disable=SC1090,SC1091

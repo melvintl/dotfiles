@@ -18,7 +18,7 @@ jobs:
       - name: Install check dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y zsh lua5.4
+          sudo apt-get install -y zsh lua5.4 shellcheck
 
       - name: Install stylua
         run: |
