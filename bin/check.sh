@@ -77,6 +77,8 @@ for path in \
   .tmux.conf \
   .gitconfig \
   .gitconfig.local.example \
+  .editorconfig \
+  .shellcheckrc \
   shell/common.sh \
   .config/glow/glow.yml \
   nvim/init.lua
@@ -90,6 +92,26 @@ while IFS= read -r path; do
 done < <(find bin -maxdepth 1 -type f \( -name '*.sh' -o -perm -111 \) | sort)
 run_check "bash -n .bashrc" bash -n .bashrc
 run_check "bash -n shell/common.sh" bash -n shell/common.sh
+
+info "ShellCheck"
+if command -v shellcheck >/dev/null 2>&1; then
+  shellcheck_files=(
+    .bashrc
+    shell/common.sh
+    bin/check.sh
+    bin/new_centos.sh
+    bin/new_debian.sh
+    bin/new_macos.sh
+    bin/pi_setup.sh
+    bin/quick_setup.sh
+    bin/tmux-jump
+    bin/tmux-session
+    bin/claude-jump
+  )
+  run_check "shellcheck bash scripts" shellcheck "${shellcheck_files[@]}"
+else
+  warn "shellcheck not found; skipping shell lint (brew install shellcheck / apt install shellcheck / pacman -S shellcheck)"
+fi
 
 info "zsh syntax"
 if command -v zsh >/dev/null 2>&1; then

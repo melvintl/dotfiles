@@ -18,7 +18,7 @@ brew install \
   fzf ripgrep the_silver_searcher fd bat jq jless ncdu yazi tldr \
   direnv pipx zoxide \
   pgcli pspg \
-  yamllint \
+  yamllint shellcheck \
   kanata \
   lazygit git-delta gh hunk difftastic \
   visidata
@@ -59,7 +59,7 @@ sudo apt update && sudo apt install -y \
   fzf ripgrep silversearcher-ag fd-find bat jq ncdu tldr \
   direnv pipx zoxide \
   pgcli pspg \
-  yamllint \
+  yamllint shellcheck \
   lazygit git-delta gh \
   visidata \
   git curl wget openssh-server build-essential
@@ -95,7 +95,7 @@ sudo pacman -S --needed \
   fzf ripgrep the_silver_searcher fd bat jq jless ncdu yazi tldr \
   direnv python-pipx zoxide \
   pgcli \
-  yamllint \
+  yamllint shellcheck \
   lazygit git-delta github-cli difftastic \
   visidata \
   git curl wget openssh base-devel
@@ -215,6 +215,6 @@ curl -fsSL https://pi.dev/install.sh | sh
 | AI | `claude`, `ollama`, `aider`, `pi` |
 | JS runtime | `node` (via mise/nvm; npm globals need it), `bun` (optional) |
 | Database | `pgcli`, `pspg` |
-| Lint | `yamllint` |
+| Lint | `yamllint`, `shellcheck` |
 | Keyboard | `kanata` (+ Karabiner driver on macOS) |
 | Fonts | JetBrainsMono Nerd Font (Mono), FontAwesome |

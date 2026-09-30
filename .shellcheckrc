@@ -1,0 +1,4 @@
+# Dotfiles shell lint defaults.
+# Individual files still declare their shell via shebang or `# shellcheck shell=...`.
+source-path=SCRIPTDIR
+external-sources=true

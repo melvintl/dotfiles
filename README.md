@@ -42,7 +42,7 @@ Run the non-destructive repo checks before pushing changes:
 make check
 ```
 
-The same check runs in GitHub Actions, where it also starts Neovim headless against `nvim/` and runs `stylua --check`. Locally those need `nvim`, `stylua` and `RUN_NVIM_SMOKE=1`; the check only warns when an optional tool is missing.
+The same check runs in GitHub Actions, where it also runs ShellCheck, starts Neovim headless against `nvim/`, and runs `stylua --check`. Locally those need `shellcheck`, `nvim`, `stylua` and `RUN_NVIM_SMOKE=1`; the check only warns when an optional tool is missing.
 
 Format the Neovim config with `make fmt` (settings in `.stylua.toml`).
 
