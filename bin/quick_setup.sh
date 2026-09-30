@@ -69,6 +69,16 @@ fi
 link_file "$DOTFILES/bin/tmux-session" ~/.tmux-session
 link_file "$DOTFILES/.gitconfig" ~/.gitconfig
 link_file "$DOTFILES/.gitignore" ~/.gitignore
+
+# Editor config.
+mkdir -p ~/.config
+link_file "$DOTFILES/nvim" ~/.config/nvim
+
+# Keyboard remap and Omarchy theme configs 
+mkdir -p ~/.config/omarchy/themes
+link_file "$DOTFILES/.config/kanata" ~/.config/kanata
+link_file "$DOTFILES/.config/omarchy/themes/one-dark" ~/.config/omarchy/themes/one-dark
+
 # zsh is the Mac shell; only link it where zsh exists
 if command -v zsh >/dev/null; then
   link_file "$DOTFILES/.zshrc" ~/.zshrc

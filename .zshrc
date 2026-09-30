@@ -2,7 +2,8 @@ export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
 plugins=(git git-extras zsh-autosuggestions zsh-syntax-highlighting)
 
-source $ZSH/oh-my-zsh.sh
+# Optional on partial/bootstrap installs; quick_setup.sh installs it when zsh exists.
+[[ -r "$ZSH/oh-my-zsh.sh" ]] && source "$ZSH/oh-my-zsh.sh"
 
 # Shared with .bashrc; :A resolves the ~/.zshrc symlink back to the repo
 DOTFILES="${${(%):-%N}:A:h}"
@@ -25,7 +26,7 @@ if command -v fzf >/dev/null 2>&1; then
   fi
 fi
 
-eval "$(direnv hook zsh)"
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
 
 # Emacs line editing; Alt+. / Alt+, move by word (Option sends Esc-prefixed
 # keys in iTerm2/Ghostty). Check what a key sends with Ctrl+v.

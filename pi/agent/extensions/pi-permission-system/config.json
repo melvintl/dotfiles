@@ -317,6 +317,11 @@
       "pi --help": "allow",
       "uv --version": "allow",
       "pipx --version": "allow",
+      "tmux -V": "allow",
+      "mise --version": "allow",
+      "mise --help": "allow",
+      "mise settings ls*": "allow",
+      "mise registry": "allow",
 
       "nvim --version": "allow",
       "nvim --headless +qa": "allow",
@@ -324,6 +329,17 @@
 
       "hunk skill *": "allow",
       "hunk session *": "allow",
+
+      "lazygit --config": "allow",
+      "omarchy menu keybindings --print": "allow",
+      "pacman -Qi *": "allow",
+      "pacman -Qo *": "allow",
+      "wpctl status": "allow",
+      "pactl get-*": "allow",
+      "pactl list short sources": "allow",
+      "voxtype --help": "allow",
+      "voxtype status": "allow",
+      "voxtype info*": "allow",
 
       "ghostty --version": "allow",
       "ghostty --help": "allow",
@@ -334,6 +350,7 @@
       "hyprctl devices *": "allow",
       "hyprctl monitors *": "allow",
       "hyprctl workspaces *": "allow",
+      "hyprctl configerrors": "allow",
       "xdg-mime query *": "allow",
       "xdg-settings get *": "allow",
 
