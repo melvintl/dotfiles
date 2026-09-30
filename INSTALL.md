@@ -13,9 +13,9 @@ Scope: dev-environment tooling only. The retired i3 desktop config and its packa
 ```bash
 # Formulae
 brew install \
-  zsh tmux neovim vim universal-ctags \
+  zsh tmux neovim \
   tree-sitter-cli \
-  fzf ripgrep the_silver_searcher fd bat jq jless ncdu yazi tldr \
+  fzf ripgrep the_silver_searcher fd bat glow jq jless yazi tldr \
   direnv pipx zoxide \
   pgcli pspg \
   yamllint shellcheck \
@@ -55,8 +55,8 @@ brew install --cask \
 
 ```bash
 sudo apt update && sudo apt install -y \
-  zsh tmux neovim vim-gtk3 exuberant-ctags \
-  fzf ripgrep silversearcher-ag fd-find bat jq ncdu tldr \
+  zsh tmux neovim \
+  fzf ripgrep silversearcher-ag fd-find bat jq tldr \
   direnv pipx zoxide \
   pgcli pspg \
   yamllint shellcheck \
@@ -74,6 +74,7 @@ Notes:
 - `zoxide` shell integration is already wired up in `.zshrc` and only kicks in once the binary is on `PATH`.
 - `jless` isn't packaged on apt — install via `cargo install jless` or grab a binary from <https://github.com/PaulJuliusMartinez/jless/releases>.
 - `yazi` lands in apt only on Ubuntu 24.04+; on older releases use `cargo install --locked yazi-fm yazi-cli` or the GitHub releases.
+- `glow` isn't packaged on apt — install via Homebrew on Linux (`brew install glow`), `mise use -g glow`, or the GitHub releases.
 - `hunk` isn't packaged on apt: `curl -fsSL https://hunk.dev/install.sh | sh` (standalone binary in `~/.hunk`) or `mise use -g hunk`.
 - `difftastic` (`difft`, behind the `git dft` alias) isn't packaged on apt — install via `cargo install --locked difftastic`.
 - Kanata isn't packaged on apt; grab the latest release binary from <https://github.com/jtroo/kanata/releases> if you want it on Linux.
@@ -90,9 +91,9 @@ official repos here, so prefer pacman over `npm -g` / `pipx` on this platform.
 ```bash
 # Base dev tooling (official repos)
 sudo pacman -S --needed \
-  zsh tmux neovim vim ctags \
+  zsh tmux neovim \
   tree-sitter-cli \
-  fzf ripgrep the_silver_searcher fd bat jq jless ncdu yazi tldr \
+  fzf ripgrep the_silver_searcher fd bat glow jq jless yazi tldr \
   direnv python-pipx zoxide \
   pgcli \
   yamllint shellcheck \
@@ -113,7 +114,6 @@ yay -S pspg
 ```
 
 Notes:
-- `ctags` on Arch *is* universal-ctags — no separate package, no `exuberant-ctags`.
 - `hunk` ships with Omarchy through mise. On other Arch boxes: `mise use -g hunk` or `curl -fsSL https://hunk.dev/install.sh | sh`.
 - `reorder-python-imports` (an ALE Python fixer) isn't packaged: `pipx install reorder-python-imports`.
 - `rust-analyzer` from pacman is standalone and needs no rustup. If you install the
@@ -205,9 +205,9 @@ curl -fsSL https://pi.dev/install.sh | sh
 
 | Category | Tools |
 | --- | --- |
-| Shell | `zsh`, `oh-my-zsh` (theme `robbyrussell`, plugins `git`, `git-extras`), `base16-shell`, `direnv`, `tmux`, `fzf`, `zoxide`, `pipx` |
-| Editors | `vim`, `neovim`, `universal-ctags`, `tree-sitter-cli` (parser builds for nvim-treesitter) |
-| Search / files | `ripgrep`, `the_silver_searcher` (`ag`), `fd`, `bat`, `jq`, `jless`, `ncdu`, `yazi`, `tldr`, `visidata` |
+| Shell | `zsh`, `oh-my-zsh` (theme `robbyrussell`, plugins `git`, `git-extras`), `base16-shell`, `direnv`, `tmux`, `zoxide`, `pipx` |
+| Editors | `neovim`, `tree-sitter-cli` (parser builds for nvim-treesitter) |
+| Search / files | `fzf`, `ripgrep`, `the_silver_searcher` (`ag`), `fd`, `bat`, `glow`, `jq`, `jless`, `yazi`, `tldr`, `visidata` |
 | Neovim LSPs | `jedi-language-server`, `pyright`, `typescript-language-server`, `rust-analyzer` |
 | Neovim linters / formatters (via ALE) | `ruff`, `pylint`, `flake8`, `mypy`, `black`, `reorder-python-imports`, `prettier`, `eslint` |
 | Neovim debug / test | `debugpy`, `pytest`, `pytest-picked`, `pytest-testmon` |

@@ -7,7 +7,9 @@ plugins=(git git-extras zsh-autosuggestions zsh-syntax-highlighting)
 
 # Shared with .bashrc; :A resolves the ~/.zshrc symlink back to the repo
 DOTFILES="${${(%):-%N}:A:h}"
-[[ -r "$DOTFILES/shell/common.sh" ]] && source "$DOTFILES/shell/common.sh"
+[[ -r "$HOME/.dotfiles.env" ]] && source "$HOME/.dotfiles.env"
+export DOTFILES_DIR="${DOTFILES_DIR:-$DOTFILES}"
+[[ -r "$DOTFILES_DIR/shell/common.sh" ]] && source "$DOTFILES_DIR/shell/common.sh"
 
 # Base16 Shell
 BASE16_SHELL="$HOME/.config/base16-shell/"
