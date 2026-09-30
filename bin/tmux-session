@@ -32,7 +32,7 @@ add_window() {
 }
 
 new_session() {
-  cd "$3" &&
+  cd "$3" || return
   # shellcheck disable=SC2086 # dimensions is "-xN -yN" and must split into two tmux args
   tmux new-session -d -s "$1" -n "$2" $4
 }

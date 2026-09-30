@@ -3,4 +3,4 @@
 source-path=SCRIPTDIR
 external-sources=true
 # Dotfiles source OS-provided and per-machine rc files that do not exist in CI.
-exclude=SC1090,SC1091
+disable=SC1090,SC1091
