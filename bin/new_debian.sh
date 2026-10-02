@@ -9,8 +9,8 @@ sudo apt update
 # NB: apt `neovim` is usually older than the 0.12+ this nvim config needs;
 # grab the official release instead if so — see nvim/README.md.
 sudo apt install -y \
-  zsh tmux neovim vim-gtk3 exuberant-ctags \
-  ripgrep silversearcher-ag fd-find bat jq ncdu tldr \
+  zsh tmux neovim \
+  ripgrep silversearcher-ag fd-find bat jq tldr \
   direnv pipx zoxide \
   pgcli pspg \
   yamllint \
@@ -35,4 +35,4 @@ sudo apt install -y yazi || echo ">> yazi not packaged here; see INSTALL.md"
 command -v hunk >/dev/null || curl -fsSL https://hunk.dev/install.sh | sh
 
 # Not packaged on apt — see INSTALL.md for install options:
-#   jless, difftastic, kanata, tree-sitter-cli (npm/cargo), workmux
+#   glow, jless, difftastic, kanata, tree-sitter-cli (npm/cargo), workmux

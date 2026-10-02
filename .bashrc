@@ -14,7 +14,9 @@
 
 # Shared with .zshrc
 DOTFILES="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
-[[ -r "$DOTFILES/shell/common.sh" ]] && source "$DOTFILES/shell/common.sh"
+[[ -r "$HOME/.dotfiles.env" ]] && source "$HOME/.dotfiles.env"
+export DOTFILES_DIR="${DOTFILES_DIR:-$DOTFILES}"
+[[ -r "$DOTFILES_DIR/shell/common.sh" ]] && source "$DOTFILES_DIR/shell/common.sh"
 
 alias ll=ls # specifically for omarchy
 

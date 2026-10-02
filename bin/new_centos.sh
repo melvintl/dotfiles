@@ -9,8 +9,8 @@ sudo dnf update -y
 
 # NB: EPEL `neovim` may lag the 0.12+ this nvim config needs — see nvim/README.md.
 sudo dnf install -y \
-  zsh tmux neovim vim-enhanced \
-  ripgrep fd-find bat jq ncdu \
+  zsh tmux neovim \
+  ripgrep fd-find bat jq \
   direnv zoxide \
   yamllint \
   the_silver_searcher \
@@ -26,4 +26,4 @@ command -v hunk >/dev/null || curl -fsSL https://hunk.dev/install.sh | sh
 # Not in base/EPEL — see INSTALL.md for the usual fallbacks:
 #   lazygit (copr: atim/lazygit), git-delta + difftastic (cargo or GitHub
 #   releases), gh (https://cli.github.com/packages), pgcli/pspg/visidata
-#   (pipx / source), jless, yazi, tldr (npm/pipx), tree-sitter-cli, workmux
+#   (pipx / source), glow, jless, yazi, tldr (npm/pipx), tree-sitter-cli, workmux

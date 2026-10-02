@@ -7,9 +7,9 @@ and for the odd machine that still needs them. Nothing in here is linked by
 ## `vimrc`
 
 The pre-Neovim setup (2020–2023): vim-plug, NERDTree, fzf.vim, airline, a
-Python-oriented IDE layout. Superseded by [`nvim/`](../nvim/), which carries
-the same ideas (space leader, NERDTree, tmux dispatch, One Dark) on native LSP
-and Treesitter.
+Python-oriented IDE layout. Its Vim-specific tooling, including universal-ctags,
+is legacy too. Superseded by [`nvim/`](../nvim/), which carries the same ideas
+(space leader, NERDTree, tmux dispatch, One Dark) on native LSP and Treesitter.
 
 To use it on a box that only has classic Vim:
 

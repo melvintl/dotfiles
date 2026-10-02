@@ -17,11 +17,11 @@ if ! command -v brew >/dev/null; then
 fi
 
 FORMULAE=(
-  zsh tmux neovim vim universal-ctags
+  zsh tmux neovim
   # nvim-treesitter (main) shells out to this to build parsers. The plain
   # `tree-sitter` formula is the C library only and ships no binary.
   tree-sitter-cli
-  fzf ripgrep the_silver_searcher fd bat jq jless ncdu yazi tldr
+  fzf ripgrep the_silver_searcher fd bat glow jq jless yazi tldr
   direnv pipx zoxide
   pgcli pspg
   yamllint
