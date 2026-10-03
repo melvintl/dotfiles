@@ -37,6 +37,36 @@ return {
         component_separators = '|',
         section_separators = '',
       },
+      sections = {
+        lualine_a = {
+          {
+            'mode',
+            fmt = function(s)
+              return s:sub(1, 1)
+            end,
+          },
+        },
+        lualine_b = { 'branch', 'diff', 'diagnostics' },
+        lualine_c = { { 'filename', path = 1, symbols = { modified = '●', readonly = '' } } },
+        lualine_x = {
+          -- Encoding and line endings only appear when they're not the usual utf-8/unix
+          {
+            'encoding',
+            cond = function()
+              return vim.bo.fileencoding ~= '' and vim.bo.fileencoding ~= 'utf-8'
+            end,
+          },
+          {
+            'fileformat',
+            cond = function()
+              return vim.bo.fileformat ~= 'unix'
+            end,
+          },
+          'filetype',
+        },
+        lualine_y = {},
+        lualine_z = { 'location' },
+      },
     },
   },
 
