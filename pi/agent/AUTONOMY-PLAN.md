@@ -49,14 +49,24 @@ Config lives in `~/myprojects/dotfiles/pi/agent/` and is symlinked into
   - Add `enabledModels` to `settings.json` so ctrl+p cycles only the two or
     three models actually used.
 
-- [ ] 4. pi-sandbox, then loosen the bash allowlist
-  - https://github.com/carderne/pi-sandbox wraps bash, read, write, edit in
-    bubblewrap with path and domain allowlists, never auto-grants.
-  - Once on, allow package installs and `curl` inside the project directory;
-    the blast radius is the sandbox, not `$HOME`.
-  - Note 2026-09-19: the "loosen the allowlist" half is likely superseded by
-    the `/allow` extension (see log): global config stays tight, grants are
-    per-project. Re-evaluate when the sandbox lands.
+- [~] 4. Sandbox for bash, then loosen the bash allowlist (extension built
+  2026-10-02, trial pending; see log)
+  - pi-sandbox rejected after review. Own extension instead:
+    `extensions/srt-sandbox/` on upstream `@anthropic-ai/sandbox-runtime`,
+    bash tool only, global config only, `enabled: false` until the trial
+    passes. Trial with `pi --sandbox` in ~/Work/test1.
+  - Split: the sandbox owns what is possible (secrets hidden, writes limited
+    to project, /tmp and caches, network allowlist); pi-permission-system owns
+    intent (commit, push, history rewrites, `rm -r`, gh writes) and the
+    in-process tools, which the sandbox does not cover.
+  - After the trial: set `bash."*"` to `allow`, drop the read-only allowlist
+    and the execute-anything asks, keep a short ask/deny list. Move the
+    secret path denies' bash coverage to the sandbox but keep them in `path`
+    for read/grep/find/ls.
+  - Still to test live: `git push` / `gh` via `unsandboxedCommands`,
+    unix-socket tools (`hunk session`, tmux, docker), npm/uv installs,
+    pi-subagents child sessions, and whether `/allow` grants are still
+    needed.
 
 - [ ] 5. tmux-backed bash and pi-side-agents (only when running parallel or
   long jobs)
@@ -206,3 +216,46 @@ Config lives in `~/myprojects/dotfiles/pi/agent/` and is symlinked into
   left as is.
 - 2026-09-19: removed the dangling `~/.pi/agent/personas` symlink; its
   target `pi/agent/personas` was never committed.
+- 2026-10-02: step 4 review. carderne/pi-sandbox 0.6.8 NOT installed.
+  Good: small (~1100 lines), keeps the tool name `bash` so
+  pi-permission-system still gates it, solid process handling. Rejected for:
+  (a) it depends on the fork `@carderne/sandbox-runtime` 0.0.72, which
+  removes upstream's write protection of `.git/hooks` and `.git/config`
+  (commit 9b856ab), so a sandboxed command can plant a hook that runs
+  unsandboxed on the next host `git commit`; also `.vscode`, `.idea`,
+  `.gitmodules` made writable; (b) the fork is 174 commits behind upstream
+  srt (forked 2026-07-13), missing the 2026-09-09 proxy fixes (metadata
+  endpoints, IPv4-mapped/NAT64 bypasses, TLS check) and the September Linux
+  deny-mount fixes; (c) `.pi/sandbox.json` in the project is read on every
+  tool call with no trust check and `.` is writable, so the agent can set
+  `enabled: false` (disables the read/write/edit checks at once) or widen
+  `allowRead`; (d) only read/write/edit are path-checked (grep/find/ls are
+  not) and the read check ignores `denyRead`; (e) after a write prompt it
+  re-runs the whole bash command; (f) no per-command exclusions (issue #50),
+  so `git push`/`gh` cannot work; open issues #57 (symlinked ~/.pi) and #58
+  (node not found) also hit this setup.
+- 2026-10-02: same review found a hole in the current setup: in a trusted
+  project the agent could use `write` to edit
+  `.pi/extensions/pi-permission-system/config.json` and allow itself
+  anything (`path."*"` and `write` are allow). Added `.pi/*` and `*/.pi/*`
+  as `ask` at the top of `path_write`. `/allow` writes that file with `fs`,
+  not the write tool, so it is unaffected. Verified the pattern with the
+  plugin's own wildcard matcher.
+- 2026-10-02: wrote `extensions/srt-sandbox/` (index.ts, config.json,
+  package.json; `npm install` there pulls @anthropic-ai/sandbox-runtime
+  0.0.78). Replaces the bash tool's operations with srt-wrapped ones, reusing
+  pi's local shell backend for abort/timeout. Global config only; writes
+  always denied to pi's extensions dir and settings.json (realpaths) and an
+  existing `.pi/`. `unsandboxedCommands` (`git push`, `git fetch`,
+  `git pull`, `gh`) run on the host only as a single simple command (no
+  shell operators, substitutions or redirects). Fails closed: if srt does not
+  start, bash is blocked. `!` commands are not sandboxed. Policy: `denyRead
+  ~` with carve-outs mirroring `external_directory_read`, writes to
+  project, /tmp and package caches, registry and GitHub domains. srt's Linux
+  placeholder mounts for protected names (.bashrc, .vscode, .mcp.json, ...)
+  showed up in `git status`; the extension gives sandboxed git a
+  `core.excludesFile` (user excludes + those names) through GIT_CONFIG_* env.
+  Verified headless with `pi -p --sandbox` in a scratch repo: `~` and
+  `~/.config` hidden, `.git/hooks` read-only, project writes work, `git
+  status` clean, excludes file removed at session end. Typechecked against
+  pi-coding-agent 0.87.1.

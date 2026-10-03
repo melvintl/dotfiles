@@ -1,0 +1,41 @@
+{
+	"enabled": false,
+	"unsandboxedCommands": ["git push", "git fetch", "git pull", "gh"],
+	"network": {
+		"allowedDomains": [
+			"github.com",
+			"*.github.com",
+			"*.githubusercontent.com",
+			"registry.npmjs.org",
+			"registry.yarnpkg.com",
+			"pypi.org",
+			"files.pythonhosted.org",
+			"crates.io",
+			"*.crates.io",
+			"proxy.golang.org",
+			"sum.golang.org"
+		],
+		"deniedDomains": []
+	},
+	"filesystem": {
+		"denyRead": ["~"],
+		"allowRead": [
+			".",
+			"~/code",
+			"~/mynotes",
+			"~/myprojects",
+			"~/Work",
+			"~/.gitconfig",
+			"~/.config/git",
+			"~/.config/mise",
+			"~/.local/bin",
+			"~/.local/share/mise",
+			"~/.cache",
+			"~/.npm",
+			"~/.cargo",
+			"~/.rustup"
+		],
+		"allowWrite": [".", "/tmp", "~/.cache", "~/.npm", "~/.cargo/registry", "~/.cargo/git"],
+		"denyWrite": [".env*", "*.pem", "*.key", "*.p12", "*.pfx"]
+	}
+}
