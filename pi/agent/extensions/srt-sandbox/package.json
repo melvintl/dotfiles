@@ -1,0 +1,13 @@
+{
+	"name": "pi-extension-srt-sandbox",
+	"private": true,
+	"type": "module",
+	"pi": {
+		"extensions": [
+			"./index.ts"
+		]
+	},
+	"dependencies": {
+		"@anthropic-ai/sandbox-runtime": "0.0.78"
+	}
+}
