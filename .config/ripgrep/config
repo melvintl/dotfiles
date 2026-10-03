@@ -1,0 +1,14 @@
+# ag-style colors: bold green paths, bold yellow line numbers,
+# black-on-yellow matches. `none` clears ripgrep's default styles first.
+--colors=path:none
+--colors=path:fg:green
+--colors=path:style:bold
+--colors=line:none
+--colors=line:fg:yellow
+--colors=line:style:bold
+--colors=column:none
+--colors=column:fg:yellow
+--colors=match:none
+--colors=match:fg:black
+--colors=match:bg:yellow
+--smart-case

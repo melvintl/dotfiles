@@ -160,6 +160,8 @@ MANIFEST=(
   # workmux global defaults; per-project .workmux.yaml files override them
   'link|.config/workmux/config.yaml|.config/workmux/config.yaml'
   'link|.config/glow/glow.yml|.config/glow/glow.yml'
+  # ripgrep defaults; shell/common.sh points RIPGREP_CONFIG_PATH here.
+  'link|.config/ripgrep/config|.config/ripgrep/config'
   # Link the files, not the directory: `ya pkg` installs flavors/ and plugins/
   # next to them per machine.
   'link|.config/yazi/yazi.toml|.config/yazi/yazi.toml'

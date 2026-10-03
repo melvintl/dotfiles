@@ -17,5 +17,8 @@
   ],
   "quietStartup": true,
   "tuiMode": "fullscreen",
-  "hideThinkingBlock": false
+  "hideThinkingBlock": false,
+  "markdown": {
+    "mermaid": "streaming"
+  }
 }
