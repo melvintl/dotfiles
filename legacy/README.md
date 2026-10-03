@@ -36,3 +36,12 @@ sudo apt-get install i3 i3status suckless-tools i3lock rofi \
 ln -s ~/myprojects/dotfiles/legacy/i3       ~/.config/i3
 ln -s ~/myprojects/dotfiles/legacy/i3status ~/.config/i3status
 ```
+
+## aider
+
+CLI pair-programmer, superseded by Claude Code and Pi as the day-to-day agents.
+It has no config in this repo; `.gitignore` still ignores its `.aider*` files.
+
+```bash
+pipx install aider-chat
+```

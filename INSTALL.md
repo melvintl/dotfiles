@@ -2,7 +2,7 @@
 
 Tools the configs in this repo expect on `PATH`. Copy the block for your platform — each section is one command (or one per package manager).
 
-Scope: dev-environment tooling only. The retired i3 desktop config and its packages live under [`legacy/`](legacy/README.md).
+Scope: dev-environment tooling only. The retired i3 desktop config and its packages live under [legacy](legacy/README.md).
 
 ---
 
@@ -192,9 +192,6 @@ curl -fsSL https://claude.ai/install.sh | bash        # macOS / Linux / WSL (aut
 brew install ollama                              # macOS
 # curl -fsSL https://ollama.com/install.sh | sh  # Linux
 
-# aider — CLI pair-programmer
-pipx install aider-chat
-
 # Pi — minimal terminal coding harness (pi.dev)
 curl -fsSL https://pi.dev/install.sh | sh
 ```
@@ -212,7 +209,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 | Neovim linters / formatters (via ALE) | `ruff`, `pylint`, `flake8`, `mypy`, `black`, `reorder-python-imports`, `prettier`, `eslint` |
 | Neovim debug / test | `debugpy`, `pytest`, `pytest-picked`, `pytest-testmon` |
 | Git tooling | `lazygit`, `git-delta`, `gh`, `difftastic` (`difft`, syntax-aware diffs via `git dft`), `hunk` (diff review of agent changes), `workmux` (git-worktree + tmux orchestration for parallel agents; tmux prefix+a dashboard) |
-| AI | `claude`, `ollama`, `aider`, `pi` |
+| AI | `claude`, `ollama`, `pi` |
 | JS runtime | `node` (via mise/nvm; npm globals need it), `bun` (optional) |
 | Database | `pgcli`, `pspg` |
 | Lint | `yamllint`, `shellcheck` |

@@ -19,7 +19,7 @@ See [what each tool is for](INSTALL.md#what-each-tool-is-for) for a quick map of
 └── legacy/           retired Vim/i3 configs kept for reference
 ```
 
-More detail in the sub-READMEs: [`nvim/`](nvim/README.md), [`kanata`](.config/kanata/README.md), [`omarchy One Dark theme`](.config/omarchy/themes/one-dark/README.md), [`legacy/`](legacy/README.md).
+More detail in the sub-READMEs: [nvim](nvim/README.md), [kanata](.config/kanata/README.md), [Omarchy One Dark theme](.config/omarchy/themes/one-dark/README.md), [legacy](legacy/README.md).
 
 ## Bootstrap
 
