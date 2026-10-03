@@ -14,12 +14,12 @@ See [what each tool is for](INSTALL.md#what-each-tool-is-for) for a quick map of
 ├── shell/            shared aliases, PATH setup, and shell helpers
 ├── nvim/             Neovim setup
 ├── pi/               pi coding-agent config and specs
-├── .config/          app configs: kanata, omarchy theme, lazygit, yazi, etc.
+├── .config/          app configs: kanata, voxtype, omarchy theme, lazygit, yazi, etc.
 ├── bin/              helper scripts and bootstrap scripts
 └── legacy/           retired Vim/i3 configs kept for reference
 ```
 
-More detail in the sub-READMEs: [nvim](nvim/README.md), [kanata](.config/kanata/README.md), [Omarchy One Dark theme](.config/omarchy/themes/one-dark/README.md), [legacy](legacy/README.md).
+More detail in the sub-READMEs: [nvim](nvim/README.md), [kanata](.config/kanata/README.md), [voxtype](.config/voxtype/README.md), [Omarchy One Dark theme](.config/omarchy/themes/one-dark/README.md), [legacy](legacy/README.md).
 
 ## Setup
 
