@@ -142,6 +142,55 @@ clone_once() {
   fi
 }
 
+# Single source of truth for unconditional config links/copies; setup and
+# doctor both iterate this. Format: kind|source (repo-relative)|target
+# ($HOME-relative). Conditional entries (tmux, zsh) stay in code below.
+MANIFEST=(
+  'link|.bashrc|.bashrc'
+  'link|bin/tmux-session|.local/bin/tmux-session'
+  'link|.gitconfig|.gitconfig'
+  'link|.gitignore|.gitignore'
+  'link|nvim|.config/nvim'
+  # Keyboard remap and Omarchy theme configs
+  'link|.config/kanata|.config/kanata'
+  'link|.config/omarchy/themes/one-dark|.config/omarchy/themes/one-dark'
+  # Link the file, not the directory: hunk keeps per-machine state.json next to its config
+  'link|.config/lazygit/config.yml|.config/lazygit/config.yml'
+  'link|.config/hunk/config.toml|.config/hunk/config.toml'
+  # workmux global defaults; per-project .workmux.yaml files override them
+  'link|.config/workmux/config.yaml|.config/workmux/config.yaml'
+  'link|.config/glow/glow.yml|.config/glow/glow.yml'
+  # Link the files, not the directory: `ya pkg` installs flavors/ and plugins/
+  # next to them per machine.
+  'link|.config/yazi/yazi.toml|.config/yazi/yazi.toml'
+  'link|.config/yazi/theme.toml|.config/yazi/theme.toml'
+  'link|.config/yazi/package.toml|.config/yazi/package.toml'
+  'copy|.config/yamllint/config|.config/yamllint/config'
+  'copy|.config/pgcli/config|.config/pgcli/config'
+)
+
+apply_manifest() {
+  local mode="$1" only_kind="${2:-}" entry kind source target
+  for entry in "${MANIFEST[@]}"; do
+    IFS='|' read -r kind source target <<<"$entry"
+    [[ -n "$only_kind" && "$kind" != "$only_kind" ]] && continue
+    source="$DOTFILES/$source"
+    target="$HOME/$target"
+    if [[ "$mode" == "doctor" ]]; then
+      case "$kind" in
+        link) link_status "$source" "$target" ;;
+        copy) file_status "$source" "$target" ;;
+      esac
+    else
+      mkdir_p "$(dirname "$target")"
+      case "$kind" in
+        link) link_file "$source" "$target" ;;
+        copy) copy_file "$source" "$target" ;;
+      esac
+    fi
+  done
+}
+
 link_status() {
   local source="$1" target="$2"
 
@@ -176,25 +225,12 @@ doctor() {
   fi
 
   echo "==> links"
-  link_status "$DOTFILES/.bashrc" "$HOME/.bashrc"
+  apply_manifest doctor link
   if [[ -e "$HOME/.config/tmux/tmux.conf" ]]; then
     printf 'warn: ~/.config/tmux/tmux.conf exists; setup leaves ~/.tmux.conf alone\n'
   else
     link_status "$DOTFILES/.tmux.conf" "$HOME/.tmux.conf"
   fi
-  link_status "$DOTFILES/bin/tmux-session" "$HOME/.local/bin/tmux-session"
-  link_status "$DOTFILES/.gitconfig" "$HOME/.gitconfig"
-  link_status "$DOTFILES/.gitignore" "$HOME/.gitignore"
-  link_status "$DOTFILES/nvim" "$HOME/.config/nvim"
-  link_status "$DOTFILES/.config/kanata" "$HOME/.config/kanata"
-  link_status "$DOTFILES/.config/omarchy/themes/one-dark" "$HOME/.config/omarchy/themes/one-dark"
-  link_status "$DOTFILES/.config/lazygit/config.yml" "$HOME/.config/lazygit/config.yml"
-  link_status "$DOTFILES/.config/hunk/config.toml" "$HOME/.config/hunk/config.toml"
-  link_status "$DOTFILES/.config/workmux/config.yaml" "$HOME/.config/workmux/config.yaml"
-  link_status "$DOTFILES/.config/glow/glow.yml" "$HOME/.config/glow/glow.yml"
-  for f in yazi.toml theme.toml package.toml; do
-    link_status "$DOTFILES/.config/yazi/$f" "$HOME/.config/yazi/$f"
-  done
   if command -v zsh >/dev/null; then
     link_status "$DOTFILES/.zshrc" "$HOME/.zshrc"
   else
@@ -202,8 +238,7 @@ doctor() {
   fi
 
   echo "==> copied configs"
-  file_status "$DOTFILES/.config/yamllint/config" "$HOME/.config/yamllint/config"
-  file_status "$DOTFILES/.config/pgcli/config" "$HOME/.config/pgcli/config"
+  apply_manifest doctor copy
 
   echo "==> tools"
   for cmd in git zsh tmux nvim rg fd fzf jq lazygit delta glow hunk workmux; do
@@ -218,7 +253,8 @@ doctor() {
 link_configs() {
   create_dotfiles_env
 
-  link_file "$DOTFILES/.bashrc" "$HOME/.bashrc"
+  apply_manifest apply
+
   # ~/.tmux.conf takes precedence over ~/.config/tmux/tmux.conf, so don't shadow
   # a config another tool owns (Omarchy ships one there)
   if [[ -e "$HOME/.config/tmux/tmux.conf" ]]; then
@@ -245,19 +281,6 @@ link_configs() {
       log "Removed stale ~/.tmux-session link (script now in ~/.local/bin)"
     fi
   fi
-  mkdir_p "$HOME/.local/bin"
-  link_file "$DOTFILES/bin/tmux-session" "$HOME/.local/bin/tmux-session"
-  link_file "$DOTFILES/.gitconfig" "$HOME/.gitconfig"
-  link_file "$DOTFILES/.gitignore" "$HOME/.gitignore"
-
-  # Editor config.
-  mkdir_p "$HOME/.config"
-  link_file "$DOTFILES/nvim" "$HOME/.config/nvim"
-
-  # Keyboard remap and Omarchy theme configs
-  mkdir_p "$HOME/.config/omarchy/themes"
-  link_file "$DOTFILES/.config/kanata" "$HOME/.config/kanata"
-  link_file "$DOTFILES/.config/omarchy/themes/one-dark" "$HOME/.config/omarchy/themes/one-dark"
 
   # zsh is the Mac shell; only link it where zsh exists
   if command -v zsh >/dev/null; then
@@ -279,33 +302,6 @@ link_configs() {
 '
       run chmod 600 "$rc"
     fi
-  done
-
-  mkdir_p "$HOME/.config/yamllint"
-  copy_file "$DOTFILES/.config/yamllint/config" "$HOME/.config/yamllint/config"
-
-  mkdir_p "$HOME/.config/pgcli"
-  copy_file "$DOTFILES/.config/pgcli/config" "$HOME/.config/pgcli/config"
-
-  # Link the file, not the directory: hunk keeps per-machine state.json next to its config
-  mkdir_p "$HOME/.config/lazygit"
-  mkdir_p "$HOME/.config/hunk"
-  link_file "$DOTFILES/.config/lazygit/config.yml" "$HOME/.config/lazygit/config.yml"
-  link_file "$DOTFILES/.config/hunk/config.toml" "$HOME/.config/hunk/config.toml"
-
-  # workmux global defaults; per-project .workmux.yaml files override them
-  mkdir_p "$HOME/.config/workmux"
-  link_file "$DOTFILES/.config/workmux/config.yaml" "$HOME/.config/workmux/config.yaml"
-
-  # Glow markdown renderer defaults.
-  mkdir_p "$HOME/.config/glow"
-  link_file "$DOTFILES/.config/glow/glow.yml" "$HOME/.config/glow/glow.yml"
-
-  # Link the files, not the directory: `ya pkg` installs flavors/ and plugins/
-  # next to them per machine.
-  mkdir_p "$HOME/.config/yazi"
-  for f in yazi.toml theme.toml package.toml; do
-    link_file "$DOTFILES/.config/yazi/$f" "$HOME/.config/yazi/$f"
   done
 }
 
