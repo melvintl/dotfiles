@@ -4,6 +4,7 @@
 export EDITOR=nvim
 export VISUAL="$EDITOR"
 export SUDO_EDITOR="$EDITOR"
+export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
 
 # Skip missing dirs and duplicates (rc files get re-sourced by tmux splits etc.)
 path_add() {
