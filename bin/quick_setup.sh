@@ -311,6 +311,10 @@ bootstrap_shell_deps() {
   else
     log "zsh not found; skipping zsh dependency bootstrap"
   fi
+
+  # tmux plugins that .tmux.conf loads with run-shell (no plugin manager).
+  clone_once https://github.com/laktak/extrakto "$HOME/.tmux/plugins/extrakto"
+  clone_once https://github.com/omerxx/tmux-floax "$HOME/.tmux/plugins/tmux-floax"
 }
 
 case "$MODE" in

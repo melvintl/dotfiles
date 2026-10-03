@@ -205,7 +205,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 
 | Category | Tools |
 | --- | --- |
-| Shell | `zsh`, `oh-my-zsh` (theme `robbyrussell`, plugins `git`, `git-extras`), `base16-shell`, `direnv`, `tmux`, `zoxide`, `pipx` |
+| Shell | `zsh`, `oh-my-zsh` (theme `robbyrussell`, plugins `git`, `git-extras`), `base16-shell`, `direnv`, `tmux`, `extrakto` (tmux prefix+e: fzf over pane text), `tmux-floax` (tmux prefix+f: persistent floating shell), `zoxide`, `pipx` |
 | Editors | `neovim`, `tree-sitter-cli` (parser builds for nvim-treesitter) |
 | Search / files | `fzf`, `ripgrep`, `the_silver_searcher` (`ag`), `fd`, `bat`, `glow`, `jq`, `jless`, `yazi`, `tldr`, `visidata` |
 | Neovim LSPs | `jedi-language-server`, `pyright`, `typescript-language-server`, `rust-analyzer` |
