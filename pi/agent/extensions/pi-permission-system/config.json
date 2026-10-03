@@ -29,6 +29,8 @@
       "~/.pi/*/sessions/*": "deny"
     },
     "path_write": {
+      ".pi/*": "ask",
+      "*/.pi/*": "ask",
       "~/.pi/agent/*": "ask",
       "~/myprojects/dotfiles/pi/agent/*": "ask",
       "~/.pi/agent/auth.json": "deny",
