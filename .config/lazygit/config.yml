@@ -6,3 +6,11 @@ git:
       name: delta
     - command: delta --no-gitconfig --dark --paging=never --side-by-side
       name: delta side-by-side
+gui:
+  theme:
+    # Muted Tokyo Night blue instead of the default bright blue selection bar
+    selectedLineBgColor:
+      - "#2d3f76"
+      - bold
+    inactiveViewSelectedLineBgColor:
+      - "#232b4a"
