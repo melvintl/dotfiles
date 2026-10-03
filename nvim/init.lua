@@ -36,5 +36,6 @@ require('custom.test')
 require('custom.autocmd')
 
 require('custom.autoread')
+require('custom.pi')
 
 require('custom.keymap')
