@@ -236,6 +236,11 @@ doctor() {
   else
     printf 'warn: zsh not found; setup skips ~/.zshrc\n'
   fi
+  if command -v voxtype >/dev/null; then
+    link_status "$DOTFILES/.config/voxtype/config.toml" "$HOME/.config/voxtype/config.toml"
+  else
+    printf 'warn: voxtype not found; setup skips ~/.config/voxtype/config.toml\n'
+  fi
 
   echo "==> copied configs"
   apply_manifest doctor copy
@@ -285,6 +290,12 @@ link_configs() {
   # zsh is the Mac shell; only link it where zsh exists
   if command -v zsh >/dev/null; then
     link_file "$DOTFILES/.zshrc" "$HOME/.zshrc"
+  fi
+
+  # Voice dictation is Linux-only; only link where voxtype is installed
+  if command -v voxtype >/dev/null; then
+    mkdir_p "$HOME/.config/voxtype"
+    link_file "$DOTFILES/.config/voxtype/config.toml" "$HOME/.config/voxtype/config.toml"
   fi
 
   # Per-machine layer: identity + secrets live in ~/*.local, never in the repo.

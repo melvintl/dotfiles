@@ -81,6 +81,7 @@ for path in \
   .shellcheckrc \
   shell/common.sh \
   .config/glow/glow.yml \
+  .config/voxtype/config.toml \
   nvim/init.lua
   do
   run_check "$path exists" require_file "$path"
@@ -122,6 +123,14 @@ fi
 
 info "git config"
 run_check "git config parses" git_config_parses
+
+info "voxtype config"
+if command -v python3 >/dev/null 2>&1; then
+  run_check "TOML parses .config/voxtype/config.toml" \
+    python3 -c 'import sys, tomllib; tomllib.load(open(sys.argv[1], "rb"))' .config/voxtype/config.toml
+else
+  warn "python3 not found; skipping voxtype config parse check"
+fi
 
 info "Lua syntax"
 lua_compiler=""
