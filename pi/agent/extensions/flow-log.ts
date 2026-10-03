@@ -8,13 +8,18 @@
  *   message history, tool schemas) -> LLM RESPONSE (stop reason, usage, text,
  *   tool calls) -> TOOL execution (args, result) -> next request ...
  *
- * The provider payload is dumped in full on every request. That is deliberate:
- * seeing the whole context re-sent (and growing) each turn is the core insight
- * into how an agent harness works. Tool results are truncated in the TOOL
- * section since they reappear verbatim inside the next request payload.
+ * The provider payload is dumped in full only on request #1 (system prompt and
+ * tool schemas are identical on every request, and the message history is
+ * cumulative). Later requests log just the messages added since the previous
+ * request plus a summary line — the trace stays complete without the O(n^2)
+ * repetition. Tool results are truncated in the TOOL section since they also
+ * appear inside the request payload.
  *
- * One file per session under ~/.pi/agent/flow-logs/. `/flow-log` prints the
- * current file's path.
+ * Off by default. Enable at startup with PI_FLOW_LOG=1, or mid-session with
+ * `/flow-log on` (the next request is then logged as #1 with the full payload,
+ * which contains the entire prior history — nothing is lost by enabling late).
+ * `/flow-log off` stops logging; `/flow-log` shows status and the file path.
+ * One file per session under ~/.pi/agent/flow-logs/.
  */
 
 import { appendFileSync, mkdirSync } from "node:fs";
@@ -26,6 +31,8 @@ const MAX_TOOL_RESULT_CHARS = 3000;
 
 let logFile: string | undefined;
 let requestNo = 0;
+let loggedMessageCount = 0;
+let enabled = !!process.env.PI_FLOW_LOG && process.env.PI_FLOW_LOG !== "0";
 
 function logPath(): string {
 	if (!logFile) {
@@ -74,26 +81,44 @@ export default function (pi: ExtensionAPI) {
 		// New session (startup, /new, /resume, /fork) starts a fresh log file.
 		logFile = undefined;
 		requestNo = 0;
+		loggedMessageCount = 0;
 	});
 
 	pi.on("before_agent_start", async (event) => {
+		if (!enabled) return;
 		write(`\n# USER PROMPT\n\n${event.prompt}\n`);
 		write(`_system prompt: ${event.systemPrompt.length} chars (full text inside every request payload below)_\n`);
 	});
 
 	pi.on("before_provider_request", async (event, ctx) => {
+		if (!enabled) return;
 		requestNo++;
 		const model = ctx.model ? `${ctx.model.provider}/${ctx.model.id}` : "unknown";
 		write(`\n## → LLM REQUEST #${requestNo} (${model})\n`);
-		write("The exact payload sent to the provider — system prompt, full message history, tool schemas:\n");
-		write(fenced(event.payload));
+		const payload: any = event.payload;
+		const messages = Array.isArray(payload?.messages) ? payload.messages : undefined;
+		if (requestNo === 1 || !messages) {
+			// Full payload once per session (or as fallback if the payload shape is
+			// unrecognized): system prompt and tool schemas never change after this.
+			write("The exact payload sent to the provider — system prompt, full message history, tool schemas:\n");
+			write(fenced(payload));
+		} else {
+			const fresh = messages.slice(loggedMessageCount);
+			write(
+				`messages=${messages.length} (${fresh.length} new) · system prompt + tool schemas unchanged — full payload in request #1\n`,
+			);
+			if (fresh.length > 0) write(fenced(fresh));
+		}
+		if (messages) loggedMessageCount = messages.length;
 	});
 
 	pi.on("after_provider_response", async (event) => {
+		if (!enabled) return;
 		write(`\n## ← LLM RESPONSE #${requestNo} (HTTP ${event.status})\n`);
 	});
 
 	pi.on("message_end", async (event) => {
+		if (!enabled) return;
 		const message: any = event.message;
 		if (message?.role !== "assistant") return;
 		const usage = message.usage
@@ -109,23 +134,46 @@ export default function (pi: ExtensionAPI) {
 	});
 
 	pi.on("tool_execution_start", async (event) => {
+		if (!enabled) return;
 		write(`\n### ⚙ TOOL ${event.toolName} start (${event.toolCallId})\n${fenced(event.args)}`);
 	});
 
 	pi.on("tool_execution_end", async (event) => {
+		if (!enabled) return;
 		const status = event.isError ? "ERROR" : "ok";
 		const output = typeof event.result === "string" ? event.result : textOf(event.result) || json(event.result);
 		write(`\n### ⚙ TOOL ${event.toolName} end — ${status}\n\n\`\`\`\n${truncate(output, MAX_TOOL_RESULT_CHARS)}\n\`\`\``);
 	});
 
 	pi.on("turn_end", async (event) => {
+		if (!enabled) return;
 		write(`\n---\n_turn ${event.turnIndex} complete_\n`);
 	});
 
 	pi.registerCommand("flow-log", {
-		description: "Show the path of the current flow log file",
-		handler: async (_args, ctx) => {
-			ctx.ui.notify(logFile ?? `No flow log yet this session (will be created under ~/.pi/agent/flow-logs/)`, "info");
+		description: "flow-log status and file path; 'on'/'off' toggles logging",
+		handler: async (args, ctx) => {
+			const arg = String(args ?? "")
+				.trim()
+				.toLowerCase();
+			if (arg === "on") {
+				if (!enabled) {
+					enabled = true;
+					// Log the next request as #1 with the full payload — it carries the
+					// entire history, so enabling late loses nothing.
+					requestNo = 0;
+					loggedMessageCount = 0;
+				}
+				ctx.ui.notify(`flow-log on — logging to ${logFile ?? "~/.pi/agent/flow-logs/ (file created on next event)"}`, "info");
+			} else if (arg === "off") {
+				enabled = false;
+				ctx.ui.notify("flow-log off", "info");
+			} else {
+				ctx.ui.notify(
+					`flow-log is ${enabled ? "on" : "off"} · ${logFile ?? "no file yet this session"} · use /flow-log on|off (PI_FLOW_LOG=1 enables at startup)`,
+					"info",
+				);
+			}
 		},
 	});
 }
