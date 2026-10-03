@@ -14,7 +14,7 @@ See [what each tool is for](INSTALL.md#what-each-tool-is-for) for a quick map of
 ├── shell/            shared aliases, PATH setup, and shell helpers
 ├── nvim/             Neovim setup
 ├── pi/               pi coding-agent config and specs
-├── .config/          app configs: kanata, voxtype, omarchy theme, lazygit, yazi, etc.
+├── .config/          app configs: kanata, lazygit, yazi, etc.
 ├── bin/              helper scripts and bootstrap scripts
 └── legacy/           retired Vim/i3 configs kept for reference
 ```
