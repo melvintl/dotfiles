@@ -191,6 +191,9 @@ doctor() {
   link_status "$DOTFILES/.config/hunk/config.toml" "$HOME/.config/hunk/config.toml"
   link_status "$DOTFILES/.config/workmux/config.yaml" "$HOME/.config/workmux/config.yaml"
   link_status "$DOTFILES/.config/glow/glow.yml" "$HOME/.config/glow/glow.yml"
+  for f in yazi.toml theme.toml package.toml; do
+    link_status "$DOTFILES/.config/yazi/$f" "$HOME/.config/yazi/$f"
+  done
   if command -v zsh >/dev/null; then
     link_status "$DOTFILES/.zshrc" "$HOME/.zshrc"
   else
@@ -296,6 +299,13 @@ link_configs() {
   # Glow markdown renderer defaults.
   mkdir_p "$HOME/.config/glow"
   link_file "$DOTFILES/.config/glow/glow.yml" "$HOME/.config/glow/glow.yml"
+
+  # Link the files, not the directory: `ya pkg` installs flavors/ and plugins/
+  # next to them per machine.
+  mkdir_p "$HOME/.config/yazi"
+  for f in yazi.toml theme.toml package.toml; do
+    link_file "$DOTFILES/.config/yazi/$f" "$HOME/.config/yazi/$f"
+  done
 }
 
 bootstrap_shell_deps() {
