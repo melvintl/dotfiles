@@ -1,6 +1,6 @@
 {
   "theme": "one-dark-tmux",
-  "lastChangelogVersion": "0.86.0",
+  "lastChangelogVersion": "1.0.0",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
   "_defaultProvider": "ollama",
@@ -13,7 +13,6 @@
     "npm:@gotgenes/pi-permission-system",
     "npm:@narumitw/pi-goal",
     "npm:@narumitw/pi-lsp",
-    "npm:@langfuse/pi-observability-plugin",
     "npm:@narumitw/pi-usage"
   ],
   "quietStartup": true,
