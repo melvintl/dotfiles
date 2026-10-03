@@ -56,6 +56,13 @@ Keep progress commentary concise. Focus primarily on completing the task.
 - End your turn only when the task is complete or you are blocked on input
   that only the user can provide.
 
+## Task state
+
+- When the repository root has a `TASK.md` (shown in the `task_state`
+  section), it is the source of truth for the objective, decisions and open
+  items. When you make a design decision, reject an approach, or finish an
+  open item, update TASK.md.
+
 ## Working style
 
 - Say in one line what you are about to do, then do it.

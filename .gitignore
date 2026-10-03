@@ -30,6 +30,11 @@ __pycache__/
 !**/.claude/commands/
 !**/.claude/agents/
 
+# Pi handoff briefs (prompts/handoff.md) and per-worktree task state
+# (extensions/task-state.ts). Anchored: only the repo-root TASK.md.
+handoff-*.md
+/TASK.md
+
 # Pi project-local permission rules
 **/.pi/extensions/pi-permission-system/config.json
 
