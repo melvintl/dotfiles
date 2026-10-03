@@ -21,9 +21,11 @@ See [what each tool is for](INSTALL.md#what-each-tool-is-for) for a quick map of
 
 More detail in the sub-READMEs: [nvim](nvim/README.md), [kanata](.config/kanata/README.md), [Omarchy One Dark theme](.config/omarchy/themes/one-dark/README.md), [legacy](legacy/README.md).
 
-## Bootstrap
+## Setup
 
-Recommended order on a fresh machine:
+One entry point for every machine state: `make setup`. It is idempotent — existing links and clones are detected and skipped, only what's missing gets applied — so the fresh-machine command and the routine update command are the same. Preview any run with `make setup-dry-run`; inspect current state with `make doctor`.
+
+### New machine
 
 ```bash
 git clone https://github.com/melvintl/dotfiles.git ~/myprojects/dotfiles
@@ -34,22 +36,39 @@ make install-macos
 # make install-debian
 # make install-centos
 
-# 2. Then link configs and bootstrap shell dependencies.
+# 2. Optional: check what's already there — useful if the machine had a
+#    previous setup, or the distro ships its own default configs.
 make doctor          # inspect current links/tools
 make setup-dry-run   # preview what setup would change
+
+# 3. Then wire up the dotfiles.
 make setup           # link configs and bootstrap shell deps
 ```
 
-Tooling is documented in [INSTALL.md](INSTALL.md), including [what each tool is for](INSTALL.md#what-each-tool-is-for). Platform install targets are `make install-macos`, `make install-debian`, and `make install-centos`; read the underlying script before running one.
+Tooling is documented in [INSTALL.md](INSTALL.md), including [what each tool is for](INSTALL.md#what-each-tool-is-for); read the underlying install script before running one.
 
-`make setup` does the dotfile wiring:
+### Existing machine: pulling changes merged elsewhere
+
+After a PR lands on master (e.g. from another computer):
+
+```bash
+git pull
+make setup
+```
+
+Configs are symlinked into the repo, so edits to already-linked files take effect on pull by themselves — just reload the app (`prefix+r` for tmux, restart nvim). `make setup` is for what pull can't do: a commit that added a *new* config link or dependency clone does nothing until setup applies it. Running it after every pull is safe; skipping it when nothing new was added is also fine.
+
+One thing neither pull nor setup does: update the cloned dependencies themselves (`clone_once` is clone-if-missing). To update oh-my-zsh or a tmux plugin, `git pull` inside its clone.
+
+### What `make setup` does
 
 - backs up existing targets into `~/.dotfiles-backup/...`
 - links configs into place
 - writes `~/.dotfiles.env` with the actual clone path (`DOTFILES_DIR`)
 - clones shell dependencies that `.zshrc` sources: oh-my-zsh, its two plugins, and base16-shell
+- clones the tmux plugins `.tmux.conf` loads: extrakto (prefix+e) and tmux-floax (prefix+f) into `~/.tmux/plugins/`
 
-It does **not** install CLI tools. For partial setup, use `make links` for config links only or `make bootstrap` for shell dependency clones only.
+It does **not** install CLI tools — that's the `make install-*` targets. For partial setup, `make setup-links` runs only the config links and `make setup-bootstrap` only the shell/tmux dependency clones; together they equal `make setup`.
 
 If you only want a subset, manually symlink the pieces you care about instead. Common examples:
 
@@ -86,8 +105,8 @@ The same check runs in GitHub Actions, where it also runs ShellCheck, starts Neo
 
 Format the Neovim config with `make fmt` (settings in `.stylua.toml`).
 
-When changing Neovim config, opt into a heavier headless startup smoke test:
+When changing Neovim config, opt into the heavier startup test — everything `make check` does, plus booting Neovim headless against the repo config with plugins restored from `lazy-lock.json` (slow, needs network):
 
 ```bash
-make smoke
+make check-smoke
 ```

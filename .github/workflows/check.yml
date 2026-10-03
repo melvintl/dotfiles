@@ -35,4 +35,4 @@ jobs:
           version: stable
 
       - name: Run dotfiles health checks
-        run: make smoke
+        run: make check-smoke

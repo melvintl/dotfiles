@@ -17,9 +17,10 @@ usage() {
 Usage: bin/quick_setup.sh [--dry-run] [--doctor|--links-only|--bootstrap-only]
 
 Modes:
-  setup             Link configs and bootstrap shell deps (default)
-  --links-only      Link/copy configs only; skip zsh dependency clones
-  --bootstrap-only  Clone/update shell deps only; skip config links/copies
+  setup             Link configs and clone shell/tmux deps (default)
+  --links-only      Link/copy configs only; skip dependency clones
+  --bootstrap-only  Clone shell/tmux deps only (existing clones are left
+                    untouched, never updated); skip config links/copies
   --doctor          Report link/tool status without changing anything
 
 Options:
