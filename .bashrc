@@ -18,6 +18,11 @@ DOTFILES="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 export DOTFILES_DIR="${DOTFILES_DIR:-$DOTFILES}"
 [[ -r "$DOTFILES_DIR/shell/common.sh" ]] && source "$DOTFILES_DIR/shell/common.sh"
 
+if command -v workmux >/dev/null 2>&1; then
+  eval "$(workmux completions bash)"
+  complete -F _workmux_dynamic -o bashdefault -o default wm
+fi
+
 alias ll=ls # specifically for omarchy
 
 # Machine-local (untracked): API keys, client PATHs. Keep last so it wins.
