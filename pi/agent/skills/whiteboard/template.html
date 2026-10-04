@@ -442,12 +442,15 @@ function toggleSide(force) {
 
 // ------------------------------------------------------------------- hunks
 const hid = id => "h-" + Array.from(id, c => c.codePointAt(0).toString(16)).join("-");
+// POSIX shell quoting keeps filenames literal when the copied command is pasted.
+const shellQuote = s => "'" + String(s).replace(/'/g, "'\\''") + "'";
+const editorCommand = (line, path) => `nvim +${line} -- ${shellQuote(path)}`;
 let hunkInstance = 0;
 function hunkCard(id, note) {
   const h = H[id]; if (!h) return "";
   const syms = h.symbols.filter(s => s.name !== "(top level)").map(s => `<span class="sym-chip ${s.kind}" title="${s.kind}">${esc(s.name)}</span>`).join("");
   const line = h.added ? h.new_start : h.old_start;
-  const cmd = `nvim +${line} ${M.repo}/${h.file}`;
+  const cmd = editorCommand(line, `${M.repo}/${h.file}`);
   const ch = hunkChapter[id];
   return `<div class="hunk" id="${hid(id)}-${hunkInstance++}" data-id="${esc(id)}">
     <div class="hunk-head" title="Click to fold"><span class="fold">▾</span><span class="p">${esc(h.file)}<span>#${h.index}</span></span>${syms}

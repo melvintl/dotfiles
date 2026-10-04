@@ -520,7 +520,8 @@ def cmd_render(a):
     page = {"meta": data["meta"], "files": data["files"], "hunks": by_id, "spec": spec,
             "noise": noise, "unexplained": unexplained}
     template = (HERE / "template.html").read_text()
-    blob = json.dumps(page).replace("</", "<\\/")
+    # Escape every '<': HTML script parsing also treats '<!-- <script>' specially.
+    blob = json.dumps(page).replace("<", "\\u003c")
     title = spec.get("title", "Whiteboard")
     html = template.replace("__TITLE__", title.replace("<", "&lt;")).replace("/*__DATA__*/null", blob)
     (out / "index.html").write_text(html)
