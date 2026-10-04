@@ -157,6 +157,8 @@ MANIFEST=(
   # Link the file, not the directory: hunk keeps per-machine state.json next to its config
   'link|.config/lazygit/config.yml|.config/lazygit/config.yml'
   'link|.config/hunk/config.toml|.config/hunk/config.toml'
+  # Claude Code skill shared with pi (pi reads it through ~/.pi/agent/skills)
+  'link|pi/agent/skills/whiteboard|.claude/skills/whiteboard'
   # workmux global defaults; per-project .workmux.yaml files override them
   'link|.config/workmux/config.yaml|.config/workmux/config.yaml'
   'link|.config/glow/glow.yml|.config/glow/glow.yml'

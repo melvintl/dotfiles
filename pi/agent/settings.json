@@ -2,7 +2,7 @@
   "theme": "one-dark-tmux",
   "lastChangelogVersion": "1.0.0",
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
+  "defaultModel": "gpt-6.1-sol",
   "_defaultProvider": "ollama",
   "_defaultModel": "qwen2.5-coder:14b-instruct",
   "packages": [
