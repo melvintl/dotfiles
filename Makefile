@@ -1,4 +1,4 @@
-.PHONY: help check check-smoke setup setup-dry-run setup-links setup-bootstrap doctor fmt install-macos install-debian install-centos
+.PHONY: help check check-whiteboard check-smoke setup setup-dry-run setup-links setup-bootstrap doctor fmt install-macos install-debian install-centos
 
 help:
 	@echo "Machine setup:"
@@ -13,6 +13,7 @@ help:
 	@echo ""
 	@echo "Repo development:"
 	@echo "  make check           - Static repo checks: syntax/lint/format (fast; run locally before pushing)"
+	@echo "  make check-whiteboard - Whiteboard security regressions (Python 3, Node.js, Bash)"
 	@echo "  make check-smoke     - check + boot Neovim headless with plugins (slow; what CI runs)"
 	@echo "  make fmt             - Format Neovim Lua config with stylua"
 	@echo ""
@@ -46,6 +47,9 @@ doctor:
 
 check:
 	bash bin/check.sh
+
+check-whiteboard:
+	python3 -B -m unittest discover -s pi/agent/skills/whiteboard -p 'test_*.py' -v
 
 check-smoke:
 	RUN_NVIM_SMOKE=1 bash bin/check.sh

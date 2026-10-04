@@ -45,6 +45,7 @@
     "edit": "allow",
     "skill": "allow",
 
+    "web_enable": "allow",
     "web_search": "allow",
     "fetch_content": "ask",
     "get_search_content": "allow",
