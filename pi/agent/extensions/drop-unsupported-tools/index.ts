@@ -9,6 +9,8 @@
  * The capability is generic; the model->tool mapping is machine-local and
  * lives in config.local.json next to this file (gitignored, see
  * config.local.json.example). No config file -> no-op.
+ * Matching tools are also blocked when called from inside another tool, such
+ * as a codemode script, which never sends them to the provider.
  * Rules are read once per pi process; restart pi after editing the config.
  */
 
@@ -47,10 +49,22 @@ export default function (pi: ExtensionAPI) {
 	// Notify once per model so the missing capability is visible, not baffling.
 	const notified = new Set<string>();
 
+	const ruleFor = (modelId: string) =>
+		rules.find((r) => r.modelPrefixes.some((prefix) => modelId.startsWith(prefix)));
+
+	pi.on("tool_call", (event, ctx) => {
+		const modelId = ctx.model?.id;
+		if (!modelId) return;
+		const rule = ruleFor(modelId);
+		if (!rule?.dropTools.includes(event.toolName)) return;
+		const why = rule.reason ? `: ${rule.reason}` : "";
+		return { block: true, reason: `${event.toolName} is not available for ${modelId}${why}` };
+	});
+
 	pi.on("before_provider_request", (event, ctx) => {
 		const modelId = ctx.model?.id;
 		if (!modelId) return;
-		const rule = rules.find((r) => r.modelPrefixes.some((prefix) => modelId.startsWith(prefix)));
+		const rule = ruleFor(modelId);
 		if (!rule) return;
 
 		const payload = event.payload as Record<string, unknown>;

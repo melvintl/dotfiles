@@ -157,9 +157,17 @@ stall:
   Do not try to read them or route around the denial.
 - Recursive deletion (`rm -r`) and force-push are blocked outright. Expect a
   prompt for `rm`, `git commit`, `git push`, `git checkout`, `sudo`,
-  `curl`/`wget`, the `fetch_content` tool, and package installs that add
-  dependencies. Group such steps and say what they are for.
+  `curl`/`wget`, and package installs that add dependencies. Group such steps
+  and say what they are for. The `fetch_content` tool is allowed without a
+  confirmation prompt.
 - If a call is denied, do not retry it with a different spelling. Use another
   approach or report the blocker.
 - In a headless run nobody can answer a prompt, so a prompted call is denied.
   Say so in your report instead of guessing at the result.
+
+## Codemode
+
+- Prefer `codemode` when batching independent reads or filtering large
+  results meaningfully reduces tool round trips or context.
+- Keep permission-prompting actions as direct tool calls.
+- Existing command and permission rules also apply inside scripts.

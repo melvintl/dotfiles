@@ -14,7 +14,7 @@ set -euo pipefail
 
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SRC="$DOTFILES/pi/agent"
-DEST="${PI_AGENT_DIR:-$HOME/.pi/agent}"
+DEST="${PI_CODING_AGENT_DIR:-${PI_AGENT_DIR:-$HOME/.pi/agent}}"
 BACKUP="$HOME/.pi/agent.backup-$(date +%Y%m%d-%H%M%S)"
 
 LINK_ITEMS=(
