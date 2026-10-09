@@ -178,7 +178,7 @@ else
 fi
 
 info "optional tool availability"
-for cmd in git tmux nvim rg fd fzf jq lazygit delta glow hunk workmux; do
+for cmd in git tmux nvim rg fd fzf jq lazygit delta glow hunk workmux terraform terraform-ls tflint; do
   if command -v "$cmd" >/dev/null 2>&1; then
     ok "$cmd found"
   else

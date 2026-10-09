@@ -26,4 +26,5 @@ command -v hunk >/dev/null || curl -fsSL https://hunk.dev/install.sh | sh
 # Not in base/EPEL — see INSTALL.md for the usual fallbacks:
 #   lazygit (copr: atim/lazygit), git-delta + difftastic (cargo or GitHub
 #   releases), gh (https://cli.github.com/packages), pgcli/pspg/visidata
-#   (pipx / source), glow, jless, yazi, tldr (npm/pipx), tree-sitter-cli, workmux
+#   (pipx / source), glow, jless, yazi, tldr (npm/pipx), tree-sitter-cli, workmux,
+#   terraform + terraform-ls (HashiCorp rpm repo or mise), tflint

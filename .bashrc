@@ -23,6 +23,10 @@ if command -v workmux >/dev/null 2>&1; then
   complete -F _workmux_dynamic -o bashdefault -o default wm
 fi
 
+# Terraform's completion is the binary itself (`terraform -install-autocomplete`
+# would append a hard-coded, version-specific path here instead).
+command -v terraform >/dev/null 2>&1 && complete -o nospace -C terraform terraform
+
 alias ll=ls # specifically for omarchy
 
 # Machine-local (untracked): API keys, client PATHs. Keep last so it wins.

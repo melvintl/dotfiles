@@ -15,6 +15,9 @@ path_add "$HOME/.cargo/bin"
 path_add "$HOME/.local/bin"
 path_add "$HOME/.bun/bin"
 path_add "$HOME/.hunk/bin"
+# mise shims work in both shells and in child processes such as Neovim.
+# Unlike version-specific install paths, they respect project mise.toml files.
+path_add "$HOME/.local/share/mise/shims"
 
 alias v=vim
 alias n=nvim

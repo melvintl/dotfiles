@@ -57,6 +57,13 @@ command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh --cmd cd)"
 
 command -v workmux >/dev/null 2>&1 && eval "$(workmux completions zsh)"
 
+# Terraform completes through the binary itself, via zsh's bash-completion
+# shim. bashcompinit needs compinit (run by oh-my-zsh) for compdef.
+if command -v terraform >/dev/null 2>&1 && (( $+functions[compdef] )); then
+  autoload -U +X bashcompinit && bashcompinit
+  complete -o nospace -C terraform terraform
+fi
+
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 # Java: JDK paths differ per distro (Debian: java-11-openjdk-amd64, Arch:
 # java-11-openjdk), so take the first candidate that actually exists.

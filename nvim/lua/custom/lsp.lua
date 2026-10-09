@@ -13,6 +13,12 @@ vim.lsp.config('rust_analyzer', {
 })
 vim.lsp.enable('rust_analyzer')
 
+-- Nvim guesses *.tf from file contents and picks TinyFugue ('tf') for new or
+-- empty files, so terraformls would not attach. Always treat *.tf as Terraform.
+vim.filetype.add({ extension = { tf = 'terraform' } })
+vim.lsp.config('terraformls', {})
+vim.lsp.enable('terraformls')
+
 -- Drives lazydev.nvim (vim.* completion/hover while editing this config).
 -- Skipped silently when lua-language-server is not installed.
 vim.lsp.config('lua_ls', {})

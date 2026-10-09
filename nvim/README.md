@@ -70,6 +70,15 @@ brew install lua-language-server
 # sudo apt install lua-language-server
 ```
 
+### To setup the Terraform language server:
+
+`terraformls` is enabled in `lua/custom/lsp.lua` and attaches to `*.tf` and
+`*.tfvars`. It needs `terraform-ls`, plus `terraform` itself, which it calls
+for validation and formatting; ALE also runs `terraform fmt` on save and
+`tflint` when installed. Install all three with
+`mise use -g terraform terraform-ls tflint` — per-platform options in
+[INSTALL.md](../INSTALL.md#terraform).
+
 ## Fonts
 
 Install patched nerd fonts (eg JetBrains Mono) on the terminal 

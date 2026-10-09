@@ -35,4 +35,5 @@ sudo apt install -y yazi || echo ">> yazi not packaged here; see INSTALL.md"
 command -v hunk >/dev/null || curl -fsSL https://hunk.dev/install.sh | sh
 
 # Not packaged on apt — see INSTALL.md for install options:
-#   glow, jless, difftastic, kanata, tree-sitter-cli (npm/cargo), workmux
+#   glow, jless, difftastic, kanata, tree-sitter-cli (npm/cargo), workmux,
+#   terraform + terraform-ls (HashiCorp apt repo or mise), tflint
