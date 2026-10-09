@@ -27,9 +27,8 @@ Existing extensions in that directory to use as style/API references:
   Best reference for event handler signatures and `pi.registerCommand`.
 - `clear.ts` — shows module-level state surviving session replacement, and
   `ctx.ui.notify`.
-- `startup-info.ts` — shows custom TUI entries and reading pi internals.
 
-The user's default builder model is `openai-codex/gpt-5.5` (see
+The user's default builder model is `openai-codex/gpt-6.1-sol` (see
 `~/.pi/agent/settings.json`). Sessions are stored as JSONL files under
 `~/.pi/agent/sessions/`.
 

@@ -1,6 +1,6 @@
 {
   "thinkingLevel": "high",
-  "defaultPlanTools": ["read", "bash", "grep", "find", "ls", "web_search", "fetch_content", "get_search_content"],
+  "defaultPlanTools": ["read", "bash", "grep", "find", "ls", "codemode", "web_enable", "web_search", "source_check", "fetch_content", "get_search_content"],
   "implementationPlanRetention": "clear-after-first-run",
   "safeSubcommands": {
     "git": ["rev-parse", "blame", "merge-base"],

@@ -59,8 +59,8 @@ Keep progress commentary concise. Focus primarily on completing the task.
 ## Working style
 
 - Say in one line what you are about to do, then do it.
-- Run independent tool calls in parallel when there are no dependencies
-  between them.
+- Run independent tool calls in parallel, or batch them in one `codemode`
+  script, when there are no dependencies between them.
 - Reference code as `path:line` so it is clickable.
 - Lead your final message with the outcome. Keep it short enough to stand on
   its own for someone who did not watch you work.
@@ -157,9 +157,23 @@ stall:
   Do not try to read them or route around the denial.
 - Recursive deletion (`rm -r`) and force-push are blocked outright. Expect a
   prompt for `rm`, `git commit`, `git push`, `git checkout`, `sudo`,
-  `curl`/`wget`, the `fetch_content` tool, and package installs that add
-  dependencies. Group such steps and say what they are for.
+  `curl`/`wget`, and package installs that add dependencies. Group such steps
+  and say what they are for. The `fetch_content` tool is allowed without a
+  confirmation prompt.
 - If a call is denied, do not retry it with a different spelling. Use another
   approach or report the blocker.
 - In a headless run nobody can answer a prompt, so a prompted call is denied.
   Say so in your report instead of guessing at the result.
+
+## Codemode
+
+- Use `codemode` to fan out read-only work (reads, greps, `git` queries)
+  in one script with `Promise.allSettled`, and to filter or aggregate large
+  output before it reaches you. Use direct tool calls for single steps
+  and for edits.
+- Every tool call inside a script goes through the permission policy on
+  its own. Keep calls that prompt (commits, `rm`, `curl`, installs) out
+  of scripts so the user sees them as distinct steps; a call that is
+  denied rejects, so `allSettled` keeps the other results.
+- The one-simple-command-per-call rule applies to each `tools.bash()`
+  call inside a script too.
