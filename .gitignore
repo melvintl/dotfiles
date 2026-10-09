@@ -14,6 +14,11 @@ htmlcov/
 .aws-sam/
 __pycache__/
 .aider*
+# Terraform provider/module cache and state (state can hold secrets). The
+# .terraform.lock.hcl lock file is meant to be committed, so it stays tracked.
+.terraform
+*.tfstate
+*.tfstate.*
 
 # Per-machine identity and secrets
 .gitconfig.local

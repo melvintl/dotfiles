@@ -2,6 +2,9 @@ vim.g.ale_linters = {
   ['python'] = { 'ruff', 'pylint', 'flake8', 'mypy' },
   ['typescript'] = { 'eslint' },
   ['javascript'] = { 'eslint' },
+  -- terraform-ls handles editor diagnostics; keep CLI validation explicit
+  -- (`terraform init`, then `terraform validate`) rather than linting on every edit.
+  ['terraform'] = { 'tflint' },
 }
 -- Language servers are run by vim.lsp.enable (lua/custom/lsp.lua). The default
 -- "auto" only detects lspconfig's legacy setup(), so ALE would start a second
@@ -16,6 +19,8 @@ vim.g.ale_fixers = {
   },
   ['typescript'] = { 'eslint', 'prettier' },
   ['javascript'] = { 'eslint', 'prettier' },
+  ['terraform'] = { 'terraform' }, -- terraform fmt
+  ['terraform-vars'] = { 'terraform' },
 }
 vim.g.ale_fix_on_save = 1
 vim.g.ale_echo_msg_format = '[%linter%] %s [%severity%]'

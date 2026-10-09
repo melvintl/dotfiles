@@ -34,6 +34,9 @@ FORMULAE=(
   node
   # workmux — git-worktree + tmux orchestration (tmux prefix+a dashboard)
   raine/workmux/workmux
+  # Terraform: homebrew-core froze terraform at 1.5.7 after the BSL relicense,
+  # so terraform and its language server come from HashiCorp's tap.
+  hashicorp/tap/terraform hashicorp/tap/terraform-ls tflint
 )
 
 CASKS=(
@@ -58,6 +61,7 @@ brew update
 
 echo "==> formulae"
 brew tap raine/workmux >/dev/null 2>&1 || true
+brew tap hashicorp/tap >/dev/null 2>&1 || true
 missing=()
 for f in "${FORMULAE[@]}"; do
   brew list --formula "${f##*/}" >/dev/null 2>&1 || missing+=("$f")

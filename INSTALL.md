@@ -37,6 +37,10 @@ brew install \
 # on PATH)
 brew install raine/workmux/workmux
 
+# Terraform + language server from HashiCorp's tap (homebrew-core's
+# `terraform` is frozen at 1.5.7, the last MPL release); tflint is in core.
+brew install hashicorp/tap/terraform hashicorp/tap/terraform-ls tflint
+
 # Casks (fonts + kanata driver)
 brew install --cask \
   font-jetbrains-mono-nerd-font \
@@ -79,6 +83,7 @@ Notes:
 - `difftastic` (`difft`, behind the `git dft` alias) isn't packaged on apt — install via `cargo install --locked difftastic`.
 - Kanata isn't packaged on apt; grab the latest release binary from <https://github.com/jtroo/kanata/releases> if you want it on Linux.
 - `tree-sitter` CLI (needed by nvim-treesitter to build parsers) isn't packaged on apt — install via `npm install -g tree-sitter-cli` or `cargo install tree-sitter-cli`.
+- Terraform isn't in Debian/Ubuntu's repos. Either add [HashiCorp's apt repo](https://developer.hashicorp.com/terraform/install#linux) (`sudo apt install terraform terraform-ls`) or use mise (see [Terraform](#terraform)). `tflint`: `mise use -g tflint` or its [install script](https://github.com/terraform-linters/tflint#installation).
 - `workmux` isn't packaged on apt — install via `curl -fsSL https://raw.githubusercontent.com/raine/workmux/main/scripts/install.sh | bash`, `cargo install workmux`, or Homebrew on Linux (`brew install raine/workmux/workmux`).
 
 ---
@@ -120,6 +125,7 @@ Notes:
   Rust toolchain via `rustup` instead, use `rustup component add rust-analyzer` and
   skip the pacman package to avoid two copies on `PATH`.
 - `workmux` isn't in the official repos — install via `mise use -g cargo:raine/workmux` (fits Omarchy) or `cargo install workmux`.
+- Terraform: `terraform` and `tflint` are in extra; `terraform-ls` is in the AUR. Alternatively, use mise for all three (see [Terraform](#terraform)).
 - Skip the npm-globals section below on Arch unless a tool is missing from the repos —
   and note that if `node` comes from a version manager (mise, nvm, asdf), `npm -g`
   binaries live inside that runtime's directory and disappear when you change versions.
@@ -170,6 +176,24 @@ rustup component add rust-analyzer
 
 ---
 
+## Terraform
+
+`terraform` (also used by the `terraform fmt` fix-on-save in Neovim and by
+`terraform-ls`), `terraform-ls` (Neovim LSP) and `tflint` (optional ALE linter).
+mise works the same on every platform and is how Omarchy gets them:
+
+```bash
+mise use -g terraform terraform-ls tflint
+```
+
+Platform packages instead: macOS is covered by `bin/new_macos.sh`; Debian/RHEL
+can use HashiCorp's apt/rpm repos — see the notes in each section above. Shell
+completion for `terraform` is wired up in `.bashrc`/`.zshrc` and activates once
+the binary is on `PATH`; don't run `terraform -install-autocomplete`, which
+appends a hard-coded binary path to the rc file.
+
+---
+
 ## Manual / one-off
 
 - **oh-my-zsh, zsh-autosuggestions, zsh-syntax-highlighting, base16-shell**:
@@ -205,12 +229,13 @@ curl -fsSL https://pi.dev/install.sh | sh
 | Shell | `zsh`, `oh-my-zsh` (theme `robbyrussell`, plugins `git`, `git-extras`), `base16-shell`, `direnv`, `tmux`, `extrakto` (tmux prefix+e: fzf over pane text), `tmux-floax` (tmux prefix+f: persistent floating shell), `zoxide`, `pipx` |
 | Editors | `neovim`, `tree-sitter-cli` (parser builds for nvim-treesitter) |
 | Search / files | `fzf`, `ripgrep`, `the_silver_searcher` (`ag`), `fd`, `bat`, `glow`, `jq`, `jless`, `yazi`, `tldr`, `visidata` |
-| Neovim LSPs | `jedi-language-server`, `pyright`, `typescript-language-server`, `rust-analyzer` |
+| Neovim LSPs | `jedi-language-server`, `pyright`, `typescript-language-server`, `rust-analyzer`, `terraform-ls` |
 | Neovim linters / formatters (via ALE) | `ruff`, `pylint`, `flake8`, `mypy`, `black`, `reorder-python-imports`, `prettier`, `eslint` |
 | Neovim debug / test | `debugpy`, `pytest`, `pytest-picked`, `pytest-testmon` |
 | Git tooling | `lazygit`, `git-delta`, `gh`, `difftastic` (`difft`, syntax-aware diffs via `git dft`), `hunk` (diff review of agent changes), `workmux` (git-worktree + tmux orchestration for parallel agents; tmux prefix+a dashboard) |
 | AI | `claude`, `ollama`, `pi` |
 | JS runtime | `node` (via mise/nvm; npm globals need it), `bun` (optional) |
+| Infrastructure | `terraform`, `tflint` (optional Terraform linter via ALE) |
 | Database | `pgcli`, `pspg` |
 | Lint | `yamllint`, `shellcheck` |
 | Keyboard | `kanata` (+ Karabiner driver on macOS) |
