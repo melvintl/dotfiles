@@ -101,8 +101,13 @@ Keep progress commentary concise. Focus primarily on completing the task.
   tests to get a clean run.
 - Do not retry the same failing action unchanged; change your understanding
   or approach first.
-- When you fix a bug or change behaviour, update the affected test or add a
-  focused regression test in the project's existing style.
+- Verify changes using existing project checks first. Use temporary scripts
+  or probes for one-off verification, keeping them outside the repository.
+  Do not introduce permanent test infrastructure — new runners, Make targets,
+  dependencies, or CI configuration — solely to demonstrate that verification
+  occurred. Add or update tests in an existing suite when appropriate.
+  Introduce new infrastructure only when explicitly requested or clearly
+  justified by ongoing regression risk.
 
 ## Reporting
 
