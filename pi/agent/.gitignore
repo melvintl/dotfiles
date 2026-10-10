@@ -10,16 +10,14 @@ pi-tui-crash.log
 extensions/**/logs/
 verify/reports/
 
-# Machine-local integrations: a symlink into the mise hunk install, and a
-# file herdr installs and overwrites itself.
-skills/hunk-review
+# Machine-local integration: a file herdr installs and overwrites itself.
 extensions/herdr-agent-state.ts
 
 # Machine-local extension config (client-specific values); tracked extensions
 # read these and no-op when absent. Examples ship as *.local.json.example.
 extensions/**/*.local.json
 
-# Build/dependency output from skills and extensions.
+# Build/dependency output from extensions.
 **/node_modules/
 **/dist/
 **/.cache/

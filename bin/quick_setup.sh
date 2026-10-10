@@ -157,8 +157,6 @@ MANIFEST=(
   # Link the file, not the directory: hunk keeps per-machine state.json next to its config
   'link|.config/lazygit/config.yml|.config/lazygit/config.yml'
   'link|.config/hunk/config.toml|.config/hunk/config.toml'
-  # Claude Code skill shared with pi (pi reads it through ~/.pi/agent/skills)
-  'link|pi/agent/skills/whiteboard|.claude/skills/whiteboard'
   # workmux global defaults; per-project .workmux.yaml files override them
   'link|.config/workmux/config.yaml|.config/workmux/config.yaml'
   'link|.config/glow/glow.yml|.config/glow/glow.yml'
@@ -249,6 +247,13 @@ doctor() {
   echo "==> copied configs"
   apply_manifest doctor copy
 
+  echo "==> agent skills"
+  if [[ -f "$AGENT_SKILLS/bin/link.sh" ]]; then
+    bash "$AGENT_SKILLS/bin/link.sh" --doctor || true
+  else
+    printf 'warn: no agent-skills repo at %s; agent skills are not linked\n' "$AGENT_SKILLS"
+  fi
+
   echo "==> tools"
   for cmd in git zsh tmux nvim rg fd fzf jq lazygit delta glow hunk workmux terraform terraform-ls tflint; do
     if command -v "$cmd" >/dev/null 2>&1; then
@@ -318,6 +323,37 @@ link_configs() {
       run chmod 600 "$rc"
     fi
   done
+
+  link_agent_skills
+}
+
+# Agent skills live in their own repo, which links itself into each agent.
+# It is used when present and never cloned from here.
+AGENT_SKILLS="${AGENT_SKILLS_DIR:-$(dirname "$DOTFILES")/agent-skills}"
+
+link_agent_skills() {
+  # The whiteboard skill moved to the agent-skills repo; drop the symlink
+  # earlier runs created so its linker is not blocked by a dangling one
+  if [[ -L "$HOME/.claude/skills/whiteboard" && "$(readlink "$HOME/.claude/skills/whiteboard")" == "$DOTFILES/pi/agent/skills/whiteboard" ]]; then
+    remove_file "$HOME/.claude/skills/whiteboard"
+    if ((DRY_RUN)); then
+      log "Would remove stale ~/.claude/skills/whiteboard link (skill now lives in agent-skills)"
+    else
+      log "Removed stale ~/.claude/skills/whiteboard link (skill now lives in agent-skills)"
+    fi
+  fi
+
+  if [[ ! -f "$AGENT_SKILLS/bin/link.sh" ]]; then
+    log "No agent-skills repo at $AGENT_SKILLS; skipping agent skills (clone it there or set AGENT_SKILLS_DIR)"
+    return 0
+  fi
+
+  local args=()
+  if ((DRY_RUN)); then
+    args=(--dry-run)
+  fi
+  bash "$AGENT_SKILLS/bin/link.sh" ${args[@]+"${args[@]}"} \
+    || log "agent-skills reported problems; run 'make doctor' in $AGENT_SKILLS"
 }
 
 bootstrap_shell_deps() {

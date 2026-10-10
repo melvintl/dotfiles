@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Symlink pi coding-agent config from this repo into ~/.pi/agent.
 #
+# Skills are not handled here: they live in the agent-skills repo, which
+# links itself into ~/.pi/agent/skills.
+#
 # Anything already at a destination that is not the correct symlink is moved
 # into a timestamped backup directory before the link is created.
 #
@@ -24,7 +27,6 @@ LINK_ITEMS=(
   pi-lsp.json
   extensions
   prompts
-  skills
   themes
 )
 
