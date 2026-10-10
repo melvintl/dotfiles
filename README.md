@@ -64,6 +64,7 @@ One thing neither pull nor setup does: update the cloned dependencies themselves
 
 - backs up existing targets into `~/.dotfiles-backup/...`
 - links configs into place
+- links [agent skills](#agent-skills) if that repo is cloned next to this one
 - writes `~/.dotfiles.env` with the actual clone path (`DOTFILES_DIR`)
 - clones shell dependencies that `.zshrc` sources: oh-my-zsh, its two plugins, and base16-shell
 - clones the tmux plugins `.tmux.conf` loads: extrakto (prefix+e) and tmux-floax (prefix+f) into `~/.tmux/plugins/`
@@ -87,7 +88,13 @@ make setup-pi-dry-run   # preview changes
 make setup-pi           # apply Pi config
 ```
 
-These targets wrap `bin/pi_setup.sh`, which links the shared config from `pi/agent/` into `~/.pi/agent/`, backing up conflicting files in `~/.pi/agent.backup-...`. It copies `pi-plan-mode.json` rather than linking it. Re-run `make setup-pi` after pulling changes that add Pi config items or update that copied file. It does not install Pi or extension dependencies; see [INSTALL.md](INSTALL.md#ai-tools) for Pi installation and [pi/SANDBOX.md](pi/SANDBOX.md#setup-on-a-new-machine) for sandbox dependencies.
+These targets wrap `bin/pi_setup.sh`, which links the shared config from `pi/agent/` into `~/.pi/agent/` (everything except skills, see [Agent skills](#agent-skills)), backing up conflicting files in `~/.pi/agent.backup-...`. It copies `pi-plan-mode.json` rather than linking it. Re-run `make setup-pi` after pulling changes that add Pi config items or update that copied file. It does not install Pi or extension dependencies; see [INSTALL.md](INSTALL.md#ai-tools) for Pi installation and [pi/SANDBOX.md](pi/SANDBOX.md#setup-on-a-new-machine) for sandbox dependencies.
+
+### Agent skills
+
+Skills for Claude Code and Pi are not kept in this repo. They live in a separate `agent-skills` repo, which symlinks each skill into the agents it is for.
+
+`make setup` looks for that repo at `$AGENT_SKILLS_DIR`, defaulting to an `agent-skills` directory next to this one. If it is there, setup runs its linker and `make doctor` includes its report. If it is not, setup prints a one-line note and carries on; it never clones it.
 
 ## Per-machine layer
 
