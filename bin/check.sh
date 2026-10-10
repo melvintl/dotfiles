@@ -81,6 +81,8 @@ for path in \
   .shellcheckrc \
   shell/common.sh \
   .config/glow/glow.yml \
+  .config/leaf/config.toml \
+  .config/leaf/one-dark.toml \
   .config/voxtype/config.toml \
   nvim/init.lua
   do
@@ -124,12 +126,14 @@ fi
 info "git config"
 run_check "git config parses" git_config_parses
 
-info "voxtype config"
+info "TOML configs"
 if command -v python3 >/dev/null 2>&1; then
-  run_check "TOML parses .config/voxtype/config.toml" \
-    python3 -c 'import sys, tomllib; tomllib.load(open(sys.argv[1], "rb"))' .config/voxtype/config.toml
+  for path in .config/voxtype/config.toml .config/leaf/config.toml .config/leaf/one-dark.toml; do
+    run_check "TOML parses $path" \
+      python3 -c 'import sys, tomllib; tomllib.load(open(sys.argv[1], "rb"))' "$path"
+  done
 else
-  warn "python3 not found; skipping voxtype config parse check"
+  warn "python3 not found; skipping TOML config parse checks"
 fi
 
 info "Lua syntax"
@@ -178,7 +182,7 @@ else
 fi
 
 info "optional tool availability"
-for cmd in git tmux nvim rg fd fzf jq lazygit delta glow hunk workmux terraform terraform-ls tflint; do
+for cmd in git tmux nvim rg fd fzf jq lazygit delta glow leaf hunk workmux terraform terraform-ls tflint; do
   if command -v "$cmd" >/dev/null 2>&1; then
     ok "$cmd found"
   else

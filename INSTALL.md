@@ -114,7 +114,7 @@ sudo pacman -S --needed \
   python-debugpy
 
 # AUR (via yay, shipped with Omarchy)
-yay -S pspg
+yay -S pspg leaf-markdown-viewer
 # kanata is AUR too, if you want it on Linux: yay -S kanata
 ```
 
@@ -194,6 +194,32 @@ appends a hard-coded binary path to the rc file.
 
 ---
 
+## Leaf Markdown viewer
+
+On Arch/Omarchy, Leaf is included in the AUR command above. Install it on its own with:
+
+```bash
+yay -S --needed leaf-markdown-viewer
+```
+
+On other Linux/macOS machines, use the [upstream installer](https://leaf.rivolink.mg/docs/installation/):
+
+```bash
+curl -fsSL https://leaf.rivolink.mg/install.sh | sh
+```
+
+Then run `make setup` (or `make setup-links`) to link
+`.config/leaf/config.toml` and `one-dark.toml` into `~/.config/leaf/`.
+`make doctor` reports both links and whether `leaf` is on `PATH`.
+Setup does not install the binary; history remains machine-local.
+
+Open a document with `leaf README.md`. The custom One Dark palette covers the
+UI and Markdown; fenced code uses Leaf's built-in syntax colors. Press **Ctrl+E**
+to open Neovim at the source line corresponding to the viewport middle and
+centre it. `shell/common.sh` also sets Neovim as `EDITOR`, `VISUAL`, and `SUDO_EDITOR`.
+
+---
+
 ## Manual / one-off
 
 - **oh-my-zsh, zsh-autosuggestions, zsh-syntax-highlighting, base16-shell**:
@@ -228,7 +254,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 | --- | --- |
 | Shell | `zsh`, `oh-my-zsh` (theme `robbyrussell`, plugins `git`, `git-extras`), `base16-shell`, `direnv`, `tmux`, `extrakto` (tmux prefix+e: fzf over pane text), `tmux-floax` (tmux prefix+f: persistent floating shell), `zoxide`, `pipx` |
 | Editors | `neovim`, `tree-sitter-cli` (parser builds for nvim-treesitter) |
-| Search / files | `fzf`, `ripgrep`, `the_silver_searcher` (`ag`), `fd`, `bat`, `glow`, `jq`, `jless`, `yazi`, `tldr`, `visidata` |
+| Search / files | `fzf`, `ripgrep`, `the_silver_searcher` (`ag`), `fd`, `bat`, `glow`, `leaf` (Markdown viewer with line-aware Neovim editing), `jq`, `jless`, `yazi`, `tldr`, `visidata` |
 | Neovim LSPs | `jedi-language-server`, `pyright`, `typescript-language-server`, `rust-analyzer`, `terraform-ls` |
 | Neovim linters / formatters (via ALE) | `ruff`, `pylint`, `flake8`, `mypy`, `black`, `reorder-python-imports`, `prettier`, `eslint` |
 | Neovim debug / test | `debugpy`, `pytest`, `pytest-picked`, `pytest-testmon` |

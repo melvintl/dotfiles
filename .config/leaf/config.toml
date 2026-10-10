@@ -1,0 +1,3 @@
+theme = "one-dark.toml"
+# Open at the source line corresponding to the viewport centre, then centre it.
+editor = 'nvim +{$line} +"normal! zz"'
