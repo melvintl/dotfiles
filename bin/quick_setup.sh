@@ -160,6 +160,9 @@ MANIFEST=(
   # workmux global defaults; per-project .workmux.yaml files override them
   'link|.config/workmux/config.yaml|.config/workmux/config.yaml'
   'link|.config/glow/glow.yml|.config/glow/glow.yml'
+  # Leaf history stays machine-local; link only the config and theme.
+  'link|.config/leaf/config.toml|.config/leaf/config.toml'
+  'link|.config/leaf/one-dark.toml|.config/leaf/one-dark.toml'
   # ripgrep defaults; shell/common.sh points RIPGREP_CONFIG_PATH here.
   'link|.config/ripgrep/config|.config/ripgrep/config'
   # Link the files, not the directory: `ya pkg` installs flavors/ and plugins/
@@ -255,7 +258,7 @@ doctor() {
   fi
 
   echo "==> tools"
-  for cmd in git zsh tmux nvim rg fd fzf jq lazygit delta glow hunk workmux terraform terraform-ls tflint; do
+  for cmd in git zsh tmux nvim rg fd fzf jq lazygit delta glow leaf hunk workmux terraform terraform-ls tflint; do
     if command -v "$cmd" >/dev/null 2>&1; then
       printf 'ok: %s found\n' "$cmd"
     else
