@@ -23,7 +23,7 @@ More detail in the sub-READMEs: [nvim](nvim/README.md), [kanata](.config/kanata/
 
 ## Setup
 
-One entry point for every machine state: `make setup`. It is idempotent — existing links and clones are detected and skipped, only what's missing gets applied — so the fresh-machine command and the routine update command are the same. Preview any run with `make setup-dry-run`; inspect current state with `make doctor`.
+For shell and app configs, use `make setup` on both new and existing machines. [Pi config](#pi-config) uses the separate `make setup-pi` target. `make setup` is idempotent — existing links and clones are detected and skipped, only what's missing gets applied — so the fresh-machine command and the routine update command are the same. Preview any run with `make setup-dry-run`; inspect current state with `make doctor`.
 
 ### New machine
 
@@ -77,6 +77,17 @@ ln -s ~/myprojects/dotfiles/.zshrc     ~/.zshrc
 ln -s ~/myprojects/dotfiles/.tmux.conf ~/.tmux.conf
 ln -s ~/myprojects/dotfiles/nvim       ~/.config/nvim
 ```
+
+### Pi config
+
+`make setup` does not apply the Pi coding-agent config. If you use Pi, run its separate setup target from the repo root:
+
+```bash
+make setup-pi-dry-run   # preview changes
+make setup-pi           # apply Pi config
+```
+
+These targets wrap `bin/pi_setup.sh`, which links the shared config from `pi/agent/` into `~/.pi/agent/`, backing up conflicting files in `~/.pi/agent.backup-...`. It copies `pi-plan-mode.json` rather than linking it. Re-run `make setup-pi` after pulling changes that add Pi config items or update that copied file. It does not install Pi or extension dependencies; see [INSTALL.md](INSTALL.md#ai-tools) for Pi installation and [pi/SANDBOX.md](pi/SANDBOX.md#setup-on-a-new-machine) for sandbox dependencies.
 
 ## Per-machine layer
 

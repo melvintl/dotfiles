@@ -1,4 +1,4 @@
-.PHONY: help check check-whiteboard check-smoke setup setup-dry-run setup-links setup-bootstrap doctor fmt install-macos install-debian install-centos
+.PHONY: help check check-whiteboard check-smoke setup setup-dry-run setup-links setup-bootstrap setup-pi setup-pi-dry-run doctor fmt install-macos install-debian install-centos
 
 help:
 	@echo "Machine setup:"
@@ -10,6 +10,10 @@ help:
 	@echo "  make setup-links     - Setup subset: symlink/copy configs only"
 	@echo "  make setup-bootstrap - Setup subset: clone shell/tmux deps only"
 	@echo "  make doctor          - Report dotfile link/tool status"
+	@echo ""
+	@echo "Pi setup (optional):"
+	@echo "  make setup-pi         - Apply Pi config (separate from setup)"
+	@echo "  make setup-pi-dry-run - Preview Pi config changes"
 	@echo ""
 	@echo "Repo development:"
 	@echo "  make check           - Static repo checks: syntax/lint/format (fast; run locally before pushing)"
@@ -41,6 +45,12 @@ setup-links:
 
 setup-bootstrap:
 	bash bin/quick_setup.sh --bootstrap-only
+
+setup-pi:
+	bash bin/pi_setup.sh
+
+setup-pi-dry-run:
+	bash bin/pi_setup.sh --dry-run
 
 doctor:
 	bash bin/quick_setup.sh --doctor
