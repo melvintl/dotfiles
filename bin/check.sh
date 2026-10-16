@@ -90,28 +90,19 @@ for path in \
 done
 
 info "bash syntax"
+bin_scripts=()
 while IFS= read -r path; do
-  run_check "bash -n $path" bash -n "$path"
+  bin_scripts+=("$path")
 done < <(find bin -maxdepth 1 -type f \( -name '*.sh' -o -perm -111 \) | sort)
+for path in "${bin_scripts[@]}"; do
+  run_check "bash -n $path" bash -n "$path"
+done
 run_check "bash -n .bashrc" bash -n .bashrc
 run_check "bash -n shell/common.sh" bash -n shell/common.sh
 
 info "ShellCheck"
 if command -v shellcheck >/dev/null 2>&1; then
-  shellcheck_files=(
-    .bashrc
-    shell/common.sh
-    bin/check.sh
-    bin/new_centos.sh
-    bin/new_debian.sh
-    bin/new_macos.sh
-    bin/pi_setup.sh
-    bin/quick_setup.sh
-    bin/tmux-jump
-    bin/tmux-session
-    bin/claude-jump
-  )
-  run_check "shellcheck bash scripts" shellcheck "${shellcheck_files[@]}"
+  run_check "shellcheck bash scripts" shellcheck .bashrc shell/common.sh "${bin_scripts[@]}"
 else
   warn "shellcheck not found; skipping shell lint (brew install shellcheck / apt install shellcheck / pacman -S shellcheck)"
 fi
@@ -128,10 +119,10 @@ run_check "git config parses" git_config_parses
 
 info "TOML configs"
 if command -v python3 >/dev/null 2>&1; then
-  for path in .config/voxtype/config.toml .config/leaf/config.toml .config/leaf/one-dark.toml; do
+  while IFS= read -r path; do
     run_check "TOML parses $path" \
       python3 -c 'import sys, tomllib; tomllib.load(open(sys.argv[1], "rb"))' "$path"
-  done
+  done < <(git ls-files '*.toml')
 else
   warn "python3 not found; skipping TOML config parse checks"
 fi
