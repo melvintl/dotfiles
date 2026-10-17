@@ -19,7 +19,6 @@ path_add "$HOME/.hunk/bin"
 # Unlike version-specific install paths, they respect project mise.toml files.
 path_add "$HOME/.local/share/mise/shims"
 
-alias v=vim
 alias n=nvim
 alias l=lazygit
 alias h="hunk diff --watch"
