@@ -4,12 +4,12 @@
  * pi only loads index.ts from this directory, so this file is never an extension.
  */
 
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createServer } from "node:http";
-import { listPages, resolveRequest, saveVisual, slugify, validate } from "./core.ts";
+import { ensureIndex, listPages, resolveRequest, saveVisual, slugify, validate } from "./core.ts";
 import { serve } from "./server.ts";
 
 const dir = mkdtempSync(join(tmpdir(), "pi-visual-"));
@@ -25,6 +25,8 @@ try {
   A[Agent] -->|AG-UI events| U[UI]
   A -->|MCP calls| T[Tools]</pre>
 <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "dark" });</script>`;
+	ensureIndex(join(dir, "fresh"));
+	check(resolveRequest(join(dir, "fresh"), "/") !== undefined, "ensureIndex: index exists before the first page");
 	const now = new Date(2026, 9, 17, 14, 32);
 	const a = saveVisual(dir, { title: "AG-UI vs MCP <test>", html }, now);
 	const b = saveVisual(dir, { title: "AG-UI vs MCP <test>", html }, now);
@@ -55,13 +57,15 @@ try {
 	const otherPort = (other.address() as AddressInfo).port;
 	check(await serve(dir, otherPort).then(() => false, () => true), "a port held by another program is an error");
 	other.close();
-	check(listPages(dir)[0] === b.name && !listPages(dir).includes("index.html"), "listPages: pages only, newest first");
+	writeFileSync(join(dir, "compare-20261017-143200.html"), "<p>x</p>");
+	check(listPages(dir)[0] === b.name && !listPages(dir).includes("index.html"), "listPages: dated pages only, newest first");
 
 	const res = await fetch(`http://127.0.0.1:${port}/${a.name}`);
 	const page = await res.text();
 	check(res.status === 200, "serves a page");
 	check(page.includes("Content-Security-Policy"), "page carries the CSP meta tag");
 	check(page.includes("&#60;test&#62;"), "title is escaped");
+	check(page.includes('href="index.html"'), "'all' links to index.html, which also works from disk");
 	const index = await (await fetch(`http://127.0.0.1:${port}/`)).text();
 	check(index.includes(encodeURIComponent(b.name)), "index lists pages");
 	check((await fetch(`http://127.0.0.1:${port}/missing.html`)).status === 404, "missing page is 404");

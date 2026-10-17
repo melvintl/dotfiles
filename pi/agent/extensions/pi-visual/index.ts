@@ -24,7 +24,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Type } from "@earendil-works/pi-ai";
 import { defineTool, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { listPages, saveVisual } from "./core.ts";
+import { ensureIndex, listPages, saveVisual } from "./core.ts";
 import { serve } from "./server.ts";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -36,10 +36,17 @@ const BASE_URL = (process.env.PI_VISUAL_URL ?? `http://localhost:${PORT}`).repla
 let serving: Promise<unknown> | undefined;
 
 function ensureServer(): Promise<unknown> {
-	serving ??= serve(DIR, PORT).catch((err) => {
-		serving = undefined;
-		throw err;
-	});
+	serving ??= serve(DIR, PORT).then(
+		(result) => {
+			// Another session's server can exit at any time, so don't save "shared". Check again next call.
+			if (result === "shared") serving = undefined;
+			return result;
+		},
+		(err) => {
+			serving = undefined;
+			throw err;
+		},
+	);
 	return serving;
 }
 
@@ -89,6 +96,7 @@ export default function (pi: ExtensionAPI) {
 	pi.registerCommand("visuals", {
 		description: "Show the visuals index URL; 'open' opens the newest page in the browser",
 		handler: async (args, ctx) => {
+			ensureIndex(DIR);
 			try {
 				await ensureServer();
 			} catch (err) {

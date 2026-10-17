@@ -119,7 +119,7 @@ function pageShell(visual: Visual, now: Date): string {
 <style>${BASE_CSS}</style>
 </head>
 <body>
-<header class="pv"><h1>${title}</h1><span><time datetime="${now.toISOString()}">${date} ${hh}:${mm}</time> · <a href="./">all</a></span></header>
+<header class="pv"><h1>${title}</h1><span><time datetime="${now.toISOString()}">${date} ${hh}:${mm}</time> · <a href="index.html">all</a></span></header>
 ${visual.html}
 </body>
 </html>
@@ -149,15 +149,25 @@ export function saveVisual(dir: string, visual: Visual, now = new Date()): Saved
 	return { name, file };
 }
 
+/** Matches the names saveVisual writes (2026-10-17-1432-slug.html), so other files like rerun.sh's comparisons stay out. */
+const PAGE_NAME = /^\d{4}-\d{2}-\d{2}-\d{4}-.+\.html$/;
+
 /** Page file names, newest first. Names start with a local timestamp, so they sort by time. */
 export function listPages(dir: string): string[] {
 	if (!existsSync(dir)) return [];
 	return readdirSync(dir)
-		.filter((name) => name.endsWith(".html") && name !== INDEX_FILE)
+		.filter((name) => PAGE_NAME.test(name))
 		.map((name) => name.slice(0, -5)) // sort without ".html" so "x" < "x-2"
 		.sort()
 		.reverse()
 		.map((base) => `${base}.html`);
+}
+
+/** Write index.html if it is missing, so the index URL works before the first page. */
+export function ensureIndex(dir: string): void {
+	if (existsSync(join(dir, INDEX_FILE))) return;
+	mkdirSync(dir, { recursive: true });
+	writeIndex(dir);
 }
 
 /** Regenerate index.html: every page, newest first, titled from its <title>. */
