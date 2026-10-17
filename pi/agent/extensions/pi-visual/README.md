@@ -31,7 +31,9 @@ For the phone, run `tailscale serve --bg 4178` and set `PI_VISUAL_URL` to the
 
 The CSP lets scripts, styles and images load only from cdn.jsdelivr.net,
 cdnjs.cloudflare.com and unpkg.com (plus Google Fonts for styles), and blocks
-fetch to anywhere else, so a page can't send its content out. Those CDNs serve
+fetch to anywhere else. That stops background requests, but CSP can't stop a
+page navigating away (`location.href`, `window.open`, a link you tap), so a
+malicious page could still carry its content out in a URL. Those CDNs serve
 any npm package or GitHub repo, so the allowlist is not a trust boundary for
 the code itself.
 

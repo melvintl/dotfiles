@@ -4,7 +4,7 @@
  * pi only loads index.ts from this directory, so this file is never an extension.
  */
 
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -52,12 +52,17 @@ try {
 	if (first === "shared") throw new Error("port 0 cannot be shared");
 	const port = (first.address() as AddressInfo).port;
 	check((await serve(dir, port)) === "shared", "second server on a taken port reports shared");
+	check(await serve(join(dir, "fresh"), port).then(() => false, () => true), "a server for another directory is an error");
 	const other = createServer((_req, res) => res.end()).listen(0, "127.0.0.1");
 	await new Promise((r) => other.once("listening", r));
 	const otherPort = (other.address() as AddressInfo).port;
 	check(await serve(dir, otherPort).then(() => false, () => true), "a port held by another program is an error");
 	other.close();
 	writeFileSync(join(dir, "compare-20261017-143200.html"), "<p>x</p>");
+	const later = saveVisual(dir, { title: "Aardvark", html: "<p>x</p>" }, now);
+	utimesSync(join(dir, later.name), new Date(), new Date(Date.now() + 60_000));
+	check(listPages(dir)[0] === later.name, "listPages: newest by time, not by name, within a minute");
+	rmSync(join(dir, later.name));
 	check(listPages(dir)[0] === b.name && !listPages(dir).includes("index.html"), "listPages: dated pages only, newest first");
 
 	const res = await fetch(`http://127.0.0.1:${port}/${a.name}`);

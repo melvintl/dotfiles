@@ -10,9 +10,11 @@
  * phone to laptop width, and a Content-Security-Policy meta tag that only lets
  * scripts load from a short CDN allowlist and blocks fetch/XHR to anywhere
  * else. The meta tag applies whether the page is served or opened from disk.
+ * It does not stop the page navigating away, so it limits leaks but cannot
+ * prevent them.
  */
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve, sep } from "node:path";
 
 const MAX_BODY_BYTES = 1_000_000;
@@ -152,15 +154,17 @@ export function saveVisual(dir: string, visual: Visual, now = new Date()): Saved
 /** Matches the names saveVisual writes (2026-10-17-1432-slug.html), so other .html files in the directory stay out of the index. */
 const PAGE_NAME = /^\d{4}-\d{2}-\d{2}-\d{4}-.+\.html$/;
 
-/** Page file names, newest first. Names start with a local timestamp, so they sort by time. */
+/**
+ * Page file names, newest first. Sorted by modification time because names
+ * only go down to the minute; ties fall back to the name.
+ */
 export function listPages(dir: string): string[] {
 	if (!existsSync(dir)) return [];
 	return readdirSync(dir)
 		.filter((name) => PAGE_NAME.test(name))
-		.map((name) => name.slice(0, -5)) // sort without ".html" so "x" < "x-2"
-		.sort()
-		.reverse()
-		.map((base) => `${base}.html`);
+		.map((name) => ({ name, mtime: statSync(join(dir, name)).mtimeMs }))
+		.sort((a, b) => b.mtime - a.mtime || b.name.localeCompare(a.name))
+		.map((page) => page.name);
 }
 
 /** Write index.html if it is missing, so the index URL works before the first page. */
