@@ -157,14 +157,3 @@ Design for the laptop, and check the page still works at 390px.
 3. Optional: a short "how to read this" line, a legend and controls.
 
 Keep it to one idea per page. A follow-up question gets a new page, not an edit.
-
-## Drawing on Sage
-
-When the question is about something Melvin has watched or noted, ground the page
-in his knowledge base first:
-
-```bash
-cd ~/myprojects/sage && ./venv/bin/python kb.py search "<query>"
-```
-
-Cite the sources it returns in a small footer list on the page.
