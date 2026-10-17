@@ -8,7 +8,8 @@ import { mkdtempSync, rmSync } from "node:fs";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { resolveRequest, saveVisual, slugify, validate } from "./core.ts";
+import { createServer } from "node:http";
+import { listPages, resolveRequest, saveVisual, slugify, validate } from "./core.ts";
 import { serve } from "./server.ts";
 
 const dir = mkdtempSync(join(tmpdir(), "pi-visual-"));
@@ -45,10 +46,16 @@ try {
 	check(resolveRequest(dir, "/x.ts") === undefined, "serves .html only");
 	check(resolveRequest(dir, "/")?.endsWith("index.html"), "/ serves the index");
 
-	const first = await serve(dir, "127.0.0.1", 0);
+	const first = await serve(dir, 0);
 	if (first === "shared") throw new Error("port 0 cannot be shared");
 	const port = (first.address() as AddressInfo).port;
-	check((await serve(dir, "127.0.0.1", port)) === "shared", "second server on a taken port reports shared");
+	check((await serve(dir, port)) === "shared", "second server on a taken port reports shared");
+	const other = createServer((_req, res) => res.end()).listen(0, "127.0.0.1");
+	await new Promise((r) => other.once("listening", r));
+	const otherPort = (other.address() as AddressInfo).port;
+	check(await serve(dir, otherPort).then(() => false, () => true), "a port held by another program is an error");
+	other.close();
+	check(listPages(dir)[0] === b.name && !listPages(dir).includes("index.html"), "listPages: pages only, newest first");
 
 	const res = await fetch(`http://127.0.0.1:${port}/${a.name}`);
 	const page = await res.text();

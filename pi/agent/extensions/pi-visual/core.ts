@@ -6,27 +6,27 @@
  * browser facet both call these functions; only the wrapper changes when the
  * runtime does.
  *
- * Every page gets the same shell: One Dark tokens, a phone-first layout, and a
- * Content-Security-Policy meta tag that only lets scripts load from a short CDN
- * allowlist and blocks fetch/XHR to anywhere else. The meta tag applies whether
- * the page is served or opened straight from disk.
+ * Every page gets the same shell: One Dark tokens, a layout that works from
+ * phone to laptop width, and a Content-Security-Policy meta tag that only lets
+ * scripts load from a short CDN allowlist and blocks fetch/XHR to anywhere
+ * else. The meta tag applies whether the page is served or opened from disk.
  */
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve, sep } from "node:path";
 
-export const MAX_BODY_BYTES = 1_000_000;
-export const INDEX_FILE = "index.html";
+const MAX_BODY_BYTES = 1_000_000;
+const INDEX_FILE = "index.html";
 
-/** Script origins a page may load from. Keep in sync with skills/visual/SKILL.md. */
-export const CDN_ORIGINS = ["https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://unpkg.com"];
+/** Script origins a page may load from. */
+const CDN_ORIGINS = ["https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://unpkg.com"];
 
 const CSP = [
 	"default-src 'none'",
 	`script-src 'unsafe-inline' ${CDN_ORIGINS.join(" ")}`,
 	`style-src 'unsafe-inline' ${CDN_ORIGINS.join(" ")} https://fonts.googleapis.com`,
 	`font-src data: https://fonts.gstatic.com ${CDN_ORIGINS.join(" ")}`,
-	"img-src data: blob: https:",
+	`img-src data: blob: ${CDN_ORIGINS.join(" ")}`,
 	`connect-src ${CDN_ORIGINS.join(" ")}`,
 	"worker-src blob:",
 	"base-uri 'none'",
@@ -39,13 +39,17 @@ const BASE_CSS = `
 	color-scheme: dark;
 	--bg: #282c34; --panel: #30343c; --line: #3e4451; --fg: #abb2bf; --strong: #dcdfe4;
 	--muted: #5c6370; --red: #e06c75; --green: #98c379; --yellow: #e5c07b;
-	--blue: #61afef; --purple: #c678dd; --cyan: #56b6c2;
+	--blue: #61afef; --purple: #c678dd; --cyan: #56b6c2; --orange: #d19a66;
 	--sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 	--mono: "JetBrainsMono Nerd Font", "JetBrains Mono", ui-monospace, monospace;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--bg); color: var(--fg); }
-body { font: 16px/1.5 var(--sans); padding: 16px; max-width: 960px; margin: 0 auto; overflow-x: hidden; }
+body { font: 16px/1.5 var(--sans); padding: 16px; max-width: 1400px; margin: 0 auto; overflow-x: hidden; }
+@media (min-width: 1000px) { body { padding: 24px 32px; } }
+/* Visual beside a side panel (controls, legend, details) on wide screens; stacked on narrow ones. */
+.split { display: grid; gap: 16px; }
+@media (min-width: 1000px) { .split { grid-template-columns: minmax(0, 1fr) 320px; align-items: start; } }
 header.pv { display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
 	border-bottom: 1px solid var(--line); margin-bottom: 16px; padding-bottom: 8px; }
 header.pv h1 { font-size: 1.25rem; margin: 0; color: var(--strong); }
@@ -54,27 +58,28 @@ a { color: var(--blue); }
 h2, h3 { color: var(--strong); }
 code, pre { font-family: var(--mono); font-size: 0.9em; }
 pre { background: var(--panel); padding: 12px; border-radius: 6px; overflow-x: auto; }
-svg, canvas, img, video { max-width: 100%; height: auto; }
+canvas, img, video { max-width: 100%; height: auto; }
+svg { max-width: 100%; }
 table { border-collapse: collapse; width: 100%; }
 th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; }
 button, select, input { font: inherit; color: var(--strong); background: var(--panel);
 	border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; }
 `;
 
-export interface Visual {
+interface Visual {
 	title: string;
 	/** Body markup: elements, <style> and <script> tags. Not a full document. */
 	html: string;
 }
 
-export interface SavedVisual {
+interface SavedVisual {
 	/** File name inside the visuals directory, also its URL path. */
 	name: string;
 	/** Absolute path on disk. */
 	file: string;
 }
 
-export function escapeHtml(text: string): string {
+function escapeHtml(text: string): string {
 	return text.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 }
 
@@ -101,13 +106,9 @@ export function validate(visual: Visual): void {
 	}
 }
 
-function shown(now: Date): string {
-	const { date, hh, mm } = clock(now);
-	return `${date} ${hh}:${mm}`;
-}
-
-export function pageShell(visual: Visual, now: Date): string {
+function pageShell(visual: Visual, now: Date): string {
 	const title = escapeHtml(visual.title.trim());
+	const { date, hh, mm } = clock(now);
 	return `<!doctype html>
 <html lang="en">
 <head>
@@ -118,7 +119,7 @@ export function pageShell(visual: Visual, now: Date): string {
 <style>${BASE_CSS}</style>
 </head>
 <body>
-<header class="pv"><h1>${title}</h1><span><time datetime="${now.toISOString()}">${shown(now)}</time> · <a href="./">all</a></span></header>
+<header class="pv"><h1>${title}</h1><span><time datetime="${now.toISOString()}">${date} ${hh}:${mm}</time> · <a href="./">all</a></span></header>
 ${visual.html}
 </body>
 </html>
@@ -148,14 +149,22 @@ export function saveVisual(dir: string, visual: Visual, now = new Date()): Saved
 	return { name, file };
 }
 
-/** Regenerate index.html: every page, newest first, titled from its <title>. */
-export function writeIndex(dir: string): void {
-	const pages = readdirSync(dir)
+/** Page file names, newest first. Names start with a local timestamp, so they sort by time. */
+export function listPages(dir: string): string[] {
+	if (!existsSync(dir)) return [];
+	return readdirSync(dir)
 		.filter((name) => name.endsWith(".html") && name !== INDEX_FILE)
-		.map((name) => ({ name, mtime: statSync(join(dir, name)).mtimeMs }))
-		.sort((a, b) => b.mtime - a.mtime);
+		.map((name) => name.slice(0, -5)) // sort without ".html" so "x" < "x-2"
+		.sort()
+		.reverse()
+		.map((base) => `${base}.html`);
+}
+
+/** Regenerate index.html: every page, newest first, titled from its <title>. */
+function writeIndex(dir: string): void {
+	const pages = listPages(dir);
 	const items = pages
-		.map(({ name }) => {
+		.map((name) => {
 			const head = readFileSync(join(dir, name), "utf8").slice(0, 4000);
 			const title = /<title>([^<]*)<\/title>/.exec(head)?.[1] ?? escapeHtml(name);
 			return `<li><a href="${encodeURIComponent(name)}">${title}</a><br><small>${escapeHtml(name.slice(0, 15))}</small></li>`;
