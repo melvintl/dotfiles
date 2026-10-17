@@ -149,7 +149,7 @@ export function saveVisual(dir: string, visual: Visual, now = new Date()): Saved
 	return { name, file };
 }
 
-/** Matches the names saveVisual writes (2026-10-17-1432-slug.html), so other files like rerun.sh's comparisons stay out. */
+/** Matches the names saveVisual writes (2026-10-17-1432-slug.html), so other .html files in the directory stay out of the index. */
 const PAGE_NAME = /^\d{4}-\d{2}-\d{2}-\d{4}-.+\.html$/;
 
 /** Page file names, newest first. Names start with a local timestamp, so they sort by time. */

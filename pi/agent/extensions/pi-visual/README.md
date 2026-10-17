@@ -37,8 +37,9 @@ the code itself.
 
 ## Known limits
 
-- The server lives in the pi process that started it, so links die between
-  sessions. A launchd agent would keep it up.
+- The server lives in a pi process. When that pi exits, the next `render_ui`
+  or `/visuals` call from another pi takes the port over, but links are dead
+  while no pi is running. A launchd agent would keep it up.
 - Old pages are never pruned.
 - Later: live reload over SSE; under pi-durable, `index.ts` becomes a browser
   facet and pages become documents, while `core.ts`, `server.ts` and the skill
