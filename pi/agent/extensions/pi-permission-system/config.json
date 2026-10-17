@@ -65,6 +65,7 @@
     "goal_wait": "allow",
     "lsp_diagnostics": "allow",
     "lsp_fix": "allow",
+    "render_ui": "allow",
 
     "bash": {
       "*": "ask",
