@@ -11,7 +11,14 @@
     side-by-side = true
     light = false
     line-numbers = true
-    syntax-theme = zenburn
+    syntax-theme = OneHalfDark
+    # OneDark-muted line backgrounds; keep in sync with .config/lazygit/config.yml
+    plus-style = syntax "#2f3b2c"
+    minus-style = syntax "#3f2d31"
+    plus-emph-style = syntax "#405a35"
+    minus-emph-style = syntax "#6a3a40"
+    file-style = "#61afef"
+    hunk-header-style = "#c678dd"
 
 [merge]
     conflictstyle = zdiff3
