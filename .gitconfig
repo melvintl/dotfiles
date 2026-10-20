@@ -18,6 +18,14 @@
 
 [diff]
     algorithm = histogram
+    tool = difftastic
+
+[difftool "difftastic"]
+    # Keep diffs open until q, without making lazygit pause after editors.
+    cmd = difft --color=always "$LOCAL" "$REMOTE" | less -R -+F
+
+[init]
+    defaultBranch = main
 
 [pull]
     rebase = true
@@ -47,8 +55,7 @@
     cm = commit -m
     aacm = !git add -A . && git commit -m
     dev = !git checkout dev && git pull origin dev
-    master = !git checkout master && git pull origin master
-    main = !git checkout main && git pull origin main
+    m = !git checkout main && git pull
     p = push
     ls = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate
     ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat

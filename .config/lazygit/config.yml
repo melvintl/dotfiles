@@ -14,5 +14,5 @@ gui:
       - bold
     inactiveViewSelectedLineBgColor:
       - "#232b4a"
-# Return straight to lazygit after Neovim or another subprocess exits
-promptToReturnFromSubprocess: false
+# Editors return immediately; the difftool uses its own pager to keep output visible
+# promptToReturnFromSubprocess: false
