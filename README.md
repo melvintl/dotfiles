@@ -49,7 +49,7 @@ Tooling is documented in [INSTALL.md](INSTALL.md), including [what each tool is 
 
 ### Existing machine: pulling changes merged elsewhere
 
-After a PR lands on master (e.g. from another computer):
+After a PR lands on main (e.g. from another computer):
 
 ```bash
 git pull
