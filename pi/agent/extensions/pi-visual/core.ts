@@ -18,6 +18,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSy
 import { join, resolve, sep } from "node:path";
 
 const MAX_BODY_BYTES = 1_000_000;
+const MAX_SUMMARY_LENGTH = 240;
 const INDEX_FILE = "index.html";
 
 /** Script origins a page may load from. */
@@ -40,7 +41,7 @@ const BASE_CSS = `
 :root {
 	color-scheme: dark;
 	--bg: #282c34; --panel: #30343c; --line: #3e4451; --fg: #abb2bf; --strong: #dcdfe4;
-	--muted: #5c6370; --red: #e06c75; --green: #98c379; --yellow: #e5c07b;
+	--soft: #9aa2af; --muted: #5c6370; --red: #e06c75; --green: #98c379; --yellow: #e5c07b;
 	--blue: #61afef; --purple: #c678dd; --cyan: #56b6c2; --orange: #d19a66;
 	--sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 	--mono: "JetBrainsMono Nerd Font", "JetBrains Mono", ui-monospace, monospace;
@@ -55,7 +56,7 @@ body { font: 16px/1.5 var(--sans); padding: 16px; max-width: 1400px; margin: 0 a
 header.pv { display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
 	border-bottom: 1px solid var(--line); margin-bottom: 16px; padding-bottom: 8px; }
 header.pv h1 { font-size: 1.25rem; margin: 0; color: var(--strong); }
-header.pv a, header.pv time { color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
+header.pv a, header.pv time { color: var(--soft); font-size: 0.85rem; white-space: nowrap; }
 a { color: var(--blue); }
 h2, h3 { color: var(--strong); }
 code, pre { font-family: var(--mono); font-size: 0.9em; }
@@ -70,6 +71,8 @@ button, select, input { font: inherit; color: var(--strong); background: var(--p
 
 interface Visual {
 	title: string;
+	/** Optional plain-text description for the page and index, at most 240 characters. */
+	summary?: string;
 	/** Body markup: elements, <style> and <script> tags. Not a full document. */
 	html: string;
 }
@@ -100,6 +103,9 @@ export function slugify(title: string): string {
 export function validate(visual: Visual): void {
 	if (!visual.title.trim()) throw new Error("title is empty");
 	if (!visual.html.trim()) throw new Error("html is empty");
+	if (visual.summary && visual.summary.trim().length > MAX_SUMMARY_LENGTH) {
+		throw new Error(`summary is over ${MAX_SUMMARY_LENGTH} characters; shorten it to one sentence`);
+	}
 	if (Buffer.byteLength(visual.html) > MAX_BODY_BYTES) {
 		throw new Error(`html is over ${MAX_BODY_BYTES} bytes; inline less data or simplify the page`);
 	}
@@ -110,6 +116,7 @@ export function validate(visual: Visual): void {
 
 function pageShell(visual: Visual, now: Date): string {
 	const title = escapeHtml(visual.title.trim());
+	const summary = visual.summary?.trim();
 	const { date, hh, mm } = clock(now);
 	return `<!doctype html>
 <html lang="en">
@@ -118,7 +125,7 @@ function pageShell(visual: Visual, now: Date): string {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="${CSP}">
 <title>${title}</title>
-<style>${BASE_CSS}</style>
+${summary ? `<meta name="description" content="${escapeHtml(summary)}">\n` : ""}<style>${BASE_CSS}</style>
 </head>
 <body>
 <header class="pv"><h1>${title}</h1><span><time datetime="${now.toISOString()}">${date} ${hh}:${mm}</time> · <a href="index.html">all</a></span></header>
@@ -174,17 +181,18 @@ export function ensureIndex(dir: string): void {
 	writeIndex(dir);
 }
 
-/** Regenerate index.html: every page, newest first, titled from its <title>. */
+/** Regenerate index.html: every page, newest first, with its title and optional description. */
 function writeIndex(dir: string): void {
 	const pages = listPages(dir);
 	const items = pages
 		.map((name) => {
 			const head = readFileSync(join(dir, name), "utf8").slice(0, 4000);
 			const title = /<title>([^<]*)<\/title>/.exec(head)?.[1] ?? escapeHtml(name);
-			return `<li><a href="${encodeURIComponent(name)}">${title}</a><br><small>${escapeHtml(name.slice(0, 15))}</small></li>`;
+			const summary = /<meta name="description" content="([^"<]*)">/.exec(head)?.[1];
+			return `<li><a href="${encodeURIComponent(name)}">${title}</a>${summary ? `<p>${summary}</p>` : ""}<br><small>${escapeHtml(name.slice(0, 15))}</small></li>`;
 		})
 		.join("\n");
-	const css = `${BASE_CSS} ul { list-style: none; padding: 0; } li { padding: 10px 0; border-bottom: 1px solid var(--line); } small { color: var(--muted); }`;
+	const css = `${BASE_CSS} ul { list-style: none; padding: 0; } li { padding: 10px 0; border-bottom: 1px solid var(--line); } small, li p { color: var(--soft); } li p { margin: 4px 0; }`;
 	writeFileSync(
 		join(dir, INDEX_FILE),
 		`<!doctype html>

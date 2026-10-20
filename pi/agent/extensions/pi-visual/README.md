@@ -2,7 +2,9 @@
 
 Lets pi answer with a page instead of prose: concept maps, flows, charts, force
 graphs, interactive explainers, 3D scenes. The model calls
-`render_ui(title, html)` and gets back a URL.
+`render_ui(title, html, summary?)` and gets back a URL. The optional plain-text
+summary (at most 240 characters) appears below the title in the index and in the
+page's description metadata. Pages without summaries remain supported.
 
 | File | Role |
 |---|---|
@@ -42,7 +44,11 @@ the code itself.
 - The server lives in a pi process. When that pi exits, the next `render_ui`
   or `/visuals` call from another pi takes the port over, but links are dead
   while no pi is running. A launchd agent would keep it up.
-- Old pages are never pruned.
+- Old pages are never pruned or rewritten. Shell and skill changes affect newly
+  published pages only.
+- Publishing validates markup size and document shape, not browser execution.
+  Check diagrams and interactions in a browser at laptop and phone widths when
+  available; a published URL does not guarantee Mermaid or JavaScript succeeded.
 - Later: live reload over SSE; under pi-durable, `index.ts` becomes a browser
   facet and pages become documents, while `core.ts`, `server.ts` and the skill
   carry over.

@@ -69,11 +69,12 @@ const renderUi = defineTool({
 	],
 	parameters: Type.Object({
 		title: Type.String({ description: "Short page title, 2-6 words" }),
+		summary: Type.Optional(Type.String({ maxLength: 240, description: "Optional one-sentence plain-text takeaway for the index, at most 240 characters." })),
 		html: Type.String({ description: "Body markup: elements plus inline <style>/<script>. No <html>, <head> or <body>." }),
 	}),
 
 	async execute(_toolCallId, params) {
-		const saved = saveVisual(DIR, { title: params.title, html: params.html });
+		const saved = saveVisual(DIR, { title: params.title, summary: params.summary, html: params.html });
 		let note = "";
 		try {
 			await ensureServer();

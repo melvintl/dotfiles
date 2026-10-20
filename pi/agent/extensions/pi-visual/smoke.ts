@@ -4,7 +4,7 @@
  * pi only loads index.ts from this directory, so this file is never an extension.
  */
 
-import { mkdtempSync, rmSync, utimesSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -65,6 +65,23 @@ try {
 	rmSync(join(dir, later.name));
 	check(listPages(dir)[0] === b.name && !listPages(dir).includes("index.html"), "listPages: dated pages only, newest first");
 
+	const summary = `Read "actors" & <notes> 'safely'`;
+	const described = saveVisual(dir, { title: "With summary", summary: `  ${summary}  `, html: "<p>Summary</p>" }, now);
+	const describedPage = readFileSync(described.file, "utf8");
+	const escapedSummary = "Read &#34;actors&#34; &#38; &#60;notes&#62; &#39;safely&#39;";
+	check(describedPage.includes(`<meta name="description" content="${escapedSummary}">`), "summary is trimmed and escaped in metadata");
+	const blankSummary = saveVisual(dir, { title: "Blank summary", summary: "  ", html: "<p>x</p>" }, now);
+	check(!readFileSync(blankSummary.file, "utf8").includes('name="description"'), "blank summary omits metadata");
+	check(!readFileSync(a.file, "utf8").includes('name="description"'), "summary remains optional");
+	let summaryThrew = false;
+	try {
+		validate({ title: "t", summary: "x".repeat(241), html: "<p>x</p>" });
+	} catch {
+		summaryThrew = true;
+	}
+	check(summaryThrew, "rejects summaries over 240 characters");
+	validate({ title: "t", summary: "x".repeat(240), html: "<p>x</p>" });
+
 	const res = await fetch(`http://127.0.0.1:${port}/${a.name}`);
 	const page = await res.text();
 	check(res.status === 200, "serves a page");
@@ -72,7 +89,18 @@ try {
 	check(page.includes("&#60;test&#62;"), "title is escaped");
 	check(page.includes('href="index.html"'), "'all' links to index.html, which also works from disk");
 	const index = await (await fetch(`http://127.0.0.1:${port}/`)).text();
-	check(index.includes(encodeURIComponent(b.name)), "index lists pages");
+	check(index.includes(encodeURIComponent(b.name)), "index lists pages without summaries");
+	check(index.includes(`<p>${escapedSummary}</p>`), "index displays escaped summary without double escaping");
+	check(!index.includes("<notes>"), "summary cannot inject markup into index");
+	const luminance = (hex: string) => {
+		const rgb = hex.match(/../g)!.map((v) => Number.parseInt(v, 16) / 255)
+			.map((v) => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+		return rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
+	};
+	const token = (name: string) => luminance(new RegExp(`--${name}: #([a-f0-9]{6})`).exec(page)![1]);
+	for (const background of ["bg", "panel"]) {
+		check((token("soft") + 0.05) / (token(background) + 0.05) >= 4.5, `secondary text meets AA on --${background}`);
+	}
 	check((await fetch(`http://127.0.0.1:${port}/missing.html`)).status === 404, "missing page is 404");
 	first.close();
 } finally {
