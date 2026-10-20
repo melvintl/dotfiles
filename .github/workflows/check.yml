@@ -28,11 +28,14 @@ jobs:
           stylua --version
 
       # nvim/ needs Neovim 0.12+; Ubuntu's apt package is far older.
+      # Extracted straight into $HOME: /tmp and $HOME can be on different filesystems.
       - name: Install Neovim
-        uses: rhysd/action-setup-vim@v1
-        with:
-          neovim: true
-          version: stable
+        run: |
+          curl -fsSL -o /tmp/nvim.tar.gz \
+            https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz
+          tar -xzf /tmp/nvim.tar.gz -C "$HOME"
+          echo "$HOME/nvim-linux-x86_64/bin" >> "$GITHUB_PATH"
+          "$HOME/nvim-linux-x86_64/bin/nvim" --version | head -1
 
       - name: Run dotfiles health checks
         run: make check-smoke
