@@ -5,6 +5,8 @@ git:
     - pager: delta --no-gitconfig --dark --paging=never
     - pager: delta --no-gitconfig --dark --paging=never --side-by-side
     - externalDiffCommand: difft --color=always
+    # Empty entry = lazygit's built-in diff, no external pager
+    - pager: ""
 gui:
   theme:
     # Muted Tokyo Night blue instead of the default bright blue selection bar
