@@ -1,24 +1,31 @@
 [core]
     editor = nvim
 	excludesfile = ~/.gitignore
-    pager = delta
+    # Side-by-side lives here, not in [delta], so lazygit can reuse [delta] without it
+    pager = delta --side-by-side --line-numbers
 
 [interactive]
     diffFilter = delta --color-only
 
 [delta]
     navigate = true
-    side-by-side = true
     light = false
-    line-numbers = true
     syntax-theme = OneHalfDark
-    # OneDark-muted line backgrounds; keep in sync with .config/lazygit/config.yml
+    # OneDark: muted line backgrounds, quiet grey chrome so the code stands out.
+    # lazygit's pagers read these too (.config/lazygit/config.yml)
     plus-style = syntax "#2f3b2c"
     minus-style = syntax "#3f2d31"
     plus-emph-style = syntax "#405a35"
     minus-emph-style = syntax "#6a3a40"
-    file-style = "#61afef"
-    hunk-header-style = "#c678dd"
+    file-style = "#61afef" bold
+    file-decoration-style = "#3e4451" ol
+    hunk-header-style = "#5c6370" italic
+    hunk-header-decoration-style = none
+    line-numbers-minus-style = "#e06c75"
+    line-numbers-plus-style = "#98c379"
+    line-numbers-zero-style = "#4b5263"
+    line-numbers-left-style = "#3e4451"
+    line-numbers-right-style = "#3e4451"
 
 [merge]
     conflictstyle = zdiff3

@@ -1,10 +1,9 @@
 git:
   # Cycle through these with | in the diff view
   pagers:
-    # --no-gitconfig skips side-by-side from ~/.gitconfig, too wide for lazygit's panel
-    # Quoted so YAML doesn't read " #" in the colours as a comment
-    - pager: "delta --no-gitconfig --dark --paging=never --syntax-theme=OneHalfDark --plus-style='syntax #2f3b2c' --minus-style='syntax #3f2d31' --plus-emph-style='syntax #405a35' --minus-emph-style='syntax #6a3a40' --file-style='#61afef' --hunk-header-style='#c678dd'"
-    - pager: "delta --no-gitconfig --dark --paging=never --side-by-side --syntax-theme=OneHalfDark --plus-style='syntax #2f3b2c' --minus-style='syntax #3f2d31' --plus-emph-style='syntax #405a35' --minus-emph-style='syntax #6a3a40' --file-style='#61afef' --hunk-header-style='#c678dd'"
+    # Colours come from [delta] in ~/.gitconfig; side-by-side is only set in core.pager there
+    - pager: delta --dark --paging=never
+    - pager: delta --dark --paging=never --side-by-side
     - externalDiffCommand: difft --color=always
     # Empty entry = lazygit's built-in diff, no external pager
     - pager: ""
@@ -15,7 +14,7 @@ gui:
     inactiveBorderColor: ["#5c6370"]
     searchingActiveBorderColor: ["#e5c07b", bold]
     optionsTextColor: ["#61afef"]
-    selectedLineBgColor: ["#3e4451", bold]
+    selectedLineBgColor: ["#2c4a6e", bold]
     inactiveViewSelectedLineBgColor: ["#2c313a"]
     cherryPickedCommitFgColor: ["#61afef"]
     cherryPickedCommitBgColor: ["#3e4451"]
