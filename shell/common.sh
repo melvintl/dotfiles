@@ -5,6 +5,8 @@ export EDITOR=nvim
 export VISUAL="$EDITOR"
 export SUDO_EDITOR="$EDITOR"
 export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
+# lazygit on macOS otherwise reads ~/Library/Application Support/lazygit
+export LG_CONFIG_FILE="$HOME/.config/lazygit/config.yml"
 
 # Skip missing dirs and duplicates (rc files get re-sourced by tmux splits etc.)
 path_add() {

@@ -1,18 +1,26 @@
 git:
   # Cycle through these with | in the diff view
-  diffRenderers:
-    # --no-gitconfig skips side-by-side from ~/.gitconfig, too wide for lazygit's panel
-    - command: delta --no-gitconfig --dark --paging=never
-      name: delta
-    - command: delta --no-gitconfig --dark --paging=never --side-by-side
-      name: delta side-by-side
+  pagers:
+    # Colours come from [delta] in ~/.gitconfig; side-by-side is only set in core.pager there
+    - pager: delta --dark --paging=never
+    - pager: delta --dark --paging=never --side-by-side
+    - externalDiffCommand: difft --color=always
+    # Empty entry = lazygit's built-in diff, no external pager
+    - pager: ""
 gui:
+  # OneDark palette, to match the terminal and nvim
   theme:
-    # Muted Tokyo Night blue instead of the default bright blue selection bar
-    selectedLineBgColor:
-      - "#2d3f76"
-      - bold
-    inactiveViewSelectedLineBgColor:
-      - "#232b4a"
+    activeBorderColor: ["#61afef", bold]
+    inactiveBorderColor: ["#5c6370"]
+    searchingActiveBorderColor: ["#e5c07b", bold]
+    optionsTextColor: ["#61afef"]
+    selectedLineBgColor: ["#2c4a6e", bold]
+    inactiveViewSelectedLineBgColor: ["#2c313a"]
+    cherryPickedCommitFgColor: ["#61afef"]
+    cherryPickedCommitBgColor: ["#3e4451"]
+    markedBaseCommitFgColor: ["#61afef"]
+    markedBaseCommitBgColor: ["#e5c07b"]
+    unstagedChangesColor: ["#e06c75"]
+    defaultFgColor: ["#abb2bf"]
 # Editors return immediately; the difftool uses its own pager to keep output visible
 # promptToReturnFromSubprocess: false
