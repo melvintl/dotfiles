@@ -147,7 +147,6 @@ clone_once() {
 # ($HOME-relative). Conditional entries (tmux, zsh) stay in code below.
 MANIFEST=(
   'link|.bashrc|.bashrc'
-  'link|bin/tmux-session|.local/bin/tmux-session'
   'link|.gitconfig|.gitconfig'
   'link|.gitignore|.gitignore'
   'link|nvim|.config/nvim'
@@ -289,15 +288,18 @@ link_configs() {
       log "Removed stale ~/.vimrc link (config now lives in legacy/vimrc)"
     fi
   fi
-  # tmux-session goes on PATH; ~/.tmux-session must not point at the script
-  if [[ -L "$HOME/.tmux-session" && "$(readlink "$HOME/.tmux-session")" == "$DOTFILES/bin/tmux-session" ]]; then
-    remove_file "$HOME/.tmux-session"
-    if ((DRY_RUN)); then
-      log "Would remove stale ~/.tmux-session link (script now in ~/.local/bin)"
-    else
-      log "Removed stale ~/.tmux-session link (script now in ~/.local/bin)"
+  # tmux-session was retired; remove only symlinks owned by this repo.
+  local retired_link
+  for retired_link in "$HOME/.local/bin/tmux-session" "$HOME/.tmux-session"; do
+    if [[ -L "$retired_link" && "$(readlink "$retired_link")" == "$DOTFILES/bin/tmux-session" ]]; then
+      remove_file "$retired_link"
+      if ((DRY_RUN)); then
+        log "Would remove retired tmux-session link: $retired_link"
+      else
+        log "Removed retired tmux-session link: $retired_link"
+      fi
     fi
-  fi
+  done
 
   # zsh is the Mac shell; only link it where zsh exists
   if command -v zsh >/dev/null; then
