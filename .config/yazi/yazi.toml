@@ -1,2 +1,12 @@
 [mgr]
 ratio = [1,2,3]
+
+[opener]
+visidata = [
+  { run = 'vd "$@"', block = true, desc = "VisiData", for = "unix" },
+]
+
+[open]
+prepend_rules = [
+  { url = "*.{csv,tsv}", use = ["edit", "visidata", "reveal"] },
+]
