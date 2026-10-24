@@ -1,12 +1,15 @@
 git:
   # Cycle through these with | in the diff view
-  pagers:
+  diffRenderers:
     # Colours come from [delta] in ~/.gitconfig; side-by-side is only set in core.pager there
-    - pager: delta --dark --paging=never
-    - pager: delta --dark --paging=never --side-by-side
-    - externalDiffCommand: difft --color=always
-    # Empty entry = lazygit's built-in diff, no external pager
-    - pager: ""
+    - command: delta --dark --paging=never
+    - command: delta --dark --paging=never --side-by-side
+      name: delta side-by-side
+    - type: extDiff
+      command: difft --color=always
+    # lazygit's built-in diff
+    - type: rawGit
+      name: git
 gui:
   # OneDark palette, to match the terminal and nvim
   theme:
