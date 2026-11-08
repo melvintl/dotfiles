@@ -79,6 +79,15 @@ for validation and formatting; ALE also runs `terraform fmt` on save and
 `mise use -g terraform terraform-ls tflint` — per-platform options in
 [INSTALL.md](../INSTALL.md#terraform).
 
+## Send code to an agent
+
+Select code and press `<leader>as` (Space, a, s) to paste it with its file/line
+location into the first Claude Code (`claude`) or pi (`pi`) pane, by pane index,
+in Neovim's current tmux window. The agent must be running directly in that pane.
+After pasting, focus switches to the agent pane so you can review and submit.
+No picker, new agent, or automatic Enter.
+If no agent is found, a notification is shown. Requires only tmux, no extra plugin.
+
 ## Fonts
 
 Install patched nerd fonts (eg JetBrains Mono) on the terminal 
