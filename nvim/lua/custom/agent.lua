@@ -34,7 +34,8 @@ vim.keymap.set('x', '<leader>as', function()
   local start = vim.fn.getpos('v')
   local finish = vim.fn.getpos('.')
   local lines = vim.fn.getregion(start, finish, { type = vim.fn.mode(), exclusive = vim.o.selection == 'exclusive' })
-  local ref = string.format('%s:%d-%d', vim.fn.expand('%:p'), math.min(start[2], finish[2]), math.max(start[2], finish[2]))
+  local ref =
+    string.format('%s:%d-%d', vim.fn.expand('%:p'), math.min(start[2], finish[2]), math.max(start[2], finish[2]))
   local message = string.format('%s\n```\n%s\n```\n', ref, table.concat(lines, '\n'))
   local buffer = 'nvim-agent-' .. vim.fn.getpid()
   if tmux({ 'load-buffer', '-b', buffer, '-' }, message) then
