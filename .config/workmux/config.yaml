@@ -32,15 +32,19 @@ panes:
 # (`pip install -e .` / `uv sync` on a pyproject): site-packages then points at
 # the main checkout and tests in the worktree import the wrong code. Those
 # projects override with `symlink: []` and build a real venv in post_create.
+#
+# Agent context is symlinked, not copied, so notes and permission approvals
+# made in any worktree land in the main checkout and every worktree sees them.
 files:
   symlink:
     - .venv
     - venv
     - node_modules
+    - CLAUDE.local.md
+    - .claude/settings.local.json
   copy:
     - .env
     - .envrc
-    - .claude/settings.local.json
     - .pi/extensions/pi-permission-system/config.json
 
 # direnv trusts .envrc per path, so the copied one needs allowing once.
