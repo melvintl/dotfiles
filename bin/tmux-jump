@@ -59,7 +59,11 @@ preview() {
   if [[ $kind == s ]]; then
     tmux list-windows -t "=$value" -F '#{?window_active,*, } #I #W' 2>/dev/null
     echo
-    tmux capture-pane -ep -t "=$value:" 2>/dev/null
+    # Bottom of the active pane, where the prompt/latest output is, minus the
+    # blank rows below it.
+    tmux capture-pane -ep -t "=$value:" 2>/dev/null \
+      | awk '{ l[NR] = $0 } NF { last = NR } END { for (i = 1; i <= last; i++) print l[i] }' \
+      | tail -n "${FZF_PREVIEW_LINES:-40}"
   else
     if git -C "$value" rev-parse --git-dir >/dev/null 2>&1; then
       git -C "$value" -c color.status=always status -sb 2>/dev/null | head -20
@@ -120,7 +124,7 @@ sel=$(list all | fzf \
   --prompt='all> ' \
   --header='enter: switch · ^a all · ^s sessions · ^z dirs · ^x kill session' \
   --preview="'$self' preview {2} {3}" \
-  --preview-window='right:55%:wrap' \
+  --preview-window='right,50%,border-left,<100(down,50%,border-top)' \
   --bind="ctrl-a:change-prompt(all> )+reload('$self' list all)" \
   --bind="ctrl-s:change-prompt(sessions> )+reload('$self' list sessions)" \
   --bind="ctrl-z:change-prompt(dirs> )+reload('$self' list dirs)" \
