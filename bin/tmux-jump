@@ -1,29 +1,149 @@
 #!/usr/bin/env bash
 # Fuzzy session switcher for tmux (bound to prefix+j in .tmux.conf).
 #
-# The picker lists live tmux sessions first, then zoxide's directories. Pick a
-# session to switch to it; pick a directory to switch to a session named after
-# it, creating that session rooted in the directory if it does not exist yet.
+# The picker lists live tmux sessions (most recently attached first, current
+# session hidden, so Enter alone bounces to the previous one), then zoxide's
+# directories that don't already have a session. Pick a session to switch to
+# it; pick a directory to switch to the session rooted at its git repo,
+# creating that session if it does not exist yet.
+#
+# Picker keys: ctrl-a all, ctrl-s sessions only, ctrl-z dirs only,
+# ctrl-x kill the highlighted session.
+#
+# The script re-invokes itself for fzf's reload/preview/kill actions:
+#   tmux-jump list [all|sessions|dirs]
+#   tmux-jump preview <kind> <value>
+#   tmux-jump kill <kind> <value>
+# Rows are "<display>\t<kind>\t<value>", kind is "s" (session) or "d" (dir).
 
 set -euo pipefail
 
-for dep in tmux fzf zoxide; do
+self=$(cd "$(dirname "$0")" && pwd)/$(basename "$0")
+
+c_sess=$'\e[35m' c_dir=$'\e[34m' c_dim=$'\e[90m' c_off=$'\e[0m'
+
+# "last_attached\tname\tpath" per session, most recent first. Never-attached
+# sessions report 0: an empty first field would be swallowed by `read`, since
+# tab is IFS whitespace.
+sessions_raw() {
+  tmux list-sessions -F $'#{?session_last_attached,#{session_last_attached},0}\t#{session_name}\t#{session_path}' 2>/dev/null \
+    | sort -t $'\t' -k1,1nr || true
+}
+
+list() {
+  local mode=${1:-all} current raw
+  current=$(tmux display-message -p '#S' 2>/dev/null || true)
+  raw=$(sessions_raw)
+
+  if [[ $mode != dirs ]]; then
+    while IFS=$'\t' read -r _ name path; do
+      [[ -z $name || $name == "$current" ]] && continue
+      printf '%s %s  %s%s%s\ts\t%s\n' \
+        "${c_sess}${c_off}" "$name" "$c_dim" "${path/#$HOME/\~}" "$c_off" "$name"
+    done <<<"$raw"
+  fi
+
+  if [[ $mode != sessions ]]; then
+    # Hide dirs that are already some session's root; that session row covers them.
+    # (grep -Fx, not an associative array: macOS ships bash 3.2.)
+    local taken
+    taken=$(cut -f3 <<<"$raw")
+    zoxide query -l | { grep -vFx -- "$taken" || true; } | while IFS= read -r dir; do
+      printf '%s %s\td\t%s\n' "${c_dir}${c_off}" "${dir/#$HOME/\~}" "$dir"
+    done
+  fi
+}
+
+preview() {
+  local kind=$1 value=$2
+  if [[ $kind == s ]]; then
+    tmux list-windows -t "=$value" -F '#{?window_active,*, } #I #W' 2>/dev/null
+    echo
+    # Bottom of the active pane, where the prompt/latest output is, minus the
+    # blank rows below it.
+    tmux capture-pane -ep -t "=$value:" 2>/dev/null \
+      | awk '{ l[NR] = $0 } NF { last = NR } END { for (i = 1; i <= last; i++) print l[i] }' \
+      | tail -n "${FZF_PREVIEW_LINES:-40}"
+  else
+    if git -C "$value" rev-parse --git-dir >/dev/null 2>&1; then
+      git -C "$value" -c color.status=always status -sb 2>/dev/null | head -20
+      echo
+    fi
+    if command -v eza >/dev/null; then
+      eza -1 --color=always --icons --group-directories-first "$value"
+    else
+      ls -1 "$value"
+    fi
+  fi
+}
+
+kill_session() {
+  [[ $1 == s ]] && tmux kill-session -t "=$2" 2>/dev/null || true
+}
+
+# Name of the session whose root is exactly $1, if any.
+session_for_path() {
+  sessions_raw | awk -F '\t' -v p="$1" '$3 == p { print $2; exit }'
+}
+
+# Session name for a project root: its basename, or "parent_basename" when the
+# basename is already taken by a session rooted elsewhere (~/work/api vs
+# ~/oss/api). tmux rejects '.' and ':' in session names.
+name_for_root() {
+  local root=$1 name
+  name=$(basename "$root" | tr '.:' '__')
+  if tmux has-session -t "=$name" 2>/dev/null; then
+    name=$(basename "$(dirname "$root")")_$name
+    name=$(tr '.:' '__' <<<"$name")
+  fi
+  printf '%s\n' "$name"
+}
+
+switch_to() {
+  if [[ -n ${TMUX:-} ]]; then
+    tmux switch-client -t "=$1"
+  else
+    exec tmux attach-session -t "=$1"
+  fi
+}
+
+case ${1:-} in
+  list)    list "${2:-all}"; exit ;;
+  preview) preview "$2" "$3"; exit ;;
+  kill)    kill_session "$2" "$3"; exit ;;
+esac
+
+for dep in tmux fzf zoxide git; do
   command -v "$dep" >/dev/null || { echo "tmux-jump: '$dep' required" >&2; exit 1; }
 done
 
-sessions=$(tmux list-sessions -F '#S' 2>/dev/null || true)
+# The reload binds read the current mode back out of the prompt ("all> ").
+sel=$(list all | fzf \
+  --ansi --no-multi --no-mouse --no-sort \
+  --delimiter=$'\t' --with-nth=1 \
+  --prompt='all> ' \
+  --header='enter: switch · ^a all · ^s sessions · ^z dirs · ^x kill session' \
+  --preview="'$self' preview {2} {3}" \
+  --preview-window='right,50%,border-left,<100(down,50%,border-top)' \
+  --bind="ctrl-a:change-prompt(all> )+reload('$self' list all)" \
+  --bind="ctrl-s:change-prompt(sessions> )+reload('$self' list sessions)" \
+  --bind="ctrl-z:change-prompt(dirs> )+reload('$self' list dirs)" \
+  --bind="ctrl-x:execute-silent('$self' kill {2} {3})+reload('$self' list \"\${FZF_PROMPT%> }\")") \
+  || exit 0
+[[ -z $sel ]] && exit 0
 
-sel=$( { printf '%s\n' "$sessions"; zoxide query -l; } | grep -v '^$' \
-  | fzf --no-multi --no-mouse --prompt='session/dir> ' \
-        --header='live sessions, then zoxide dirs') || exit 0
-[[ -z "$sel" ]] && exit 0
+IFS=$'\t' read -r _ kind value <<<"$sel"
 
-if grep -qxF -- "$sel" <<<"$sessions"; then
-  tmux switch-client -t "=$sel"
+if [[ $kind == s ]]; then
+  switch_to "$value"
   exit 0
 fi
 
-# tmux rejects '.' and ':' in session names
-name=$(basename "$sel" | tr '.:' '__')
-tmux has-session -t "=$name" 2>/dev/null || tmux new-session -d -s "$name" -c "$sel"
-tmux switch-client -t "=$name"
+zoxide add "$value"
+root=$(git -C "$value" rev-parse --show-toplevel 2>/dev/null || printf '%s\n' "$value")
+name=$(session_for_path "$root")
+if [[ -z $name ]]; then
+  name=$(name_for_root "$root")
+  tmux new-session -d -s "$name" -c "$root"
+fi
+switch_to "$name"
