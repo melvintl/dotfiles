@@ -2,7 +2,7 @@
 # Fuzzy session switcher for tmux (bound to prefix+j in .tmux.conf).
 #
 # The picker lists live tmux sessions (most recently attached first, current
-# session hidden, so Enter alone bounces to the previous one), then zoxide's
+# session and helper sessions hidden), then zoxide's
 # directories that don't already have a session. Pick a session to switch to
 # it; pick a directory to switch to the session rooted at its git repo,
 # creating that session if it does not exist yet.
@@ -20,13 +20,18 @@ set -euo pipefail
 
 self=$(cd "$(dirname "$0")" && pwd)/$(basename "$0")
 
-c_sess=$'\e[35m' c_dir=$'\e[34m' c_dim=$'\e[90m' c_off=$'\e[0m'
+# One Dark yellow (#e5c07b) for sessions, blue (#61afef) for directories.
+c_sess=$'\e[38;2;229;192;123m' c_dir=$'\e[38;2;97;175;239m' c_dim=$'\e[90m' c_off=$'\e[0m'
 
 # "last_attached\tname\tpath" per session, most recent first. Never-attached
 # sessions report 0: an empty first field would be swallowed by `read`, since
-# tab is IFS whitespace.
+# tab is IFS whitespace. Hide floax (including a configured custom name) and
+# sessions explicitly marked with `tmux set-option -t <session> @tmux-jump-hidden 1`.
 sessions_raw() {
-  tmux list-sessions -F $'#{?session_last_attached,#{session_last_attached},0}\t#{session_name}\t#{session_path}' 2>/dev/null \
+  local floax
+  floax=$(tmux show-option -gqv @floax-session-name 2>/dev/null || true)
+  tmux list-sessions -F $'#{?session_last_attached,#{session_last_attached},0}\t#{session_name}\t#{session_path}\t#{@tmux-jump-hidden}' 2>/dev/null \
+    | awk -F '\t' -v floax="${floax:-floax}" '$2 != floax && $4 != "1" { print $1 "\t" $2 "\t" $3 }' \
     | sort -t $'\t' -k1,1nr || true
 }
 
@@ -39,7 +44,7 @@ list() {
     while IFS=$'\t' read -r _ name path; do
       [[ -z $name || $name == "$current" ]] && continue
       printf '%s %s  %s%s%s\ts\t%s\n' \
-        "${c_sess}${c_off}" "$name" "$c_dim" "${path/#$HOME/\~}" "$c_off" "$name"
+        "${c_sess}❐${c_off}" "$name" "$c_dim" "${path/#$HOME/\~}" "$c_off" "$name"
     done <<<"$raw"
   fi
 
@@ -49,7 +54,7 @@ list() {
     local taken
     taken=$(cut -f3 <<<"$raw")
     zoxide query -l | { grep -vFx -- "$taken" || true; } | while IFS= read -r dir; do
-      printf '%s %s\td\t%s\n' "${c_dir}${c_off}" "${dir/#$HOME/\~}" "$dir"
+      printf '%s %s\td\t%s\n' "${c_dir}${c_off}" "${dir/#$HOME/\~}" "$dir"
     done
   fi
 }
@@ -57,13 +62,27 @@ list() {
 preview() {
   local kind=$1 value=$2
   if [[ $kind == s ]]; then
-    tmux list-windows -t "=$value" -F '#{?window_active,*, } #I #W' 2>/dev/null
-    echo
-    # Bottom of the active pane, where the prompt/latest output is, minus the
-    # blank rows below it.
+    local overview lines budget max_overview
+    lines=${FZF_PREVIEW_LINES:-40}
+    max_overview=$((lines / 2))
+    # Commands alone are ambiguous when several windows run Claude. Include
+    # each active pane's working directory and terminal title (often its task).
+    overview=$(tmux list-windows -t "=$value" \
+      -F '#{?window_active,*, } #I #W  | #{pane_current_path} | #{pane_title}' 2>/dev/null \
+      | awk -v max="$max_overview" 'NR <= max { print } END { if (NR > max) print "  … " NR - max " more windows" }')
+    printf '%s\n\n' "$overview"
+    budget=$((lines - $(printf '%s\n' "$overview" | wc -l) - 2))
+    (( budget > 0 )) || budget=1
+    # Keep room for the active pane's screen. ANSI-only blank rows from TUIs
+    # must not push useful output out of the preview; preserve colors otherwise.
     tmux capture-pane -ep -t "=$value:" 2>/dev/null \
-      | awk '{ l[NR] = $0 } NF { last = NR } END { for (i = 1; i <= last; i++) print l[i] }' \
-      | tail -n "${FZF_PREVIEW_LINES:-40}"
+      | awk '{
+          l[NR] = $0
+          plain = $0
+          gsub(/\033\[[0-?]*[ -\/]*[@-~]/, "", plain)
+          if (plain ~ /[^[:space:]]/) last = NR
+        } END { for (i = 1; i <= last; i++) print l[i] }' \
+      | tail -n "$budget"
   else
     if git -C "$value" rev-parse --git-dir >/dev/null 2>&1; then
       git -C "$value" -c color.status=always status -sb 2>/dev/null | head -20
